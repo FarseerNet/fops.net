@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FOPS.Data
+namespace FOPS.Blazor.Data
 {
     public class WeatherForecastService
     {

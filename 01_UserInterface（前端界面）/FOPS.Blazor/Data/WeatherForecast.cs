@@ -1,6 +1,6 @@
 using System;
 
-namespace FOPS.Data
+namespace FOPS.Blazor.Data
 {
     public class WeatherForecast
     {

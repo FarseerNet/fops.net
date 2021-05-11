@@ -1,3 +1,4 @@
-/FOPS/obj/
-/FOPS/bin/
 /.idea/
+/01_UserInterface（前端界面）/FOPS.Blazor/bin
+/01_UserInterface（前端界面）/FOPS.Blazor/obj
+/03_Abstract（组件接口）/FOPS.Abstract/bin/
