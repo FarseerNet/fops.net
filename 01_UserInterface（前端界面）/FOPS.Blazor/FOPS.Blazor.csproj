@@ -31,4 +31,8 @@
       <ProjectReference Include="..\..\04_Component（业务组件）\FOPS.Com.FssServer\FOPS.Com.FssServer.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MySql.Data" Version="8.0.25" />
+    </ItemGroup>
+
 </Project>

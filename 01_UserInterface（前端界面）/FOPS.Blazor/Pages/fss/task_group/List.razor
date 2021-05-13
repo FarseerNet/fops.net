@@ -4,13 +4,14 @@
 @using FOPS.Abstract.Fss.Entity
 @using FS.Extends
 @inject IIocManager _iocManager;
+@inject NavigationManager nav;
+
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-header" id="anchor-play-header">
-            玩法模型
+            任务组
             <div class="layui-right">
-                <button class="layui-btn layui-btn-right" data-popup="anchor/play-info" data-area="md"><i class="am-icon-plus"></i> 添加玩法</button>
-                <button class="layui-btn layui-btn-right am-icon-refresh" data-action="anchor/template/play/refreshcache"></button>
+                <button class="layui-btn layui-btn-right" data-popup="anchor/play-info" data-area="md" @onclick=RefreshCache><i class="am-icon-plus"></i> 刷新缓存</button>
             </div>
         </div>
         <div class="layui-card-body">
@@ -77,19 +78,19 @@
                                 var taskGroupVO = _lst[index];
                                 <tr data-index="@index" class="">
                                     <td class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-0">@taskGroupVO.Id</div>
+                                        <div class="laytable-cell-14-0-0">【@(taskGroupVO.IsEnable?"开启":"停止")】 @taskGroupVO.Id</div>
                                     </td>
                                     <td data-field="Type" data-key="14-0-1" class="">
                                         <div class="layui-table-cell laytable-cell-14-0-1">@taskGroupVO.TaskId</div>
                                     </td>
                                     <td data-field="Title" data-key="14-0-2" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-2">@taskGroupVO.Caption</div>
+                                        <div class="laytable-cell-14-0-2">【@taskGroupVO.JobName】@taskGroupVO.Caption</div>
                                     </td>
                                     <td data-field="Items" data-key="14-0-3" class="">
                                         <div class="layui-table-cell laytable-cell-14-0-3">@taskGroupVO.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                     </td>
                                     <td data-field="Games" data-key="14-0-4" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-4">@taskGroupVO.Cron</div>
+                                        <div class="layui-table-cell laytable-cell-14-0-4">@GetTimeSetting(taskGroupVO)</div>
                                     </td>
                                     <td data-field="Games" data-key="14-0-5" class="">
                                         <div class="layui-table-cell laytable-cell-14-0-5">@taskGroupVO.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -110,22 +111,21 @@
                     </div>
                 </div>
                 <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/task_group/list/{index}"></PageSplit>
-                <style>
-    .laytable-cell-14-0-0{ width: 80px; }
-    .laytable-cell-14-0-1{ width: 100px; }
-    .laytable-cell-14-0-2{ width: 200px; }
-    .laytable-cell-14-0-3{ width: 150px; }
-    .laytable-cell-14-0-4{ width: 150px; }
-    .laytable-cell-14-0-5{ width: 150px; }
-    .laytable-cell-14-0-6{ width: 150px; }
-    .laytable-cell-14-0-7{ width: 80px; }
-    .laytable-cell-14-0-8{ width: 80px; }
-    </style>
             </div>
         </div>
     </div>
 </div>
-
+<style>
+    .laytable-cell-14-0-0{ width: 120px; }
+    .laytable-cell-14-0-1{ width: 100px; }
+    .laytable-cell-14-0-2{ width: 300px; }
+    .laytable-cell-14-0-3{ width: 150px; }
+    .laytable-cell-14-0-4{ width: 120px; }
+    .laytable-cell-14-0-5{ width: 150px; }
+    .laytable-cell-14-0-6{ width: 150px; }
+    .laytable-cell-14-0-7{ width: 80px; }
+    .laytable-cell-14-0-8{ width: 80px; }
+</style>
 @code{
 
     [Parameter] public int PageIndex { get; set; }
@@ -137,7 +137,19 @@
     protected override async Task OnParametersSetAsync()
     {
         _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
         _lst = _lst.ToList(_pageSize, PageIndex);
+    }
+
+    private string GetTimeSetting(TaskGroupVO group)
+    {
+        return !string.IsNullOrWhiteSpace(@group.Cron) ? @group.Cron : $"{@group.IntervalMs} ms";
+    }
+
+    private async Task RefreshCache()
+    {
+        await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
+        nav.NavigateTo("/fss/task_group/list");
     }
 }
