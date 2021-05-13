@@ -10,11 +10,33 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FOPS.Blazor.Data;
+using FOPS.Com.FssServer;
+using FS.Cache.Redis;
+using FS.Core;
+using FS.Data;
+using FS.DI;
+using FS.ElasticSearch;
+using FS.Mapper;
+using FS.Modules;
+using FS.MQ.RedisStream;
 
 namespace FOPS.Blazor
 {
-    public class Startup
+    [DependsOn(
+        typeof(FarseerCoreModule),
+        typeof(MapperModule),
+        typeof(RedisModule),
+        typeof(RedisStreamModule),
+        typeof(DataModule),
+        typeof(ElasticSearchModule),
+        typeof(FssModule))]
+    public class Startup: FarseerModule
     {
+        public Startup()
+        {
+            
+        }
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,6 +48,7 @@ namespace FOPS.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IIocManager>(FS.DI.IocManager.Instance.Resolve<IIocManager>());
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
@@ -54,6 +77,7 @@ namespace FOPS.Blazor
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                //endpoints.MapFallbackToPage("/fss/task_group/list_{pageIndex}","/_Host");
             });
         }
     }

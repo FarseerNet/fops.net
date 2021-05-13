@@ -12,9 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Entity" />
-      <Folder Include="Enum" />
-      <Folder Include="Server" />
+      <Folder Include="Tmp\Entity" />
+      <Folder Include="Tmp\Enum" />
+      <Folder Include="Tmp\Server" />
     </ItemGroup>
 
 </Project>

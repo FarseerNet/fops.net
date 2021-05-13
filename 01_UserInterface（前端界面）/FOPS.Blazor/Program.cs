@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FS;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ namespace FOPS.Blazor
     {
         public static void Main(string[] args)
         {
+            FarseerApplication.Run<Startup>("FOPS.Blazor").Initialize();
             CreateHostBuilder(args).Build().Run();
         }
 
