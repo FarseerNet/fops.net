@@ -27,7 +27,7 @@ spec:
         rt: web
       containers:
         - name: fops
-          image: farseernet/fss:latest
+          image: farseernet/fops:latest
           imagePullPolicy: IfNotPresent
           imagePullSecrets:
             - name: regsecret
