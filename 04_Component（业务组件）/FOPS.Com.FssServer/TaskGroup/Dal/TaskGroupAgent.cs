@@ -26,6 +26,11 @@ namespace FOPS.Com.FssServer.TaskGroup.Dal
         public Task UpdateAsync(int id, TaskGroupPO taskGroup) => FssContext.Data.TaskGroup.Where(o => o.Id == id).UpdateAsync(taskGroup);
 
         /// <summary>
+        /// 添加任务组
+        /// </summary>
+        public Task AddAsync(TaskGroupPO po) => FssContext.Data.TaskGroup.InsertAsync(po, true);
+
+        /// <summary>
         /// 更新任务ID
         /// </summary>
         public Task UpdateTaskIdAsync(int taskGroupId, int taskId) => FssContext.Data.TaskGroup.Where(o => o.Id == taskGroupId).UpdateAsync(new TaskGroupPO {TaskId = taskId});

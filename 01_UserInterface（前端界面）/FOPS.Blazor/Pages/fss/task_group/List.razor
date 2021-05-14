@@ -11,7 +11,8 @@
         <div class="layui-card-header" id="anchor-play-header">
             任务组
             <div class="layui-right">
-                <button class="layui-btn layui-btn-right" data-popup="anchor/play-info" data-area="md" @onclick=RefreshCache><i class="am-icon-plus"></i> 刷新缓存</button>
+                <button class="layui-btn layui-btn-right" @onclick=RefreshCache><i class="am-icon-plus"></i> 刷新缓存</button>
+                <button class="layui-btn layui-btn-right" @onclick=Add><i class="am-icon-plus"></i> 添加任务组</button>
             </div>
         </div>
         <div class="layui-card-body">
@@ -151,5 +152,11 @@
     {
         await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
         nav.NavigateTo("/fss/task_group/list");
+    }
+
+    private async Task Add()
+    {
+        await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
+        nav.NavigateTo("/fss/task_group/save");
     }
 }

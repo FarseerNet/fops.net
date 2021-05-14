@@ -32,5 +32,10 @@ namespace FOPS.Com.FssServer.Abstract
         /// 更新任务时间
         /// </summary>
         Task UpdateNextAtAsync(int taskGroupId, DateTime nextAt);
+
+        /// <summary>
+        /// 添加任务组
+        /// </summary>
+        Task AddAsync(TaskGroupPO po);
     }
 }
