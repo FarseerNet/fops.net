@@ -24,7 +24,7 @@ spec:
         app: fops
     spec:
       nodeSelector:   #节点筛选器
-        rt: middleware
+        rt: web
       containers:
         - name: fops
           image: farseernet/fss:latest
