@@ -60,13 +60,13 @@
                                 var client = _lst[index];
                                 <tr data-index="@index" class="">
                                     <td data-field="Type" data-key="14-0-0" class="">
-                                        <div class="laytable-cell-14-0-0">@client.ClientIp</div>
+                                        <div class="layui-table-cell laytable-cell-14-0-0">@client.ClientIp</div>
                                     </td>
                                     <td data-field="Type" data-key="14-0-1" class="">
                                         <div class="layui-table-cell laytable-cell-14-0-1">@client.ServerHost</div>
                                     </td>
                                     <td data-field="Title" data-key="14-0-2" class="">
-                                        <div class="laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                        <div class="layui-table-cell laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                     </td>
                                     <td data-field="Items" data-key="14-0-3" class="">
                                         <div class="layui-table-cell laytable-cell-14-0-3">@client.HeartbeatAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -89,12 +89,12 @@
     </div>
 </div>
 <style>
-    .laytable-cell-14-0-0{ width: 120px; }
-    .laytable-cell-14-0-1{ width: 100px; }
-    .laytable-cell-14-0-2{ width: 100px; }
+    .laytable-cell-14-0-0{ width: 110px; }
+    .laytable-cell-14-0-1{ width: 300px; }
+    .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 150px; }
-    .laytable-cell-14-0-4{ width: 120px; }
-    .laytable-cell-14-0-5{ width: 300px; }
+    .laytable-cell-14-0-4{ width: 150px; }
+    .laytable-cell-14-0-5{ width: 400px; }
 </style>
 
 @code{

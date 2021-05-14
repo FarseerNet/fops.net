@@ -31,7 +31,7 @@ namespace FOPS.Com.FssServer.Client
             var lst = hashGetAll.Select(o => JsonConvert.DeserializeObject<ClientConnectVO>(o.Value.ToString())).ToList();
             for (int i = 0; i < lst.Count; i++)
             {
-                // 心跳大于1秒中，任为已经下线了
+                // 心跳大于1分钟，任为已经下线了
                 if ((DateTime.Now - lst[i].HeartbeatAt).TotalMinutes >= 1)
                 {
                     RedisCacheManager.Db.HashDelete(Key, lst[i].ServerHost);
