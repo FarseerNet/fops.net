@@ -84,7 +84,9 @@
                                     <div class="layui-table-cell laytable-cell-14-0-1">@taskGroupVO.TaskId</div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-2" class="">
-                                    <div class="laytable-cell-14-0-2"><a href="/fss/task_group/update/@taskGroupVO.Id">【@taskGroupVO.JobName】@taskGroupVO.Caption</a></div>
+                                    <div class="laytable-cell-14-0-2">
+                                        <a href="/fss/task_group/update/@taskGroupVO.Id">【@taskGroupVO.JobName】@taskGroupVO.Caption</a>
+                                    </div>
                                 </td>
                                 <td data-field="Items" data-key="14-0-3" class="">
                                     <div class="layui-table-cell laytable-cell-14-0-3">@taskGroupVO.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -153,7 +155,7 @@
         nav.NavigateTo("/fss/task_group/list");
     }
 
-    private async Task GotoAdd()
+    private void GotoAdd()
     {
         nav.NavigateTo("/fss/task_group/add");
     }

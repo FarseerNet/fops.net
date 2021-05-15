@@ -21,5 +21,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取所有任务组
         /// </summary>
         Task<List<TaskVO>> ToGroupListAsync();
+
+        /// <summary>
+        /// 今日执行失败数量
+        /// </summary>
+        Task<int> TodayFailCountAsync();
     }
 }

@@ -1,7 +1,9 @@
 <div class="layui-side layui-side-menu">
     <div class="layui-side-scroll">
-        <div class="layui-logo" lay-href="/main">
-            <span>星云中心</span>
+        <div class="layui-logo">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span>星云中心</span>
+            </NavLink>
         </div>
 
         <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
@@ -12,7 +14,7 @@
                 </a>
                 <dl class="layui-nav-child">
                     <dd data-name="console" class="layui-this">
-                        <NavLink class="nav-link" href="javascript:;" lay-href="/main">
+                        <NavLink class="nav-link" href="/">
                             大盘
                         </NavLink>
                     </dd>

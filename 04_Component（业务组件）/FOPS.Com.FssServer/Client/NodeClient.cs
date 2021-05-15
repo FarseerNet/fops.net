@@ -44,6 +44,15 @@ namespace FOPS.Com.FssServer.Client
         }
 
         /// <summary>
+        /// 取出全局客户端数量
+        /// </summary>
+        public Task<long> ToClientCountAsync()
+        {
+            const string Key = "FSS_ClientList";
+            return RedisCacheManager.Db.HashLengthAsync(Key);
+        }
+
+        /// <summary>
         /// 获取服务端节点列表
         /// </summary>
         public async Task<Dictionary<string, DateTime>> ToNodeListAsync()

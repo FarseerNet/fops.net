@@ -52,5 +52,10 @@ namespace FOPS.Com.FssServer.Tasks
                     return lst;
                 }, o => o.TaskGroupId);
         }
+        
+        /// <summary>
+        /// 今日执行失败数量
+        /// </summary>
+        public Task<int> TodayFailCountAsync() => TaskAgent.TodayFailCountAsync();
     }
 }

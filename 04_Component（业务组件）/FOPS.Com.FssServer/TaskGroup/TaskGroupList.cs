@@ -7,6 +7,7 @@ using FOPS.Com.FssServer.TaskGroup.Dal;
 using FS.Cache.Redis;
 using FS.DI;
 using FS.Extends;
+using StackExchange.Redis;
 
 namespace FOPS.Com.FssServer.TaskGroup
 {
@@ -40,6 +41,14 @@ namespace FOPS.Com.FssServer.TaskGroup
                 , o => o.Id);
         }
 
+        /// <summary>
+        /// 获取任务组数量
+        /// </summary>
+        public Task<long> Count()
+        {
+            return RedisCacheManager.Db.HashLengthAsync(TaskGroupCache.Key);
+        }
+        
         /// <summary>
         /// 删除整个缓存
         /// </summary>

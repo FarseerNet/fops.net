@@ -54,14 +54,13 @@
         <div class="layadmin-body-shade" layadmin-event="shade"></div>
     </div>
 </div>
-
 @code
 {
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            js.InvokeVoidAsync("InitLayui");
+            js.InvokeVoidAsync("layuiConfig.use","index");
         }
     }
 }

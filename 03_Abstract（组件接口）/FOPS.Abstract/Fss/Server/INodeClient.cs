@@ -17,5 +17,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取服务端节点列表
         /// </summary>
         Task<Dictionary<string, DateTime>> ToNodeListAsync();
+
+        /// <summary>
+        /// 取出全局客户端数量
+        /// </summary>
+        Task<long> ToClientCountAsync();
     }
 }
