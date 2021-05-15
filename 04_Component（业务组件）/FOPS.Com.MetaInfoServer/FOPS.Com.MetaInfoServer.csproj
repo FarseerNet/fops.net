@@ -13,4 +13,8 @@
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Utils\Farseer.Net.Utils.csproj" />
         <ProjectReference Include="..\..\03_Abstract（组件接口）\FOPS.Abstract\FOPS.Abstract.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Abstract" />
+    </ItemGroup>
 </Project>

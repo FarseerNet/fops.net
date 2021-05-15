@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
+        <RootNamespace>FOPS.Com.K8sServerAA</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,5 +13,10 @@
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.MQ.RedisStream\Farseer.Net.MQ.RedisStream.csproj" />
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Utils\Farseer.Net.Utils.csproj" />
         <ProjectReference Include="..\..\03_Abstract（组件接口）\FOPS.Abstract\FOPS.Abstract.csproj" />
+        <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.ElasticSearch\Farseer.Net.ElasticSearch.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Abstract" />
     </ItemGroup>
 </Project>

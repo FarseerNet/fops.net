@@ -1,31 +1,22 @@
-using FOPS.Abstract.MetaInfo.Entity;
-using FS.Core.Mapping.Attribute;
-using FS.Mapper;
-
-namespace FOPS.Com.MetaInfoServer.Project.Dal
+namespace FOPS.Abstract.MetaInfo.Entity
 {
-    [Map(typeof(ProjectVO))]
-    public class ProjectPO
+    public class ProjectVO
     {
         /// <summary>
         /// 主键
         /// </summary>
-        [Field(Name = "id",IsPrimaryKey = true)]
         public int? Id { get; set; }
         /// <summary>
         /// 项目名称
         /// </summary>
-        [Field(Name = "name")]
         public string Name { get; set; }
         /// <summary>
         /// 项目组ID
         /// </summary>
-        [Field(Name = "group_id")]
         public int? GroupId { get; set; }
         /// <summary>
         /// GIT
         /// </summary>
-        [Field(Name = "git_id")]
         public int? GitId { get; set; }
     }
 }
