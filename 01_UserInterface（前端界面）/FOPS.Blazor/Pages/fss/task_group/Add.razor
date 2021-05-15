@@ -77,6 +77,10 @@
     {
         try
         {
+            if (_info.Caption == null || _info.Cron == null || _info.Data == null || _info.JobName == null)
+            {
+                throw new Exception("标题、时间间隔、传输数据、Job名称 必须填写");
+            }
             await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
             nav.NavigateTo($"/fss/task_group/update/{_info.Id}");
