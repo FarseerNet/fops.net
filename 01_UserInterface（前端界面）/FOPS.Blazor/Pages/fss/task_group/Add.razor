@@ -11,7 +11,7 @@
             <div class="layui-card-header">
                 添加任务组
                 <div class="layui-right">
-                    <button class="layui-btn"  onclick="location.href='/fss/task_group/list'"><i class="am-icon-plus"></i> 列表</button>
+                    <button class="layui-btn"  @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
                 </div>
             </div>
             <div class="layui-card-body layui-row layui-col-space10">
@@ -91,4 +91,8 @@
         }
     }
 
+    private void GotoList()
+    {
+        nav.NavigateTo("/fss/task_group/list");
+    }
 }

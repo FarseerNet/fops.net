@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime js;
+
 <div id="LAY_app">
     <div class="layui-layout layui-layout-admin">
         <!-- 头部区域 -->
@@ -52,3 +54,14 @@
         <div class="layadmin-body-shade" layadmin-event="shade"></div>
     </div>
 </div>
+
+@code
+{
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            js.InvokeVoidAsync("InitLayui");
+        }
+    }
+}
