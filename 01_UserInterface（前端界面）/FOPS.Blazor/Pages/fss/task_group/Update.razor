@@ -1,0 +1,157 @@
+@page "/fss/task_group/update/{id:int}"
+@using FOPS.Abstract.Fss.Server
+@using FOPS.Abstract.Fss.Entity
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基础信息
+                <div class="layui-right">
+                    <button class="layui-btn" onclick="location.href='/fss/task_group/list'"><i class="am-icon-plus"></i> 列表</button>
+                </div>
+            </div>
+            <div class="layui-card-body layui-row layui-col-space10">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务组标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" @bind="_info.Caption" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Job名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" @bind="_info.JobName" autocomplete="off" placeholder="客户端识别能处理的JOB" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" @bind="_info.StartAt" @bind:format="yyyy-MM-dd" lay-verify="date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时间间隔</label>
+                        <div class="layui-input-inline">
+                            <input type="text" @bind="_info.Cron" autocomplete="off" placeholder="请输入数字ms或cron" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">是否开启</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" @bind="_info.IsEnable" name="open">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">活动时间</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">下次执行</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">上次执行</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.LastRunAt.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">已执行</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.RunCount 次</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">子任务ID</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.TaskId</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">平均耗时</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label" style="width:150px">@_info.RunSpeedAvg</label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;">
+                            <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">传给客户端的参数</div>
+            <div class="layui-card-body layui-row layui-col-space10">
+                <div class="layui-form-item">
+                    <textarea @bind="_info.Data" placeholder="Json格式" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    [Parameter] public int Id { get; set; }
+
+    private TaskGroupVO _info = new() {IsEnable = true};
+
+    private async Task UpdateInfo()
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "任务组不存在");
+            nav.NavigateTo($"/fss/task_group/list");
+        }
+        try
+        {
+            await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
+            await js.InvokeVoidAsync("alert", "修改成功");
+            nav.NavigateTo($"/fss/task_group/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("alert", e.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "任务组不存在");
+            nav.NavigateTo($"/fss/task_group/list");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id > 0 && _info.Id == 0)
+        {
+            _info = await _iocManager.Resolve<ITaskGroupInfo>().ToInfoAsync(Id);
+            if (_info == null)
+            {
+                await js.InvokeVoidAsync("alert", "任务组不存在");
+                nav.NavigateTo($"/fss/task_group/list");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(_info.Cron)) _info.Cron = _info.IntervalMs.ToString();
+        }
+    }
+
+}

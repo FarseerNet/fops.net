@@ -6,85 +6,83 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
-<div class="layui-fluid">
-    <div class="layui-card">
-        <div class="layui-card-header" id="anchor-play-header">
-            客户端列表
-        </div>
-        <div class="layui-card-body">
-            <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
-                <div class="layui-table-box">
-                    <div class="layui-table-header">
-                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
-                            <thead>
-                            <tr>
-                                <th data-field="ID" data-key="14-0-0" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-0">
-                                        <span>客户端IP</span>
-                                    </div>
-                                </th>
-                                <th data-field="Type" data-key="14-0-1" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">
-                                        <span>通道端口</span>
-                                    </div>
-                                </th>
-                                <th data-field="Title" data-key="14-0-2" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <span>注册时间</span>
-                                    </div>
-                                </th>
-                                <th data-field="Games" data-key="14-0-3" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">
-                                        <span>心跳时间</span>
-                                    </div>
-                                </th>
-                                <th data-field="Games" data-key="14-0-4" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">
-                                        <span>使用时间</span>
-                                    </div>
-                                </th>
-                                <th data-field="Games" data-key="14-0-5" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-5">
-                                        <span>注册的Job</span>
-                                    </div>
-                                </th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div class="layui-table-body layui-table-main">
-                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
-                            <tbody>
-                            @for (var index = 0; index < _lst.Count; index++)
-                            {
-                                var client = _lst[index];
-                                <tr data-index="@index" class="">
-                                    <td data-field="Type" data-key="14-0-0" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-0">@client.ClientIp</div>
-                                    </td>
-                                    <td data-field="Type" data-key="14-0-1" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-1">@client.ServerHost</div>
-                                    </td>
-                                    <td data-field="Title" data-key="14-0-2" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
-                                    </td>
-                                    <td data-field="Items" data-key="14-0-3" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-3">@client.HeartbeatAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
-                                    </td>
-                                    <td data-field="Games" data-key="14-0-4" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-4">@client.UseAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
-                                    </td>
-                                    <td data-field="Games" data-key="14-0-5" class="">
-                                        <div class="layui-table-cell laytable-cell-14-0-5">@string.Join(',', client.Jobs)</div>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        客户端列表
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID" data-key="14-0-0" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-0">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type" data-key="14-0-1" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>通道端口</span>
+                                </div>
+                            </th>
+                            <th data-field="Title" data-key="14-0-2" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>注册时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Games" data-key="14-0-3" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>心跳时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Games" data-key="14-0-4" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>使用时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Games" data-key="14-0-5" class="">
+                                <div class="layui-table-cell laytable-cell-14-0-5">
+                                    <span>注册的Job</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
                 </div>
-                <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/client/list/{index}"></PageSplit>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var client = _lst[index];
+                            <tr data-index="@index" class="">
+                                <td data-field="Type" data-key="14-0-0" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-0">@client.ClientIp</div>
+                                </td>
+                                <td data-field="Type" data-key="14-0-1" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">@client.ServerHost</div>
+                                </td>
+                                <td data-field="Title" data-key="14-0-2" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                                <td data-field="Items" data-key="14-0-3" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">@client.HeartbeatAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                                <td data-field="Games" data-key="14-0-4" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">@client.UseAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                                <td data-field="Games" data-key="14-0-5" class="">
+                                    <div class="layui-table-cell laytable-cell-14-0-5">@string.Join(',', client.Jobs)</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/client/list/{index}"></PageSplit>
         </div>
     </div>
 </div>

@@ -1,15 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
-using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
 using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.TaskGroup.Dal;
-using FOPS.Com.FssServer.Tasks.Dal;
-using FS.Cache.Redis;
 using FS.DI;
 using FS.Extends;
-using Newtonsoft.Json;
+using FS.Utils.Common;
+using FS.Utils.Component;
 
 namespace FOPS.Com.FssServer.TaskGroup
 {
@@ -22,19 +20,30 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// <summary>
         /// 更新TaskGroup
         /// </summary>
-        public Task UpdateAsync(TaskGroupVO taskGroup) => TaskGroupCache.SaveAsync(taskGroup.Id, taskGroup);
+        public Task UpdateAsync(TaskGroupVO vo) => TaskGroupCache.SaveAsync(vo.Id, vo);
 
         /// <summary>
         /// 保存TaskGroup
         /// </summary>
-        public async Task SaveAsync(TaskGroupVO taskGroup)
+        public async Task SaveAsync(TaskGroupVO vo)
         {
-            await UpdateAsync(taskGroup);
-            var taskGroupPO = taskGroup.Map<TaskGroupPO>();
-            taskGroupPO.Cron       = null;
-            taskGroupPO.IntervalMs = null;
-            taskGroupPO.IsEnable   = null;
-            await TaskGroupAgent.UpdateAsync(taskGroup.Id, taskGroupPO);
+            if (vo.IntervalMs < 1)
+            {
+                // 是否为数字
+                if (IsType.IsInt(vo.Cron))
+                {
+                    vo.IntervalMs = vo.Cron.ConvertType(0L);
+                    vo.Cron       = "";
+                }
+                else if (!new Cron().Parse(vo.Cron))
+                {
+                    throw new Exception("Cron格式错误");
+                }
+            }
+
+            await UpdateAsync(vo);
+            var taskGroupPO = vo.Map<TaskGroupPO>();
+            await TaskGroupAgent.UpdateAsync(vo.Id, taskGroupPO);
         }
     }
 }

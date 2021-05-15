@@ -9,6 +9,6 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 添加任务信息
         /// </summary>
-        Task ToInfoAsync(TaskGroupVO vo);
+        Task<int> AddAsync(TaskGroupVO vo);
     }
 }
