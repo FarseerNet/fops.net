@@ -357,20 +357,23 @@
     long _clientCount;
     int _todayFailCount;
 
+    protected override async Task OnInitializedAsync()
+    {
+        // FSS 任务组数
+        _taskGroupCount = await _iocManager.Resolve<ITaskGroupList>().Count();
+        // FSS 未执行数
+        var lstTaskGroup = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
+        _unExecuteCount = lstTaskGroup.FindAll(o => DateTime.Now > o.NextAt).Count;
+        // FSS 客户端数
+        _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
+        // FSS 今日失败数
+        _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // FSS 任务组数
-            _taskGroupCount = await _iocManager.Resolve<ITaskGroupList>().Count();
-            // FSS 未执行数
-            var lstTaskGroup = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
-            _unExecuteCount = lstTaskGroup.FindAll(o => DateTime.Now > o.NextAt).Count;
-            // FSS 客户端数
-            _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
-            // FSS 今日失败数
-            _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
-            
             // 初始化脚本
             await js.InvokeVoidAsync("layuiConfig.use", "index", "console");
         }
