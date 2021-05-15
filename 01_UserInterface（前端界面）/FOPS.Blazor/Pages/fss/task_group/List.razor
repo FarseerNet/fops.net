@@ -136,10 +136,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        //_lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
-        //_lst = _lst.OrderByDescending(o => o.Id).ToList();
-        //_totalCount = _lst.Count;
-        //_lst = _lst.ToList(_pageSize, PageIndex);
+        _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _totalCount = _lst.Count;
+        _lst = _lst.ToList(_pageSize, PageIndex);
     }
 
     private string GetTimeSetting(TaskGroupVO group)
