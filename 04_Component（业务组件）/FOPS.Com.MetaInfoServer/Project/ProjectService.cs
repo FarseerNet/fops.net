@@ -15,9 +15,25 @@ namespace FOPS.Com.MetaInfoServer.Project
         public Task<List<ProjectVO>> ToListAsync() => MetaInfoContext.Data.Project.ToListAsync().MapAsync<ProjectVO, ProjectPO>();
 
         /// <summary>
+        /// 项目信息
+        /// </summary>
+        public Task<ProjectVO> ToInfoAsync(int id) => MetaInfoContext.Data.Project.Where(o => o.Id == id).ToEntityAsync().MapAsync<ProjectVO, ProjectPO>();
+
+        /// <summary>
+        /// 项目数量
+        /// </summary>
+        public Task<int> CountAsync() => MetaInfoContext.Data.Project.CountAsync();
+
+        /// <summary>
         /// 添加项目
         /// </summary>
-        public Task AddAsync(ProjectVO vo) => MetaInfoContext.Data.Project.InsertAsync(vo.Map<ProjectPO>());
+        public async Task<int> AddAsync(ProjectVO vo)
+        {
+            var po = vo.Map<ProjectPO>();
+            await MetaInfoContext.Data.Project.InsertAsync(po, true);
+            vo.Id = po.Id.GetValueOrDefault();
+            return vo.Id;
+        }
 
         /// <summary>
         /// 修改项目

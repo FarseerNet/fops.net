@@ -21,6 +21,6 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// <summary>
         /// 账户密码
         /// </summary>
-        public string PassWord { get; set; }
+        public string UserPwd { get; set; }
     }
 }

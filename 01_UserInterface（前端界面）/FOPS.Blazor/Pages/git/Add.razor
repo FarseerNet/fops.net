@@ -1,0 +1,80 @@
+@page "/git/add"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@using Microsoft.AspNetCore.Components
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加GIT
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">Git名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Git名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">托管地址</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Hub" autocomplete="off" placeholder="请输入托管地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">Git账户名称</label>
+            <div class="layui-input-inline">
+                <input type="text" @bind="_info.UserName" placeholder="请输入Git账户名称" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">如没有，则留空</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">Git账户密码</label>
+            <div class="layui-input-inline">
+                <input type="text" @bind="_info.UserPwd" placeholder="请输入Git账户密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">如没有，则留空</div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="AddInfo">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    private readonly GitVO _info = new() {};
+
+    private async Task AddInfo()
+    {
+        try
+        {
+            if (_info.Name == null || _info.Hub == null)
+            {
+                throw new Exception("Git名称、托管地址必须填写。");
+            }
+            await _iocManager.Resolve<IGitService>().AddAsync(_info);
+            await js.InvokeVoidAsync("alert", "添加成功");
+            nav.NavigateTo($"/git/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("alert", e.Message);
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/git/list");
+    }
+
+}

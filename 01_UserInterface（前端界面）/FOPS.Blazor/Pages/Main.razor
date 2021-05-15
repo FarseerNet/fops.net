@@ -3,6 +3,7 @@
 @inject IJSRuntime js;
 @using FS.Extends
 @using FOPS.Abstract.Fss.Server
+@using FOPS.Abstract.MetaInfo.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -11,13 +12,13 @@
         <div class="layui-card">
             <div class="layui-card-header">
                 项目数
-                <span class="layui-badge layui-bg-blue layuiadmin-badge">数</span>
+                <span class="layui-badge layui-bg-blue layuiadmin-badge">P</span>
             </div>
             <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">0</p>
+                <p class="layuiadmin-big-font">@_projectCount</p>
                 <p>
-                    总计任务数
-                    <span class="layuiadmin-span-color">88万 <i class="layui-inline layui-icon layui-icon-flag"></i></span>
+                    Git数量
+                    <span class="layuiadmin-span-color">@_gitCount <i class="layui-inline layui-icon layui-icon-flag"></i></span>
                 </p>
             </div>
         </div>
@@ -301,6 +302,8 @@
     int _unExecuteCount;
     long _clientCount;
     int _todayFailCount;
+    int _projectCount;
+    int _gitCount;
 
     protected override async Task OnInitializedAsync()
     {
@@ -313,6 +316,10 @@
         _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
         // FSS 今日失败数
         _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
+        // 项目数量
+        _projectCount = await _iocManager.Resolve<IProjectService>().CountAsync();
+        // Git数量
+        _gitCount = await _iocManager.Resolve<IGitService>().CountAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

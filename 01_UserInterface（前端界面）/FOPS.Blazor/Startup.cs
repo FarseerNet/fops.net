@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FOPS.Blazor.Data;
 using FOPS.Com.FssServer;
+using FOPS.Com.K8sServerAA;
+using FOPS.Com.MetaInfoServer;
 using FS.Cache.Redis;
 using FS.Core;
 using FS.Data;
@@ -29,7 +31,9 @@ namespace FOPS.Blazor
         typeof(RedisStreamModule),
         typeof(DataModule),
         typeof(ElasticSearchModule),
-        typeof(FssModule))]
+        typeof(FssModule),
+        typeof(K8SModule),
+        typeof(MetaInfoModule))]
     public class Startup: FarseerModule
     {
         public Startup()

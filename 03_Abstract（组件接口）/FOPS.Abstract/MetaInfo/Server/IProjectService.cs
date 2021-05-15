@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
+using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IProjectService
+    public interface IProjectService: ITransientDependency
     {
         /// <summary>
         /// 项目列表
@@ -12,9 +13,19 @@ namespace FOPS.Abstract.MetaInfo.Server
         Task<List<ProjectVO>> ToListAsync();
 
         /// <summary>
+        /// 项目信息
+        /// </summary>
+        Task<ProjectVO> ToInfoAsync(int id);
+
+        /// <summary>
+        /// 项目数量
+        /// </summary>
+        Task<int> CountAsync();
+
+        /// <summary>
         /// 添加项目
         /// </summary>
-        Task AddAsync(ProjectVO vo);
+        Task<int> AddAsync(ProjectVO vo);
 
         /// <summary>
         /// 修改项目

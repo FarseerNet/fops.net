@@ -1,0 +1,88 @@
+@page "/project/add"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@using Microsoft.AspNetCore.Components
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加项目
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入项目名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">Git仓库</label>
+                <div class="layui-input-inline">
+                    <select name="modules" @bind="_info.GitId">
+                        @foreach (var gitVO in _lstGit)
+                        {
+                            <option value="@gitVO.Id">@gitVO.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">编译目录</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Path" autocomplete="off" placeholder="请输入项目编译的目录" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="AddInfo">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    private readonly ProjectVO _info = new() {};
+    private List<GitVO> _lstGit = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
+    }
+
+    private async Task AddInfo()
+    {
+        try
+        {
+            if (_info.Name == null || _info.GitId == 0)
+            {
+                throw new Exception("项目名称、托管地址必须填写。");
+            }
+            if (string.IsNullOrWhiteSpace(_info.Path)) _info.Path = "/";
+            else if (!_info.Path.StartsWith('/'))_info.Path = "/" + _info.Path;
+                
+            await _iocManager.Resolve<IProjectService>().AddAsync(_info);
+            await js.InvokeVoidAsync("alert", "添加成功");
+            nav.NavigateTo($"/project/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("alert", e.Message);
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/project/list");
+    }
+
+}

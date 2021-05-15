@@ -75,36 +75,36 @@
                         <tbody>
                         @for (var index = 0; index < _lst.Count; index++)
                         {
-                            var taskGroupVO = _lst[index];
+                            var info = _lst[index];
                             <tr data-index="@index" class="">
                                 <td class="">
-                                    <div class="laytable-cell-14-0-0">【@(taskGroupVO.IsEnable ? "开启" : "停止")】 @taskGroupVO.Id</div>
+                                    <div class="laytable-cell-14-0-0">【@(info.IsEnable ? "开启" : "停止")】 @info.Id</div>
                                 </td>
                                 <td data-field="Type" data-key="14-0-1" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">@taskGroupVO.TaskId</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-1">@info.TaskId</div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-2" class="">
                                     <div class="laytable-cell-14-0-2">
-                                        <a href="/fss/task_group/update/@taskGroupVO.Id">【@taskGroupVO.JobName】@taskGroupVO.Caption</a>
+                                        <a href="/fss/task_group/update/@info.Id">【@info.JobName】@info.Caption</a>
                                     </div>
                                 </td>
                                 <td data-field="Items" data-key="14-0-3" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">@taskGroupVO.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-3">@info.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td data-field="Games" data-key="14-0-4" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">@GetTimeSetting(taskGroupVO)</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-4">@GetTimeSetting(info)</div>
                                 </td>
                                 <td data-field="Games" data-key="14-0-5" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-5">@taskGroupVO.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-5">@info.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td data-field="Games" data-key="14-0-6" class="">
-                                    <div class="layui-table-cell laytable-cell-14-0-6">@taskGroupVO.LastRunAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-6">@info.LastRunAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td data-field="Games" data-key="14-0-7">
-                                    <div class="layui-table-cell laytable-cell-14-0-7">@taskGroupVO.RunSpeedAvg</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-7">@info.RunSpeedAvg</div>
                                 </td>
                                 <td data-field="Games" data-key="14-0-8">
-                                    <div class="layui-table-cell laytable-cell-14-0-8">@taskGroupVO.RunCount</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-8">@info.RunCount</div>
                                 </td>
                             </tr>
                         }

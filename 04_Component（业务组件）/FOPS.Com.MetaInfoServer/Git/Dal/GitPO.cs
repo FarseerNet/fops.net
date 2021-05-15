@@ -10,7 +10,7 @@ namespace FOPS.Com.MetaInfoServer.Git.Dal
         /// <summary>
         /// 主键
         /// </summary>
-        [Field(Name = "id",IsPrimaryKey = true)]
+        [Field(Name = "id",IsPrimaryKey = true,IsDbGenerated = true)]
         public int? Id { get; set; }
         /// <summary>
         /// Git名称
@@ -30,7 +30,7 @@ namespace FOPS.Com.MetaInfoServer.Git.Dal
         /// <summary>
         /// 账户密码
         /// </summary>
-        [Field(Name = "password")]
-        public string PassWord { get; set; }
+        [Field(Name = "user_pwd")]
+        public string UserPwd { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// <summary>
         /// 主键
         /// </summary>
-        public int? Id { get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// 项目名称
         /// </summary>
@@ -13,10 +13,22 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// <summary>
         /// 项目组ID
         /// </summary>
-        public int? GroupId { get; set; }
+        public int GroupId { get; set; }
         /// <summary>
         /// GIT
         /// </summary>
-        public int? GitId { get; set; }
+        public int GitId { get; set; }
+        /// <summary>
+        /// Git名称
+        /// </summary>
+        public string GitName { get; set; }
+        /// <summary>
+        /// 托管地址
+        /// </summary>
+        public string GitHub { get; set; }
+        /// <summary>
+        /// 项目路径
+        /// </summary>
+        public string Path { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// <summary>
         /// 主键
         /// </summary>
-        [Field(Name = "id",IsPrimaryKey = true)]
+        [Field(Name = "id",IsPrimaryKey = true,IsDbGenerated = true)]
         public int? Id { get; set; }
         /// <summary>
         /// 项目名称
@@ -27,5 +27,10 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// </summary>
         [Field(Name = "git_id")]
         public int? GitId { get; set; }
+        /// <summary>
+        /// 项目路径
+        /// </summary>
+        [Field(Name = "path")]
+        public string Path { get; set; }
     }
 }

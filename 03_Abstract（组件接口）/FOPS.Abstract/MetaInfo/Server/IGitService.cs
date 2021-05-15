@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
+using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IGitService
+    public interface IGitService: ITransientDependency
     {
         /// <summary>
         /// Git列表
@@ -12,9 +13,19 @@ namespace FOPS.Abstract.MetaInfo.Server
         Task<List<GitVO>> ToListAsync();
 
         /// <summary>
+        /// Git信息
+        /// </summary>
+        Task<GitVO> ToInfoAsync(int id);
+
+        /// <summary>
+        /// Git数量
+        /// </summary>
+        Task<int> CountAsync();
+
+        /// <summary>
         /// 添加GIT
         /// </summary>
-        Task AddAsync(GitVO vo);
+        Task<int> AddAsync(GitVO vo);
 
         /// <summary>
         /// 修改GIT
