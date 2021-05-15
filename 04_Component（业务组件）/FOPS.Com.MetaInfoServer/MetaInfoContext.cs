@@ -14,7 +14,7 @@ namespace FOPS.Com.MetaInfoServer
         {
         }
         
-        public TableSet<ProjectPO>   Project { get; set; }
+        public TableSet<ProjectPO>    Project      { get; set; }
 
         protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
         {
