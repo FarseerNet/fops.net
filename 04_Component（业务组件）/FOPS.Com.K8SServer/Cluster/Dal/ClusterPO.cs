@@ -1,4 +1,5 @@
 using FOPS.Abstract.K8S.Entity;
+using FOPS.Abstract.MetaInfo.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 
@@ -23,5 +24,11 @@ namespace FOPS.Com.K8sServerAA.Cluster.Dal
         /// </summary>
         [Field(Name = "config_name")]
         public string ConfigName { get; set; }
+        
+        /// <summary>
+        /// 集群环境类型
+        /// </summary>
+        [Field(Name = "runtime_env_type")]
+        public EumRuntimeEnv? RuntimeEnvType { get; set; }
     }
 }

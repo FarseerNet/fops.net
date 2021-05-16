@@ -1,3 +1,5 @@
+using FOPS.Abstract.MetaInfo.Enum;
+
 namespace FOPS.Abstract.K8S.Entity
 {
     public class ClusterVO
@@ -15,5 +17,10 @@ namespace FOPS.Abstract.K8S.Entity
         /// 本地kubectl配置地址
         /// </summary>
         public string ConfigName { get; set; }
+        
+        /// <summary>
+        /// 集群环境类型
+        /// </summary>
+        public EumRuntimeEnv RuntimeEnvType { get; set; }
     }
 }
