@@ -3,6 +3,7 @@
 @using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -34,7 +35,7 @@
                     <select name="modules" @bind="_info.K8SKindType">
                         @foreach (var eumK8SKind in Enum.GetValues<EumK8SKind>())
                         {
-                            <option value="@{(int)eumK8SKind}">@eumK8SKind.ToString()</option>
+                            <option value="@eumK8SKind.ConvertType(0)">@eumK8SKind.ToString()</option>
                         }
                     </select>
                 </div>
