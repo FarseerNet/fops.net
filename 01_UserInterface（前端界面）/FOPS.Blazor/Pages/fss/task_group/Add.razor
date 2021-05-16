@@ -83,7 +83,7 @@
             }
             await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
-            nav.NavigateTo($"/fss/task_group/update/{_info.Id}");
+            nav.NavigateTo("/fss/task_group/list");
         }
         catch (Exception e)
         {

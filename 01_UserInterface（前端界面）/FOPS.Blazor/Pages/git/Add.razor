@@ -64,7 +64,7 @@
             }
             await _iocManager.Resolve<IGitService>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
-            nav.NavigateTo($"/git/update/{_info.Id}");
+            nav.NavigateTo("/git/list");
         }
         catch (Exception e)
         {

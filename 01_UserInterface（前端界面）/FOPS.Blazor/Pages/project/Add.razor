@@ -72,7 +72,7 @@
                 
             await _iocManager.Resolve<IProjectService>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
-            nav.NavigateTo($"/project/update/{_info.Id}");
+            nav.NavigateTo("/project/list");
         }
         catch (Exception e)
         {

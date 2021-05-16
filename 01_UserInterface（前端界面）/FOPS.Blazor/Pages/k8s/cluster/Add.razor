@@ -70,7 +70,7 @@
 
             await _iocManager.Resolve<IClusterService>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
-            nav.NavigateTo($"/k8s/cluster/update/{_info.Id}");
+            nav.NavigateTo("/k8s/cluster/list");
         }
         catch (Exception e)
         {
