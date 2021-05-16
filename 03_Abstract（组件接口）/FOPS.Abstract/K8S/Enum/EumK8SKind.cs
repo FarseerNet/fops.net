@@ -8,7 +8,6 @@ namespace FOPS.Abstract.K8S.Enum
         Deployment,
         Ingress,
         Service,
-        Secret,
-        Config
+        Config,
     }
 }

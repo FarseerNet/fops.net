@@ -18,22 +18,22 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0" class="">
+                            <th data-field="ID" data-key="14-0-0">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>ID</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1" class="">
+                            <th data-field="Type" data-key="14-0-1">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>项目名称</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-2" class="">
+                            <th data-field="Title" data-key="14-0-2">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>GIT地址</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-3" class="">
+                            <th data-field="Title" data-key="14-0-3">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>编译路径</span>
                                 </div>
@@ -48,21 +48,21 @@
                         @for (var index = 0; index < _lst.Count; index++)
                         {
                             var info = _lst[index];
-                            <tr data-index="@index" class="">
-                                <td class="">
+                            <tr data-index="@index">
+                                <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1" class="">
+                                <td data-field="Type" data-key="14-0-1">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/project/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-2" class="">
+                                <td data-field="Title" data-key="14-0-2">
                                     <div class="laytable-cell-14-0-2">
                                         <a href="@info.GitHub" target="_blank">@info.GitId 【@info.GitName】@info.GitHub</a>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-3" class="">
+                                <td data-field="Title" data-key="14-0-3">
                                     <div class="laytable-cell-14-0-3">
                                         @info.Path
                                     </div>
