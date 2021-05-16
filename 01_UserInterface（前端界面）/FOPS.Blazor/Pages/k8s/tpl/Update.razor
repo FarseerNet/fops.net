@@ -1,0 +1,111 @@
+@page "/k8s/tpl/update/{id:int}"
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.K8S.Enum
+@using FOPS.Abstract.K8S.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加Yaml模板
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+                @_info.Id
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">Yaml模板名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Yaml模板名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">k8s类型</label>
+                <div class="layui-input-inline">
+                    <select name="modules" @bind="_info.K8SKindType">
+                        @foreach (var eumK8SKind in Enum.GetValues<EumK8SKind>())
+                        {
+                            <option value="@{(int)eumK8SKind}">@eumK8SKind.ToString()</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">模板内容</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Template" autocomplete="off" placeholder="请输入Yaml模板内容" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    [Parameter] public int Id { get; set; }
+
+    private YamlTplVO _info = new() {};
+
+    private async Task UpdateInfo()
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "Yaml模板不存在");
+            nav.NavigateTo($"/k8s/tpl/list");
+        }
+        try
+        {
+            await _iocManager.Resolve<IYamlTplService>().UpdateAsync(Id, _info);
+            await js.InvokeVoidAsync("alert", "修改成功");
+            nav.NavigateTo($"/k8s/tpl/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("alert", e.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "Yaml模板不存在");
+            nav.NavigateTo($"/k8s/tpl/list");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id > 0 && _info.Id == 0)
+        {
+            _info = await _iocManager.Resolve<IYamlTplService>().ToInfoAsync(Id);
+            if (_info == null)
+            {
+                await js.InvokeVoidAsync("alert", "Yaml模板不存在");
+                nav.NavigateTo($"/k8s/tpl/list");
+            }
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/k8s/tpl/list");
+    }
+
+}
