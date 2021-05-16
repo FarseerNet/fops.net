@@ -23,8 +23,8 @@
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">Git仓库</label>
-                <div class="layui-input-inline">
-                    <select name="modules" @bind="_info.GitId">
+                <div class="layui-input-block">
+                    <select @bind="_info.GitId">
                         @foreach (var gitVO in _lstGit)
                         {
                             <option value="@gitVO.Id">@gitVO.Name</option>

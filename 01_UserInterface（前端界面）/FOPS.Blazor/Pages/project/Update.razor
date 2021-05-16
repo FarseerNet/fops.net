@@ -15,8 +15,8 @@
     <div class="layui-card-body" style="padding: 15px;">
         <div class="layui-form-item">
             <label class="layui-form-label">ID</label>
-            <div class="layui-input-block">
-                @_info.Id
+            <div class="layui-input-inline">
+                <label class="layui-form-label" style="text-align: left">@_info.Id</label>
             </div>
         </div>
         <div class="layui-form-item">
@@ -28,8 +28,8 @@
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">Git仓库</label>
-                <div class="layui-input-inline">
-                    <select name="modules" @bind="_info.GitId">
+                <div class="layui-input-block">
+                    <select @bind="_info.GitId">
                         @foreach (var gitVO in _lstGit)
                         {
                             <option value="@gitVO.Id">@gitVO.Name</option>

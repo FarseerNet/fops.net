@@ -11,10 +11,16 @@
             <div class="layui-card-header">
                 基础信息
                 <div class="layui-right">
-                    <button class="layui-btn"  @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+                    <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
                 </div>
             </div>
             <div class="layui-card-body layui-row layui-col-space10">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" style="text-align: left">@_info.Id</label>
+                    </div>
+                </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">任务组标题</label>
                     <div class="layui-input-block">
@@ -153,7 +159,7 @@
             if (string.IsNullOrWhiteSpace(_info.Cron)) _info.Cron = _info.IntervalMs.ToString();
         }
     }
-    
+
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");

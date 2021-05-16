@@ -258,3 +258,5 @@ p.layui-btn-group { display: block; }
 
 /* 表格组件不自动隐藏多出内容　*/
 .layui-table-break + .layui-table-view .layui-table-cell { white-space: normal; }
+
+select {width:150px;height: 35px;}

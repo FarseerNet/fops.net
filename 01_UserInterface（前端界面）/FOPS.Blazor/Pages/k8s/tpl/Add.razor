@@ -17,19 +17,19 @@
     </div>
     <div class="layui-card-body" style="padding: 15px;">
         <div class="layui-form-item">
-            <label class="layui-form-label">Yaml模板名称</label>
-            <div class="layui-input-block">
+            <label class="layui-form-label">模板名称</label>
+            <div class="layui-input-inline">
                 <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Yaml模板名称" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">k8s类型</label>
-                <div class="layui-input-inline">
-                    <select name="modules" @bind="_info.K8SKindType">
+                <div class="layui-input-block">
+                    <select @bind="_info.K8SKindType">
                         @foreach (var eumK8SKind in Enum.GetValues<EumK8SKind>())
                         {
-                            <option value="@eumK8SKind.ConvertType(0)">@eumK8SKind.ToString()</option>
+                            <option value="@eumK8SKind.ToString()">@eumK8SKind.ToString()</option>
                         }
                     </select>
                 </div>
@@ -38,7 +38,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">模板内容</label>
             <div class="layui-input-block">
-                <input type="text" @bind="_info.Template" autocomplete="off" placeholder="请输入Yaml模板内容" class="layui-input">
+                <textarea @bind="_info.Template" placeholder="Yaml模板内容" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
             </div>
         </div>
         <div class="layui-form-item layui-layout-admin">
@@ -53,7 +53,7 @@
 
 @code{
 
-    private readonly YamlTplVO _info = new() {};
+    private readonly YamlTplVO _info = new() { }; // K8SKindType = EumK8SKind.Deployment
 
     private async Task AddInfo()
     {
@@ -78,5 +78,4 @@
     {
         nav.NavigateTo("/k8s/tpl/list");
     }
-
 }
