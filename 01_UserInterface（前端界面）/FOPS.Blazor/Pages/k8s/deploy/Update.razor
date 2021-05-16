@@ -25,8 +25,8 @@
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">项目名称</label>
-            <div class="layui-input-block">
-                @_info.Name
+            <div class="layui-input-inline">
+                <label class="layui-form-label" style="text-align: left">@_info.Name</label>
             </div>
         </div>
         <div class="layui-form-item">
@@ -34,7 +34,8 @@
                 <label class="layui-form-label">Deployment模板</label>
                 <div class="layui-input-inline">
                     <select name="modules" @bind="_info.K8STplDeployment">
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O=>O.K8SKindType == EumK8SKind.Deployment))
+                        <option value="0">不需要</option>
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }
@@ -47,7 +48,8 @@
                 <label class="layui-form-label">Ingress模板</label>
                 <div class="layui-input-inline">
                     <select name="modules" @bind="_info.K8STplIngress">
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O=>O.K8SKindType == EumK8SKind.Ingress))
+                        <option value="0">不需要</option>
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }
@@ -60,7 +62,8 @@
                 <label class="layui-form-label">Service模板</label>
                 <div class="layui-input-inline">
                     <select name="modules" @bind="_info.K8STplService">
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O=>O.K8SKindType == EumK8SKind.Service))
+                        <option value="0">不需要</option>
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }
@@ -73,7 +76,8 @@
                 <label class="layui-form-label">Config模板</label>
                 <div class="layui-input-inline">
                     <select name="modules" @bind="_info.K8STplConfig">
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O=>O.K8SKindType == EumK8SKind.Config))
+                        <option value="0">不需要</option>
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }
@@ -96,6 +100,11 @@
         </div>
     </div>
 </div>
+<style>
+.layui-form-label {
+    width: 120px;
+}
+</style>
 
 @code{
 

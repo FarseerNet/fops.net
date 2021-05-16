@@ -1,17 +1,19 @@
 @page "/k8s/deploy/list"
 @using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
+@inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
         K8S发布
     </div>
     <div class="layui-card-body">
-        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="">
             <div class="layui-table-box">
                 <div class="layui-table-header">
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
@@ -47,8 +49,8 @@
                                     <span>Config模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-5">
-                                <div class="layui-table-cell laytable-cell-14-0-5">
+                            <th data-field="Type" data-key="14-0-6">
+                                <div class="layui-table-cell laytable-cell-14-0-6">
                                     <span>操作</span>
                                 </div>
                             </th>
@@ -67,14 +69,15 @@
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-1">
-                                    <div class="laytable-cell-14-0-1">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/k8s/deploy/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-2">
-                                    <div class="laytable-cell-14-0-2">
-                                        <select name="modules" @bind="info.K8STplDeployment">
-                                            @foreach (var yamlTplVO in _lstTpl)
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.K8STplDeployment" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
@@ -82,9 +85,10 @@
                                     </div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-3">
-                                    <div class="laytable-cell-14-0-3">
-                                        <select name="modules" @bind="info.K8STplIngress">
-                                            @foreach (var yamlTplVO in _lstTpl)
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        <select @bind="info.K8STplIngress" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
@@ -92,9 +96,10 @@
                                     </div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-4">
-                                    <div class="laytable-cell-14-0-4">
-                                        <select name="modules" @bind="info.K8STplService">
-                                            @foreach (var yamlTplVO in _lstTpl)
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        <select @bind="info.K8STplService" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
@@ -102,9 +107,10 @@
                                     </div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-5">
-                                    <div class="laytable-cell-14-0-5">
-                                        <select name="modules" @bind="info.K8STplConfig">
-                                            @foreach (var yamlTplVO in _lstTpl)
+                                    <div class="layui-table-cell laytable-cell-14-0-5">
+                                        <select @bind="info.K8STplConfig" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
@@ -112,8 +118,9 @@
                                     </div>
                                 </td>
                                 <td data-field="Title" data-key="14-0-6">
-                                    <div class="laytable-cell-14-0-6">
-                                        <button class="layui-btn">发布</button>
+                                    <div class="layui-table-cell laytable-cell-14-0-6">
+                                        <button class="layui-btn" @onclick="() => Save(index)">保存</button>
+                                        <button class="layui-btn layui-btn-danger">发布</button>
                                     </div>
                                 </td>
                             </tr>
@@ -129,7 +136,11 @@
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 150px; }
-    .laytable-cell-14-0-2{ width: 500px; }
+    .laytable-cell-14-0-2{ width: 180px; }
+    .laytable-cell-14-0-3{ width: 180px; }
+    .laytable-cell-14-0-4{ width: 180px; }
+    .laytable-cell-14-0-5{ width: 180px; }
+    .laytable-cell-14-0-6{ width: 200px; }
 </style>
 
 @code{
@@ -140,7 +151,7 @@
     private List<ProjectVO> _lst = new();
     private List<YamlTplVO> _lstTpl = new();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
@@ -149,6 +160,12 @@
     // 模板
         _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
+    }
+
+    private async Task Save(int id)
+    {
+        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, _lst.Find(o => o.Id == id));
+        await js.InvokeVoidAsync("layer.msg", "保存成功");
     }
 
 }
