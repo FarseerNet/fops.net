@@ -20,7 +20,7 @@ namespace FOPS.Abstract.MetaInfo.Enum
         /// <summary>
         /// 预发布
         /// </summary>
-        PreDeploy = 3,
+        PreRelease = 2,
 
         /// <summary>
         /// 生产环境
