@@ -45,11 +45,11 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">Ingress模板</label>
+                <label class="layui-form-label">Service模板</label>
                 <div class="layui-input-inline">
-                    <select name="modules" @bind="_info.K8STplIngress">
+                    <select name="modules" @bind="_info.K8STplService">
                         <option value="0">不需要</option>
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }
@@ -59,11 +59,11 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">Service模板</label>
+                <label class="layui-form-label">Ingress模板</label>
                 <div class="layui-input-inline">
-                    <select name="modules" @bind="_info.K8STplService">
+                    <select name="modules" @bind="_info.K8STplIngress">
                         <option value="0">不需要</option>
-                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
+                        @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
                         {
                             <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                         }

@@ -34,14 +34,14 @@
                                     <span>Deployment模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-3">
-                                <div class="layui-table-cell laytable-cell-14-0-3">
-                                    <span>Ingress模板</span>
-                                </div>
-                            </th>
                             <th data-field="Type" data-key="14-0-4">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>Service模板</span>
+                                </div>
+                            </th>
+                            <th data-field="Type" data-key="14-0-3">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>Ingress模板</span>
                                 </div>
                             </th>
                             <th data-field="Type" data-key="14-0-5">
@@ -84,22 +84,22 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-3">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">
-                                        <select @bind="info.K8STplIngress" style="display:block;">
+                                <td data-field="Title" data-key="14-0-4">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        <select @bind="info.K8STplService" style="display:block;">
                                             <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-4">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">
-                                        <select @bind="info.K8STplService" style="display:block;">
+                                <td data-field="Title" data-key="14-0-3">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        <select @bind="info.K8STplIngress" style="display:block;">
                                             <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }
