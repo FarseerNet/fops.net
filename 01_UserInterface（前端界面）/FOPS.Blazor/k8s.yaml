@@ -35,7 +35,7 @@ spec:
             - containerPort: 80
           envFrom:  #以密文的方式，把配置项写到env
             - secretRef:
-                name: fss
+                name: fops
           env:
             - name: TZ
               value: Asia/Shanghai
@@ -53,7 +53,7 @@ data:
   Redis__0__Server: ''
 kind: Secret
 metadata:
-  name: fss
+  name: fops
   namespace: default
 type: Opaque
 ---
