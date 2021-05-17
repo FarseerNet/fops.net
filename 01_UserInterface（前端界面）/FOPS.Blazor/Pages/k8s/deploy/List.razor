@@ -186,75 +186,63 @@
     {
         var projectVO = _lst.Find(o => o.Id == id);
         await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.msg", "保存成功");
+        await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
     }
 
-    private void Deploy()
+    private async Task Deploy()
     {
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
+        if (clusterVO == null)
+        {
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
+            return;
+        }
+
+        var deployService = _iocManager.Resolve<IDeployService>();
+        try
+        {
+            var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
+            var output = string.Join("<br />", runShellResult.Output);
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", output, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", output, new {icon = 1, title = "执行结果"});
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+        }
+        await js.InvokeVoidAsync("layer.close", load);
     }
 
     private async Task Deploy(int id)
     {
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
         if (clusterVO == null)
         {
-            await js.InvokeVoidAsync("layer.msg", "请先选择集群环境");
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
             return;
         }
+
         var projectVO = _lst.Find(o => o.Id == id);
         if (projectVO == null)
         {
-            await js.InvokeVoidAsync("layer.msg", "项目不存在");
+            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 0});
             return;
         }
-        var lstYaml = new List<string>();
 
-    // 取出已选择的模板
-        if (projectVO.K8STplDeployment > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplDeployment).Template);
-        if (projectVO.K8STplService > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplService).Template);
-        if (projectVO.K8STplIngress > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplIngress).Template);
-        if (projectVO.K8STplConfig > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplConfig).Template);
-
-    // 拼接已经选择的所有脚本
-        var yaml = string.Join("\r---\n", lstYaml);
-
-    // 替换项目名称
-        yaml = yaml.Replace("${project_name}", projectVO.Name);
-
-    // 替换模板变量
-        foreach (var kv in projectVO.K8STplVariable.Split(','))
+        var deployService = _iocManager.Resolve<IDeployService>();
+        try
         {
-            var kvGroup = kv.Split('=');
-            if (kvGroup.Length != 2) continue;
-            yaml = yaml.Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
+            var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 1, title = "执行结果"});
         }
-
-        // 将yaml文件写入临时文件
-        var fileName = $"/tmp/{projectVO.Name}.yaml";
-        System.IO.File.Delete(fileName);
-        await System.IO.File.WriteAllTextAsync(fileName, yaml, Encoding.UTF8);
-
-        // 发布
-        var arguments = $"apply -f {fileName} --kubeconfig={clusterVO.ConfigName}";
-        var psi = new ProcessStartInfo("kubectl", arguments) {RedirectStandardOutput = true, RedirectStandardError = true};
-
-        using (var proc = Process.Start(psi))
+        catch (Exception e)
         {
-            if (proc == null)
-            {
-                await js.InvokeVoidAsync("alert", "执行失败");
-                return;
-            }
-
-            //开始读取
-            var output = await proc.StandardOutput.ReadToEndAsync() ?? string.Empty;
-            var error = await proc.StandardError.ReadToEndAsync() ?? string.Empty;
-
-            if (!string.IsNullOrWhiteSpace(output)) await js.InvokeVoidAsync("layer.msg", output);
-            if (!string.IsNullOrWhiteSpace(error)) await js.InvokeVoidAsync("alert", error);
-            
-            if (string.IsNullOrWhiteSpace(error)) await js.InvokeVoidAsync("layer.msg", "执行成功");
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
+        await js.InvokeVoidAsync("layer.close", load);
     }
 
 }
