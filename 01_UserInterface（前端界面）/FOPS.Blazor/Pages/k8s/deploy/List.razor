@@ -4,17 +4,13 @@
 @using FOPS.Abstract.K8S.Server
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
-@using System.Net
-@using System.Text
-@using System.Diagnostics
-@using System.Threading
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        K8S发布
+        模板发布
         <select @bind="_selectClusterId" style="display:inline;">
             @foreach (var clusterVO in _lstCluster)
             {
@@ -22,7 +18,7 @@
             }
         </select>
         <div class="layui-right">
-            <button class="layui-btn layui-btn-danger" @onclick="Deploy"><i class="am-icon-plus"></i> 发布</button>
+            <button class="layui-btn layui-btn-danger" @onclick="DeployAsync"><i class="am-icon-plus"></i> 全部发布</button>
         </div>
     </div>
     <div class="layui-card-body">
@@ -133,7 +129,7 @@
                                 <td data-field="Title" data-key="14-0-6">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
                                         <button class="layui-btn" @onclick="() => Save(info.Id)">保存</button>
-                                        <button class="layui-btn layui-btn-danger" @onclick="() => Deploy(info.Id)">发布</button>
+                                        <button class="layui-btn layui-btn-danger" @onclick="() => DeployAsync(info.Id)">发布</button>
                                     </div>
                                 </td>
                             </tr>
@@ -189,7 +185,7 @@
         await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
     }
 
-    private async Task Deploy()
+    private async Task DeployAsync()
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
@@ -214,7 +210,7 @@
         await js.InvokeVoidAsync("layer.close", load);
     }
 
-    private async Task Deploy(int id)
+    private async Task DeployAsync(int id)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);

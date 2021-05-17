@@ -17,5 +17,10 @@ namespace FOPS.Abstract.K8S.Server
         /// 发布
         /// </summary>
         Task<RunShellResult> DeployAsync(List<ProjectVO> lstProject, ClusterVO clusterVO, List<YamlTplVO> lstTpl);
+
+        /// <summary>
+        /// 发布
+        /// </summary>
+        Task<RunShellResult> DeployAsync(string yaml, ClusterVO clusterVO);
     }
 }

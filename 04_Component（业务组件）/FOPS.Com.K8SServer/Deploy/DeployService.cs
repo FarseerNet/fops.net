@@ -45,6 +45,16 @@ namespace FOPS.Com.K8sServerAA.Deploy
         }
 
         /// <summary>
+        /// 发布
+        /// </summary>
+        public Task<RunShellResult> DeployAsync(string yaml, ClusterVO clusterVO)
+        {
+            if (clusterVO == null) throw new Exception("请先选择集群环境");
+
+            return RunApplyCmd("single", yaml, clusterVO.ConfigName);
+        }
+
+        /// <summary>
         /// 替换模板内容
         /// </summary>
         private List<string> ReplaceTemplate(ProjectVO projectVO, List<YamlTplVO> lstTpl)

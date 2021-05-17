@@ -1,0 +1,87 @@
+@page "/k8s/single/deploy"
+@using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.K8S.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        Single发布
+        <select @bind="_selectClusterId" style="display:inline;">
+            @foreach (var clusterVO in _lstCluster)
+            {
+                <option value="@clusterVO.Id">@clusterVO.RuntimeEnvType 环境 @clusterVO.Name</option>
+            }
+        </select>
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">自定义变量</label>
+            <div class="layui-input-block">
+                <textarea @bind="_yaml" placeholder="Yaml内容" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 600px;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="DeployAsync">发布</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.layui-form-label {
+    width: 120px;
+}
+</style>
+
+@code{
+
+    private List<ClusterVO> _lstCluster = new();
+    private int _selectClusterId;
+    private string _yaml;
+    
+    protected override async Task OnInitializedAsync()
+    {
+    // 集群
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _lstCluster = _lstCluster.OrderByDescending(o => o.Id).ToList();
+        if (_lstCluster != null) _selectClusterId = _lstCluster[0].Id;
+    }
+
+    private async Task DeployAsync()
+    {
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
+        if (clusterVO == null)
+        {
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
+            return;
+        }
+
+        var deployService = _iocManager.Resolve<IDeployService>();
+        try
+        {
+            var runShellResult = await deployService.DeployAsync(_yaml, clusterVO);
+            var output = string.Join("<br />", runShellResult.Output);
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", output, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", output, new {icon = 1, title = "执行结果"});
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+        }
+        await js.InvokeVoidAsync("layer.close", load);
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/k8s/deploy/list");
+    }
+
+}
