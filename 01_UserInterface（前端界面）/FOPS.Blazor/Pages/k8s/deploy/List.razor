@@ -4,6 +4,10 @@
 @using FOPS.Abstract.K8S.Server
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
+@using System.Net
+@using System.Text
+@using System.Diagnostics
+@using System.Threading
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -11,6 +15,15 @@
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
         K8S发布
+        <select @bind="_selectClusterId" style="display:inline;">
+            @foreach (var clusterVO in _lstCluster)
+            {
+                <option value="@clusterVO.Id">@clusterVO.RuntimeEnvType 环境 @clusterVO.Name</option>
+            }
+        </select>
+        <div class="layui-right">
+            <button class="layui-btn layui-btn-danger" @onclick="Deploy"><i class="am-icon-plus"></i> 发布</button>
+        </div>
     </div>
     <div class="layui-card-body">
         <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="">
@@ -119,8 +132,8 @@
                                 </td>
                                 <td data-field="Title" data-key="14-0-6">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn" @onclick="() => Save(index)">保存</button>
-                                        <button class="layui-btn layui-btn-danger">发布</button>
+                                        <button class="layui-btn" @onclick="() => Save(info.Id)">保存</button>
+                                        <button class="layui-btn layui-btn-danger" @onclick="() => Deploy(info.Id)">发布</button>
                                     </div>
                                 </td>
                             </tr>
@@ -150,6 +163,8 @@
 
     private List<ProjectVO> _lst = new();
     private List<YamlTplVO> _lstTpl = new();
+    private List<ClusterVO> _lstCluster = new();
+    private int _selectClusterId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,12 +175,86 @@
     // 模板
         _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
+
+    // 集群
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _lstCluster = _lstCluster.OrderByDescending(o => o.Id).ToList();
+        if (_lstCluster != null) _selectClusterId = _lstCluster[0].Id;
     }
 
     private async Task Save(int id)
     {
-        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, _lst.Find(o => o.Id == id));
+        var projectVO = _lst.Find(o => o.Id == id);
+        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
         await js.InvokeVoidAsync("layer.msg", "保存成功");
+    }
+
+    private void Deploy()
+    {
+    }
+
+    private async Task Deploy(int id)
+    {
+        var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
+        if (clusterVO == null)
+        {
+            await js.InvokeVoidAsync("layer.msg", "请先选择集群环境");
+            return;
+        }
+        var projectVO = _lst.Find(o => o.Id == id);
+        if (projectVO == null)
+        {
+            await js.InvokeVoidAsync("layer.msg", "项目不存在");
+            return;
+        }
+        var lstYaml = new List<string>();
+
+    // 取出已选择的模板
+        if (projectVO.K8STplDeployment > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplDeployment).Template);
+        if (projectVO.K8STplService > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplService).Template);
+        if (projectVO.K8STplIngress > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplIngress).Template);
+        if (projectVO.K8STplConfig > 0) lstYaml.Add(_lstTpl.Find(o => o.Id == projectVO.K8STplConfig).Template);
+
+    // 拼接已经选择的所有脚本
+        var yaml = string.Join("\r---\n", lstYaml);
+
+    // 替换项目名称
+        yaml = yaml.Replace("${project_name}", projectVO.Name);
+
+    // 替换模板变量
+        foreach (var kv in projectVO.K8STplVariable.Split(','))
+        {
+            var kvGroup = kv.Split('=');
+            if (kvGroup.Length != 2) continue;
+            yaml = yaml.Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
+        }
+
+        // 将yaml文件写入临时文件
+        var fileName = $"/tmp/{projectVO.Name}.yaml";
+        System.IO.File.Delete(fileName);
+        await System.IO.File.WriteAllTextAsync(fileName, yaml, Encoding.UTF8);
+
+        // 发布
+        var arguments = $"apply -f {fileName} --kubeconfig={clusterVO.ConfigName}";
+        var psi = new ProcessStartInfo("kubectl", arguments) {RedirectStandardOutput = true, RedirectStandardError = true};
+
+        using (var proc = Process.Start(psi))
+        {
+            if (proc == null)
+            {
+                await js.InvokeVoidAsync("alert", "执行失败");
+                return;
+            }
+
+            //开始读取
+            var output = await proc.StandardOutput.ReadToEndAsync() ?? string.Empty;
+            var error = await proc.StandardError.ReadToEndAsync() ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(output)) await js.InvokeVoidAsync("layer.msg", output);
+            if (!string.IsNullOrWhiteSpace(error)) await js.InvokeVoidAsync("alert", error);
+            
+            if (string.IsNullOrWhiteSpace(error)) await js.InvokeVoidAsync("layer.msg", "执行成功");
+        }
     }
 
 }
