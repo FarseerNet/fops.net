@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace FOPS.Abstract.MetaInfo.Entity
 {
@@ -56,5 +57,13 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// 项目路径
         /// </summary>
         public string Path { get; set; }
+        /// <summary>
+        /// 镜像版本
+        /// </summary>
+        public string DockerVer { get; set; }
+        /// <summary>
+        /// 集群版本
+        /// </summary>
+        public Dictionary<int,ClusterVer> DicClusterVer { get; set; }
     }
 }

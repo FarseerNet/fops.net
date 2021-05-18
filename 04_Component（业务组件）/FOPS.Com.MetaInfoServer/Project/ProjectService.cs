@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.MetaInfoServer.Project.Dal;
 using FS.Extends;
+using Newtonsoft.Json;
 
 namespace FOPS.Com.MetaInfoServer.Project
 {
@@ -12,12 +14,47 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// <summary>
         /// 项目列表
         /// </summary>
-        public Task<List<ProjectVO>> ToListAsync() => MetaInfoContext.Data.Project.ToListAsync().MapAsync<ProjectVO, ProjectPO>();
+        public async Task<List<ProjectVO>> ToListAsync()
+        {
+            var lstPo = await MetaInfoContext.Data.Project.ToListAsync();
+            var lst   = new List<ProjectVO>();
+            foreach (var po in lstPo)
+            {
+                var vo = po.Map<ProjectVO>();
+                try
+                {
+                    vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
+
+                }
+                catch
+                {
+                    vo.DicClusterVer = new Dictionary<int, ClusterVer>();
+                }
+                lst.Add(vo);
+            }
+
+            return lst;
+        }
 
         /// <summary>
         /// 项目信息
         /// </summary>
-        public Task<ProjectVO> ToInfoAsync(int id) => MetaInfoContext.Data.Project.Where(o => o.Id == id).ToEntityAsync().MapAsync<ProjectVO, ProjectPO>();
+        public async Task<ProjectVO> ToInfoAsync(int id)
+        {
+            var po = await MetaInfoContext.Data.Project.Where(o => o.Id == id).ToEntityAsync();
+            var vo = po.Map<ProjectVO>();
+            try
+            {
+                vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
+
+            }
+            catch
+            {
+                vo.DicClusterVer = new Dictionary<int, ClusterVer>();
+            }
+
+            return vo;
+        }
 
         /// <summary>
         /// 项目数量
@@ -30,6 +67,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         public async Task<int> AddAsync(ProjectVO vo)
         {
             var po = vo.Map<ProjectPO>();
+            po.ClusterVer = JsonConvert.SerializeObject(vo.DicClusterVer);
             await MetaInfoContext.Data.Project.InsertAsync(po, true);
             vo.Id = po.Id.GetValueOrDefault();
             return vo.Id;
@@ -38,7 +76,12 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// <summary>
         /// 修改项目
         /// </summary>
-        public Task UpdateAsync(int id, ProjectVO vo) => MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(vo.Map<ProjectPO>());
+        public Task UpdateAsync(int id, ProjectVO vo)
+        {
+            var po = vo.Map<ProjectPO>();
+            po.ClusterVer = JsonConvert.SerializeObject(vo.DicClusterVer);
+            return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(po);
+        }
 
         /// <summary>
         /// 删除项目

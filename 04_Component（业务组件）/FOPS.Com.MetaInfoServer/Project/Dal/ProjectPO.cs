@@ -57,5 +57,15 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// </summary>
         [Field(Name = "path")]
         public string Path { get; set; }
+        /// <summary>
+        /// 镜像版本
+        /// </summary>
+        [Field(Name = "docker_ver")]
+        public string DockerVer { get; set; }
+        /// <summary>
+        /// 集群版本
+        /// </summary>
+        [Field(Name = "cluster_ver")]
+        public string ClusterVer { get; set; }
     }
 }
