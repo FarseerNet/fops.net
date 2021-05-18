@@ -8,7 +8,7 @@
 
 <div class="layui-card">
     <div class="layui-card-header">
-        添加项目
+        修改项目组
         <div class="layui-right">
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
         </div>
@@ -23,12 +23,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">集群</label>
             <div class="layui-input-block">
-                <select @bind="_info.ClusterId">
-                    @foreach (var clusterVO in _lstCluster)
-                    {
-                        <option value="@clusterVO.Id">[@clusterVO.RuntimeEnvType.ToString()] @clusterVO.Name</option>
-                    }
-                </select>
+                @foreach (var clusterVO in _lstCluster)
+                {
+                    <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" style="cursor: auto;">
+                        <input type="checkbox" @bind="_selectCluster[clusterVO.Id]"/>
+                        <span>【@clusterVO.RuntimeEnvType.ToString()】@clusterVO.Name</span>
+                    </div>
+                }
             </div>
         </div>
         <div class="layui-form-item">
@@ -53,12 +54,14 @@
 
     private ProjectGroupVO _info = new() {};
     private List<ClusterVO> _lstCluster = new();
-    
+    private Dictionary<int, bool> _selectCluster = new();
+
     protected override async Task OnInitializedAsync()
     {
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
     }
-    
+
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
@@ -67,15 +70,15 @@
             nav.NavigateTo($"/project_group/list");
             return;
         }
-        
+
         try
         {
-        
-            if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterId == 0)
+            _info.ClusterIds = _selectCluster.Where(o => o.Value).Select(o => o.Key).ToList();
+            
+            if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterIds == null || _info.ClusterIds.Count == 0)
             {
                 throw new Exception("项目组、集群必须填写.");
             }
-            
             await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             nav.NavigateTo($"/project_group/update/{_info.Id}");
@@ -105,6 +108,10 @@
                 await js.InvokeVoidAsync("layer.alert", "项目组不存在", new {icon = 2, title = "出错了"});
                 nav.NavigateTo($"/project_group/list");
             }
+            foreach (var infoClusterId in _info.ClusterIds)
+            {
+                _selectCluster[infoClusterId] = true;
+            }
         }
     }
 
@@ -112,5 +119,4 @@
     {
         nav.NavigateTo("/project_group/list");
     }
-
 }

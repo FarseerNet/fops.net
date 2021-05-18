@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace FOPS.Abstract.MetaInfo.Entity
 {
     public class ProjectGroupVO
@@ -9,7 +11,7 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// <summary>
         /// 集群ID
         /// </summary>
-        public int ClusterId { get; set; }
+        public List<int> ClusterIds { get; set; }
         /// <summary>
         /// 项目组名称
         /// </summary>

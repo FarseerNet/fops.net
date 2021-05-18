@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FOPS.Abstract.MetaInfo.Entity;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
@@ -15,8 +16,8 @@ namespace FOPS.Com.MetaInfoServer.ProjectGroup.Dal
         /// <summary>
         /// 集群ID
         /// </summary>
-        [Field(Name = "cluster_id")]
-        public int? ClusterId { get; set; }
+        [Field(Name = "cluster_ids")]
+        public List<int> ClusterIds { get; set; }
         /// <summary>
         /// 项目组名称
         /// </summary>
