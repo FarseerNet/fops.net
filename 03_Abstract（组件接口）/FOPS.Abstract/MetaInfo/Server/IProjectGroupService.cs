@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
+using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IProjectGroupService
+    public interface IProjectGroupService: ITransientDependency
     {
         /// <summary>
         /// 项目组列表

@@ -18,6 +18,9 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\ICON-LICENSE" />
       <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\README.md" />
       <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
+      <_ContentIncludedByDefault Remove="Pages\k8s\cluster\Add.razor" />
+      <_ContentIncludedByDefault Remove="Pages\k8s\cluster\List.razor" />
+      <_ContentIncludedByDefault Remove="Pages\k8s\cluster\Update.razor" />
     </ItemGroup>
 
     <ItemGroup>

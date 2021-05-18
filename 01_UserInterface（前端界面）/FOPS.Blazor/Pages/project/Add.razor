@@ -15,6 +15,17 @@
     </div>
     <div class="layui-card-body" style="padding: 15px;">
         <div class="layui-form-item">
+            <label class="layui-form-label">项目组</label>
+            <div class="layui-input-block">
+                <select @bind="_info.GroupId">
+                    @foreach (var gitVO in _lstGroup)
+                    {
+                        <option value="@gitVO.Id">@gitVO.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">项目名称</label>
             <div class="layui-input-block">
                 <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入项目名称" class="layui-input">
@@ -53,23 +64,25 @@
 
     private readonly ProjectVO _info = new() {};
     private List<GitVO> _lstGit = new();
+    private List<ProjectGroupVO> _lstGroup = new();
 
     protected override async Task OnInitializedAsync()
     {
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
     }
 
     private async Task AddInfo()
     {
         try
         {
-            if (_info.Name == null || _info.GitId == 0)
+            if (_info.Name == null || _info.GitId == 0 || _info.GroupId == 0)
             {
-                throw new Exception("项目名称、托管地址必须填写。");
+                throw new Exception("项目组、项目名称、托管地址必须填写。");
             }
             if (string.IsNullOrWhiteSpace(_info.Path)) _info.Path = "/";
-            else if (!_info.Path.StartsWith('/'))_info.Path = "/" + _info.Path;
-                
+            else if (!_info.Path.StartsWith('/')) _info.Path = "/" + _info.Path;
+
             await _iocManager.Resolve<IProjectService>().AddAsync(_info);
             await js.InvokeVoidAsync("alert", "添加成功");
             nav.NavigateTo("/project/list");
