@@ -21,7 +21,7 @@
                 <select @bind="_info.ClusterId">
                     @foreach (var clusterVO in _lstCluster)
                     {
-                        <option value="@clusterVO.Id">@clusterVO.Name</option>
+                        <option value="@clusterVO.Id">[@clusterVO.RuntimeEnvType.ToString()] @clusterVO.Name</option>
                     }
                 </select>
             </div>

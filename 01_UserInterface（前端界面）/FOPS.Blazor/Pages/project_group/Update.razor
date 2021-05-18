@@ -26,7 +26,7 @@
                 <select @bind="_info.ClusterId">
                     @foreach (var clusterVO in _lstCluster)
                     {
-                        <option value="@clusterVO.Id">@clusterVO.Name</option>
+                        <option value="@clusterVO.Id">[@clusterVO.RuntimeEnvType.ToString()] @clusterVO.Name</option>
                     }
                 </select>
             </div>
@@ -65,15 +65,17 @@
         {
             await js.InvokeVoidAsync("layer.alert", "项目组不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/project_group/list");
-        }
-        
-        if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterId == 0)
-        {
-            await js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
+            return;
         }
         
         try
         {
+        
+            if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterId == 0)
+            {
+                throw new Exception("项目组、集群必须填写.");
+            }
+            
             await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             nav.NavigateTo($"/project_group/update/{_info.Id}");
