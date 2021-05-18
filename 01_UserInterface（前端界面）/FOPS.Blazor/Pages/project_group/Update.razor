@@ -1,0 +1,90 @@
+@page "/project_group/update/{id:int}"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加项目
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-inline">
+                <label class="layui-form-label" style="text-align: left">@_info.Id</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入项目名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    [Parameter] public int Id { get; set; }
+
+    private ProjectGroupVO _info = new() {};
+
+    private async Task UpdateInfo()
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "项目组不存在");
+            nav.NavigateTo($"/project_group/list");
+        }
+        try
+        {
+            await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
+            await js.InvokeVoidAsync("alert", "修改成功");
+            nav.NavigateTo($"/project_group/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("alert", e.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("alert", "项目组不存在");
+            nav.NavigateTo($"/project_group/list");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id > 0 && _info.Id == 0)
+        {
+            _info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(Id);
+            if (_info == null)
+            {
+                await js.InvokeVoidAsync("alert", "项目组不存在");
+                nav.NavigateTo($"/project_group/list");
+            }
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/project_group/list");
+    }
+
+}
