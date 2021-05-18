@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 using FS.DI;
 
-namespace FOPS.Abstract.K8S.Server
+namespace FOPS.Abstract.MetaInfo.Server
 {
     public interface IClusterService: ITransientDependency
     {
