@@ -17,6 +17,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public string Hub { get; set; }
         /// <summary>
+        /// Git分支
+        /// </summary>
+        public string Branch { get; set; }
+        /// <summary>
         /// 账户名称
         /// </summary>
         public string UserName { get; set; }

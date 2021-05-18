@@ -24,6 +24,11 @@ namespace FOPS.Com.MetaInfoServer.Git.Dal
         [Field(Name = "hub")]
         public string Hub { get; set; }
         /// <summary>
+        /// Git分支
+        /// </summary>
+        [Field(Name = "branch")]
+        public string Branch { get; set; }
+        /// <summary>
         /// 账户名称
         /// </summary>
         [Field(Name = "user_name")]

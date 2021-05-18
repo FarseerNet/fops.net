@@ -121,9 +121,9 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger">编译打包</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger">部署K8S</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger">全部构建</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info.Id)">打包</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info.Id)">部署</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Build(info.Id)">构建</button>
                                     </div>
                                 </td>
                             </tr>
@@ -279,4 +279,23 @@
         }
     }
 
+    private void Release(int infoId)
+    {
+        // 拉取最新的Git
+        
+        // 编译
+        // 打包
+        // 上传镜像
+    }
+
+    private void Deploy(int infoId)
+    {
+        // 更新集群镜像版本
+    }
+
+    private void Build(int infoId)
+    {
+        Release(infoId);
+        Deploy(infoId);
+    }
 }

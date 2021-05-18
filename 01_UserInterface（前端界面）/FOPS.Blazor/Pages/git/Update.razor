@@ -33,6 +33,12 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">分支</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Branch" autocomplete="off" placeholder="请输入分支" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">Git账户名称</label>
             <div class="layui-input-inline">
                 <input type="text" @bind="_info.UserName" placeholder="请输入Git账户名称" autocomplete="off" class="layui-input">
@@ -68,9 +74,16 @@
         {
             await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/git/list");
+            return;
         }
         try
         {
+            
+            if (string.IsNullOrWhiteSpace(_info.Name) || string.IsNullOrWhiteSpace(_info.Hub) || string.IsNullOrWhiteSpace(_info.Branch))
+            {
+                throw new Exception("Git名称、托管地址、分支必须填写。");
+            }
+            
             await _iocManager.Resolve<IGitService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             nav.NavigateTo($"/git/update/{_info.Id}");
