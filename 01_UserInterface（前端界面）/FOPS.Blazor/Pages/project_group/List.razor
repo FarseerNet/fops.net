@@ -1,6 +1,7 @@
 @page "/project_group/list"
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.K8S.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -25,6 +26,11 @@
                             </th>
                             <th data-field="Type" data-key="14-0-1">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>集群</span>
+                                </div>
+                            </th>
+                            <th data-field="Type" data-key="14-0-2">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>项目组名称</span>
                                 </div>
                             </th>
@@ -44,6 +50,11 @@
                                 </td>
                                 <td data-field="Type" data-key="14-0-1">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
+                                        @_lstCluster.Find(o=>o.Id==info.ClusterId)?.Name
+                                    </div>
+                                </td>
+                                <td data-field="Type" data-key="14-0-2">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
                                         <a href="/project_group/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
@@ -70,12 +81,21 @@
     private int _pageSize = 999;
 
     private List<ProjectGroupVO> _lst = new();
-
+    private List<ClusterVO> _lstCluster = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+    }
+    
     protected override async Task OnParametersSetAsync()
     {
         _lst = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
+        
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _lstCluster = _lstCluster.OrderByDescending(o => o.Id).ToList();
     }
 
     private void GotoAdd()

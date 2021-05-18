@@ -2,6 +2,7 @@
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.K8S.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -14,6 +15,17 @@
         </div>
     </div>
     <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">集群</label>
+            <div class="layui-input-block">
+                <select @bind="_info.ClusterId">
+                    @foreach (var clusterVO in _lstCluster)
+                    {
+                        <option value="@clusterVO.Id">@clusterVO.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
         <div class="layui-form-item">
             <label class="layui-form-label">项目组名称</label>
             <div class="layui-input-block">
@@ -33,23 +45,29 @@
 @code{
 
     private readonly ProjectGroupVO _info = new() {};
+    private List<ClusterVO> _lstCluster = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+    }
 
     private async Task AddInfo()
     {
         try
         {
-            if (_info.Name == null)
+            if (_info.Name == null || _info.ClusterId == 0)
             {
-                throw new Exception("项目名称、托管地址必须填写。");
+                await js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
             }
-            
+
             await _iocManager.Resolve<IProjectGroupService>().AddAsync(_info);
-            await js.InvokeVoidAsync("alert", "添加成功");
+            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
             nav.NavigateTo("/project_group/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("alert", e.Message);
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 

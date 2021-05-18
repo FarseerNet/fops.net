@@ -1,6 +1,7 @@
 @page "/project_group/update/{id:int}"
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.K8S.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -17,6 +18,17 @@
             <label class="layui-form-label">ID</label>
             <div class="layui-input-inline">
                 <label class="layui-form-label" style="text-align: left">@_info.Id</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">集群</label>
+            <div class="layui-input-block">
+                <select @bind="_info.ClusterId">
+                    @foreach (var clusterVO in _lstCluster)
+                    {
+                        <option value="@clusterVO.Id">@clusterVO.Name</option>
+                    }
+                </select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -40,23 +52,35 @@
     [Parameter] public int Id { get; set; }
 
     private ProjectGroupVO _info = new() {};
-
+    private List<ClusterVO> _lstCluster = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+    }
+    
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "项目组不存在");
+            await js.InvokeVoidAsync("layer.alert", "项目组不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/project_group/list");
         }
+        
+        if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterId == 0)
+        {
+            await js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
+        }
+        
         try
         {
             await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("alert", "修改成功");
+            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             nav.NavigateTo($"/project_group/update/{_info.Id}");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("alert", e.Message);
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
@@ -64,7 +88,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "项目组不存在");
+            await js.InvokeVoidAsync("layer.alert", "项目组不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/project_group/list");
         }
     }
@@ -76,7 +100,7 @@
             _info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("alert", "项目组不存在");
+                await js.InvokeVoidAsync("layer.alert", "项目组不存在", new {icon = 2, title = "出错了"});
                 nav.NavigateTo($"/project_group/list");
             }
         }

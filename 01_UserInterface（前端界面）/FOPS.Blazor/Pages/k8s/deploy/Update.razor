@@ -117,18 +117,18 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "项目不存在");
+            await js.InvokeVoidAsync("layer.alert", "项目不存在");
             nav.NavigateTo($"/k8s/deploy/list");
         }
         try
         {
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("alert", "修改成功");
+            await js.InvokeVoidAsync("layer.alert", "修改成功");
             nav.NavigateTo($"/k8s/deploy/update/{_info.Id}");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("alert", e.Message);
+            await js.InvokeVoidAsync("layer.alert", e.Message);
         }
     }
 
@@ -136,7 +136,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "项目不存在");
+            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/k8s/deploy/list");
         }
     }
@@ -148,7 +148,7 @@
             _info = await _iocManager.Resolve<IProjectService>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("alert", "项目不存在");
+                await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
                 nav.NavigateTo($"/k8s/deploy/list");
             }
 

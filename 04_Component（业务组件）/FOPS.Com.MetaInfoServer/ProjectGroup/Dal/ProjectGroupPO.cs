@@ -13,6 +13,11 @@ namespace FOPS.Com.MetaInfoServer.ProjectGroup.Dal
         [Field(Name = "id",IsPrimaryKey = true,IsDbGenerated = true)]
         public int? Id { get; set; }
         /// <summary>
+        /// 集群ID
+        /// </summary>
+        [Field(Name = "cluster_id")]
+        public int? ClusterId { get; set; }
+        /// <summary>
         /// 项目组名称
         /// </summary>
         [Field(Name = "name")]

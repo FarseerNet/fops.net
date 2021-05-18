@@ -66,16 +66,17 @@
         {
             if (_info.Name == null)
             {
-                throw new Exception("Yaml模板名称。");
+                await js.InvokeVoidAsync("layer.alert", "模板名称必须填写", new {icon = 2, title = "出错了"});
+                return;
             }
 
             await _iocManager.Resolve<IClusterService>().AddAsync(_info);
-            await js.InvokeVoidAsync("alert", "添加成功");
+            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
             nav.NavigateTo("/cluster/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("alert", e.Message);
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 

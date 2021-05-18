@@ -66,18 +66,18 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "Git仓库不存在");
+            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/git/list");
         }
         try
         {
             await _iocManager.Resolve<IGitService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("alert", "修改成功");
+            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             nav.NavigateTo($"/git/update/{_info.Id}");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("alert", e.Message);
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
@@ -85,7 +85,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("alert", "Git仓库不存在");
+            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             nav.NavigateTo($"/git/list");
         }
     }
@@ -97,7 +97,7 @@
             _info = await _iocManager.Resolve<IGitService>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("alert", "Git仓库不存在");
+                await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
                 nav.NavigateTo($"/git/list");
             }
         }
