@@ -1,3 +1,5 @@
+using System;
+
 namespace FOPS.Abstract.MetaInfo.Entity
 {
     public class ProjectVO
@@ -18,6 +20,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// GIT
         /// </summary>
         public int GitId { get; set; }
+        /// <summary>
+        /// 拉取时间
+        /// </summary>
+        public DateTime GitPullAt { get; set; }
         /// <summary>
         /// Git名称
         /// </summary>

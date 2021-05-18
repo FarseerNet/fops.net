@@ -1,6 +1,7 @@
 @page "/git/list"
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -38,6 +39,11 @@
                                     <span>账户名称</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>上次拉取</span>
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                     </table>
@@ -63,6 +69,11 @@
                                 <td data-field="Items" data-key="14-0-3" class="">
                                     <div class="layui-table-cell laytable-cell-14-0-3">@info.UserName</div>
                                 </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        <span>@((DateTime.Now - info.PullAt).GetDateDesc())</span>
+                                    </div>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -78,6 +89,7 @@
     .laytable-cell-14-0-1{ width: 150px; }
     .laytable-cell-14-0-2{ width: 800px; }
     .laytable-cell-14-0-3{ width: 150px; }
+    .laytable-cell-14-0-4{ width: 150px; }
 </style>
 
 @code{

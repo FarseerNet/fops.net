@@ -115,6 +115,8 @@
         {
             var gitVO = _lstGit.Find(o => o.Id == projectVO.GitId);
             if (gitVO == null) continue;
+            projectVO.GitId = gitVO.Id;
+            projectVO.GitPullAt = gitVO.PullAt;
             projectVO.GitName = gitVO.Name;
             projectVO.GitHub = gitVO.Hub;
         }

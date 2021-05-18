@@ -1,3 +1,4 @@
+using System;
 using FOPS.Abstract.MetaInfo.Entity;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
@@ -32,5 +33,10 @@ namespace FOPS.Com.MetaInfoServer.Git.Dal
         /// </summary>
         [Field(Name = "user_pwd")]
         public string UserPwd { get; set; }
+        /// <summary>
+        /// 拉取时间
+        /// </summary>
+        [Field(Name = "pull_at")]
+        public DateTime? PullAt { get; set; }
     }
 }

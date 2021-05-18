@@ -41,7 +41,7 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>git版本</span>
+                                    <span>git拉取</span>
                                 </div>
                             </th>
                             <th data-field="Type">
@@ -90,8 +90,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-2">
-                                        当前：akfnz32fax <br/>
-                                        线上：FDj8dnaaxi
+                                        <span>@((DateTime.Now - info.GitPullAt).GetDateDesc())</span>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -150,10 +149,14 @@
     private List<ProjectVO> _lst = new();
     private List<YamlTplVO> _lstTpl = new();
     private List<ClusterVO> _lstCluster = new();
+    private List<GitVO> _lstGit = new();
     private int _clusterId;
 
     protected override async Task OnInitializedAsync()
     {
+    // Git
+        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
+
     // 模板
         _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
@@ -254,6 +257,18 @@
 
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
+
+
+        for (var index = 0; index < _lst.Count; index++)
+        {
+            var projectVO = _lst[index];
+            var gitVO = _lstGit.Find(o => o.Id == projectVO.GitId);
+            if (gitVO == null) continue;
+            projectVO.GitId = gitVO.Id;
+            projectVO.GitPullAt = gitVO.PullAt;
+            projectVO.GitName = gitVO.Name;
+            projectVO.GitHub = gitVO.Hub;
+        }
     }
 
 }

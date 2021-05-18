@@ -1,3 +1,5 @@
+using System;
+
 namespace FOPS.Abstract.MetaInfo.Entity
 {
     public class GitVO
@@ -22,5 +24,9 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// 账户密码
         /// </summary>
         public string UserPwd { get; set; }
+        /// <summary>
+        /// 拉取时间
+        /// </summary>
+        public DateTime PullAt { get; set; }
     }
 }
