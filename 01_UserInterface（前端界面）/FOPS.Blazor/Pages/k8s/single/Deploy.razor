@@ -12,7 +12,7 @@
         <select @bind="_selectClusterId" style="display:inline;">
             @foreach (var clusterVO in _lstCluster)
             {
-                <option value="@clusterVO.Id">@clusterVO.RuntimeEnvType 环境 @clusterVO.Name</option>
+                <option value="@clusterVO.Id">@clusterVO.Name - @clusterVO.RuntimeEnvType</option>
             }
         </select>
         <div class="layui-right">

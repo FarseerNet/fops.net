@@ -15,7 +15,7 @@
         <select style="display:inline;" @onchange="ClusterChange">
             @foreach (var clusterVO in _lstCluster)
             {
-                <option value="@clusterVO.Id">@clusterVO.RuntimeEnvType 环境 @clusterVO.Name</option>
+                <option value="@clusterVO.Id">@clusterVO.Name - @clusterVO.RuntimeEnvType</option>
             }
         </select>
         <div class="layui-right">
@@ -44,14 +44,16 @@
                                     <span>git版本</span>
                                 </div>
                             </th>
-                            @foreach (var clusterVO in _lstCluster)
-                            {
-                                <th data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">
-                                        <span>[@clusterVO.RuntimeEnvType.ToString()] @clusterVO.Name</span>
-                                    </div>
-                                </th>
-                            }
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>镜像版本</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>集群版本</span>
+                                </div>
+                            </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>上次成功</span>
@@ -92,15 +94,16 @@
                                         线上：FDj8dnaaxi
                                     </div>
                                 </td>
-                                @foreach (var clusterVO in _lstCluster)
-                                {
-                                    <td data-field="Title">
-                                        <div class="layui-table-cell laytable-cell-14-0-3">
-                                            仓库：68<br/>
-                                            K8S：69
-                                        </div>
-                                    </td>
-                                }
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        68
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        69
+                                    </div>
+                                </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-5">
                                         2021-05-18 02:09:19
@@ -159,7 +162,7 @@
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
         _lstCluster = _lstCluster.OrderByDescending(o => o.Id).ToList();
         if (_lstCluster != null) _clusterId = _lstCluster[0].Id;
-        
+
         await GetList();
     }
 
@@ -231,7 +234,7 @@
         _clusterId = args.Value.ConvertType(0);
         await GetList();
     }
-    
+
     private async Task GetList()
     {
     // 重新读取所有项目列表
@@ -243,13 +246,13 @@
         {
             var projectGroupId = projectGroupIds[i];
             var info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(projectGroupId);
-            
+
     // 如果项目组不包含当前选中的集群，则移除项目
             if (!info.ClusterIds.Contains(_clusterId))
                 _lst.RemoveAll(o => o.GroupId == projectGroupId);
         }
 
-        _lst        = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }
 
