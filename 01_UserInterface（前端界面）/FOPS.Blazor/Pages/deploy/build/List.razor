@@ -95,22 +95,28 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
-                                        68
+                                        @info.DockerVer
                                     </div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
-                                        69
+                                        @info.DicClusterVer[_clusterId].DockerVer
                                     </div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-4">
-                                        2021-05-18 02:09:19
+                                        @if (!string.IsNullOrWhiteSpace(info.DicClusterVer[_clusterId].DockerVer) && info.DicClusterVer[_clusterId].DockerVer != "0")
+                                        {
+                                            <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</span>
+                                        }
                                     </div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-5">
-                                        2021-05-18 02:09:19
+                                        @if (!string.IsNullOrWhiteSpace(info.DicClusterVer[_clusterId].DockerVer) && info.DicClusterVer[_clusterId].DockerVer != "0")
+                                        {
+                                            <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</span>
+                                        }
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -267,6 +273,9 @@
             projectVO.GitPullAt = gitVO.PullAt;
             projectVO.GitName = gitVO.Name;
             projectVO.GitHub = gitVO.Hub;
+
+            if (!projectVO.DicClusterVer.ContainsKey(_clusterId))
+                projectVO.DicClusterVer[_clusterId] = new ClusterVer {DockerVer = "0"};
         }
     }
 
