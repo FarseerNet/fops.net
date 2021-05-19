@@ -56,11 +56,5 @@ namespace FOPS.Com.BuilderServer.Build.Dal
         /// </summary>
         [Field(Name = "finish_at")]
         public DateTime? FinishAt { get; set; }
-        
-        /// <summary>
-        /// 构建输出内容
-        /// </summary>
-        [Field(Name = "output")]
-        public string Output { get; set; }
     }
 }

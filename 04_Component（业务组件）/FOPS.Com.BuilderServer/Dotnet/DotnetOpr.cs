@@ -16,7 +16,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
         public async Task<RunShellResult> Publish(string project,string source,Action<string> actReceiveOutput)
         {
             var projectPath = SavePath + project;
-            return await ShellTools.Run("dotnet", $"public -c Release -o {projectPath} {source}", actReceiveOutput);
+            return await ShellTools.Run("dotnet", $"publish -c Release -o {projectPath} {source}", actReceiveOutput);
         }
     }
 }

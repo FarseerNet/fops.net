@@ -16,11 +16,12 @@ namespace FOPS.Com.BuilderServer.Build
     /// </summary>
     public class BuildService : IBuildService
     {
-        public IGitOpr         GitOpr         { get; set; }
-        public IDotnetOpr      DotnetOpr      { get; set; }
-        public IProjectService ProjectService { get; set; }
-        public IGitService     GitService     { get; set; }
-        public IIocManager     IocManager     { get; set; }
+        public IGitOpr          GitOpr          { get; set; }
+        public IDotnetOpr       DotnetOpr       { get; set; }
+        public IProjectService  ProjectService  { get; set; }
+        public IGitService      GitService      { get; set; }
+        public IIocManager      IocManager      { get; set; }
+        public IBuildLogService BuildLogService { get; set; }
 
         /// <summary>
         /// 构建
@@ -44,7 +45,8 @@ namespace FOPS.Com.BuilderServer.Build
             var project = await ProjectService.ToInfoAsync(po.ProjectId.GetValueOrDefault());
             if (project == null)
             {
-                await Fail(po, 0, $"项目ID={po.ProjectId.GetValueOrDefault()}，不存在");
+                await Fail(po, 0);
+                BuildLogService.Write(po.Id.GetValueOrDefault(), $"项目ID={po.ProjectId.GetValueOrDefault()}，不存在");
                 return;
             }
 
@@ -52,27 +54,27 @@ namespace FOPS.Com.BuilderServer.Build
             var git = await GitService.ToInfoAsync(project.GitId);
             if (git == null)
             {
-                await Fail(po, 0, $"gitID={project.GitId}，不存在");
+                await Fail(po, 0);
+                BuildLogService.Write(po.Id.GetValueOrDefault(), $"gitID={project.GitId}，不存在");
                 return;
             }
 
             var startNew = Stopwatch.StartNew();
             IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：开始拉取git。");
 
-            // 1、拉取Git
-            var lstOutput = new List<string>();
-            var pullResult = await GitOpr.PullAsync(git.Id, async output =>
+            void ActWriteLog(string output)
             {
-                lstOutput.Add(output);
-                IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：{output}。");
-                await UpdateOutput(po.Id.GetValueOrDefault(), string.Join("\r\n", lstOutput));
-            });
+                BuildLogService.Write(po.Id.GetValueOrDefault(), output);
+            }
+
+            // 1、拉取Git
+            var pullResult = await GitOpr.PullAsync(git.Id, ActWriteLog);
 
             // Git拉取完成
             IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：拉取完成，Error={pullResult.IsError}");
             if (pullResult.IsError)
             {
-                await Fail(po, startNew.ElapsedMilliseconds, pullResult.OutputLine);
+                await Fail(po, startNew.ElapsedMilliseconds);
                 return;
             }
 
@@ -81,17 +83,12 @@ namespace FOPS.Com.BuilderServer.Build
 
             // 3、编译
             IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：开始编译。");
-            await DotnetOpr.Publish(project.Name,  System.IO.Path.Combine(GitOpr.GetGitPath(git), project.Path), async output =>
-            {
-                lstOutput.Add(output);
-                IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：{output}。");
-                await UpdateOutput(po.Id.GetValueOrDefault(), string.Join("\r\n", lstOutput));
-            });
+            if (project.Path.StartsWith("/")) project.Path = project.Path.Substring(1);
+            await DotnetOpr.Publish(project.Name, GitOpr.GetGitPath(git) + project.Path, ActWriteLog);
 
             // 4、打包
             // 5、上传镜像
             // 6、更新集群镜像版本
-
             await Success(po, startNew.ElapsedMilliseconds);
         }
 
@@ -114,7 +111,6 @@ namespace FOPS.Com.BuilderServer.Build
                 CreateAt    = DateTime.Now,
                 UseTime     = 0,
                 FinishAt    = DateTime.Now,
-                Output      = ""
             };
 
             await BuilderContext.Data.Build.InsertAsync(po);
@@ -131,21 +127,19 @@ namespace FOPS.Com.BuilderServer.Build
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = false,
                 FinishAt  = DateTime.Now,
-                Output    = "手动取消"
             });
         }
 
         /// <summary>
         /// 设置任务失败
         /// </summary>
-        private Task Fail(BuildPO po, long useTime, string output)
+        private Task Fail(BuildPO po, long useTime)
         {
             return BuilderContext.Data.Build.Where(o => o.Id == po.Id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = false,
                 FinishAt  = DateTime.Now,
-                Output    = output,
                 UseTime   = useTime
             });
         }
@@ -161,17 +155,6 @@ namespace FOPS.Com.BuilderServer.Build
                 IsSuccess = true,
                 FinishAt  = DateTime.Now,
                 UseTime   = useTime
-            });
-        }
-
-        /// <summary>
-        /// 更新执行日志
-        /// </summary>
-        private Task UpdateOutput(int id, string output)
-        {
-            return BuilderContext.Data.Build.Where(o => o.Id == id).UpdateAsync(new BuildPO
-            {
-                Output = output
             });
         }
     }

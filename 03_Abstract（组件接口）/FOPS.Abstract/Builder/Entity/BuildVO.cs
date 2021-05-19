@@ -44,10 +44,5 @@ namespace FOPS.Abstract.Builder.Entity
         /// 完成时间
         /// </summary>
         public DateTime FinishAt { get; set; }
-        
-        /// <summary>
-        /// 构建输出内容
-        /// </summary>
-        public string Output { get; set; }
     }
 }

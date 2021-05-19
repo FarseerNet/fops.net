@@ -31,6 +31,11 @@
                                     <span>Git名称</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>分支</span>
+                                </div>
+                            </th>
                             <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>托管地址</span>
@@ -70,6 +75,11 @@
                                         <a href="/git/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
+                                <td data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
+                                        @info.Branch
+                                    </div>
+                                </td>
                                 <td data-field="Title">
                                     <div class="laytable-cell-14-0-2">
                                         <a href="@info.Hub" target="_blank">@info.Hub</a>
@@ -102,7 +112,7 @@
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 150px; }
-    .laytable-cell-14-0-2{ width: 600px; }
+    .laytable-cell-14-0-2{ width: 450px; }
     .laytable-cell-14-0-3{ width: 150px; }
     .laytable-cell-14-0-4{ width: 150px; }
     .laytable-cell-14-0-5{ width: 150px; }

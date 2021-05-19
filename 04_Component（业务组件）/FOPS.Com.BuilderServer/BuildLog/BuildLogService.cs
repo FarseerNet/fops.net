@@ -1,0 +1,25 @@
+using FOPS.Abstract.Builder.Server;
+using FOPS.Com.BuilderServer.Build;
+using FS.DI;
+using Microsoft.Extensions.Logging;
+
+namespace FOPS.Com.BuilderServer.BuildLog
+{
+    public class BuildLogService : IBuildLogService
+    {
+        const  string      SavePath = "/var/lib/fops/log/";
+        public IIocManager IocManager { get; set; }
+
+        /// <summary>
+        /// 写入构建日志
+        /// </summary>
+        public void Write(int id, string log)
+        {
+            var path = SavePath + $"{id}.txt";
+            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            System.IO.File.AppendAllText(path, log);
+
+            IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={id}：{log}。");
+        }
+    }
+}
