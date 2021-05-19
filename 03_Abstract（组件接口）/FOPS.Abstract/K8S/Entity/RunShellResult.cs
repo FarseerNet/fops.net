@@ -19,5 +19,10 @@ namespace FOPS.Abstract.K8S.Entity
         /// 按<br />拼接成一条消息
         /// </summary>
         public string OutputBr => String.Join("<br />", Output);
+
+        /// <summary>
+        /// 按<br />拼接成一条消息
+        /// </summary>
+        public string OutputLine => String.Join("\r\b", Output);
     }
 }

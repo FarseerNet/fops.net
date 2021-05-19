@@ -5,6 +5,7 @@
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
 @using FS.Extends
+@using FOPS.Abstract.Builder.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -280,16 +281,9 @@
     private async Task Release(ProjectVO project)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-    // 拉取最新的Git
-        var pullResult = await _iocManager.Resolve<IGitOpr>().PullAsync(project.GitId);
+        await _iocManager.Resolve<IBuildService>().Add(project.Id);
 
-        if (pullResult.IsError) await js.InvokeVoidAsync("layer.alert", pullResult.OutputBr, new {icon = 2, title = "出错了"});
-        else await js.InvokeVoidAsync("alert", pullResult.OutputBr, new {icon = 1, title = "执行结果"});
-    // 编译
-    // 打包
-    // 上传镜像
-    // 更新集群镜像版本
-        Deploy(project);
+        await js.InvokeVoidAsync("alert", "已加入到队列", new {icon = 1, title = "执行结果"});
         await js.InvokeVoidAsync("layer.close", load);
     }
 
@@ -297,5 +291,4 @@
     {
     // 更新集群镜像版本
     }
-
 }

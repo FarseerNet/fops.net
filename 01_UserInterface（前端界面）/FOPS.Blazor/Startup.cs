@@ -1,3 +1,4 @@
+using FOPS.Blazor.Background;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,7 @@ namespace FOPS.Blazor
             services.AddSingleton<IIocManager>(FS.DI.IocManager.Instance.Resolve<IIocManager>());
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHostedService<RunBuildService>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
