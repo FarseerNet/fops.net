@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FOPS.Blazor.Data;
+using FOPS.Com.BuilderServer;
 using FOPS.Com.FssServer;
 using FOPS.Com.K8SServer;
 using FOPS.Com.K8sServerAA;
@@ -34,6 +35,7 @@ namespace FOPS.Blazor
         typeof(ElasticSearchModule),
         typeof(FssModule),
         typeof(K8SModule),
+        typeof(BuilderModule),
         typeof(MetaInfoModule))]
     public class Startup: FarseerModule
     {

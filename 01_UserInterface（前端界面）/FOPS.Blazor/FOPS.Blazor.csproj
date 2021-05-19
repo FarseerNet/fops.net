@@ -31,6 +31,7 @@
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Mapper\Farseer.Net.Mapper.csproj" />
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.MQ.RedisStream\Farseer.Net.MQ.RedisStream.csproj" />
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
+      <ProjectReference Include="..\..\04_Component（业务组件）\FOPS.Com.BuilderServer\FOPS.Com.BuilderServer.csproj" />
       <ProjectReference Include="..\..\04_Component（业务组件）\FOPS.Com.FssServer\FOPS.Com.FssServer.csproj" />
       <ProjectReference Include="..\..\04_Component（业务组件）\FOPS.Com.K8SServer\FOPS.Com.K8SServer.csproj" />
       <ProjectReference Include="..\..\04_Component（业务组件）\FOPS.Com.MetaInfoServer\FOPS.Com.MetaInfoServer.csproj" />
