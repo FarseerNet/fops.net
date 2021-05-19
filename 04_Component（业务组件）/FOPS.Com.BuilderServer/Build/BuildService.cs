@@ -17,6 +17,7 @@ namespace FOPS.Com.BuilderServer.Build
     public class BuildService : IBuildService
     {
         public IGitOpr         GitOpr         { get; set; }
+        public IDotnetOpr      DotnetOpr      { get; set; }
         public IProjectService ProjectService { get; set; }
         public IGitService     GitService     { get; set; }
         public IIocManager     IocManager     { get; set; }
@@ -79,7 +80,14 @@ namespace FOPS.Com.BuilderServer.Build
             await GitService.UpdateAsync(git.Id, DateTime.Now);
 
             // 3、编译
-            
+            IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：开始编译。");
+            await DotnetOpr.Publish(project.Name,  System.IO.Path.Combine(GitOpr.GetGitPath(git), project.Path), async output =>
+            {
+                lstOutput.Add(output);
+                IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：{output}。");
+                await UpdateOutput(po.Id.GetValueOrDefault(), string.Join("\r\n", lstOutput));
+            });
+
             // 4、打包
             // 5、上传镜像
             // 6、更新集群镜像版本

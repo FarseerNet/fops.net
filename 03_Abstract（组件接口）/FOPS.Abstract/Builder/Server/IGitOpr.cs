@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
+using FOPS.Abstract.MetaInfo.Entity;
 using FS.DI;
 
-namespace FOPS.Abstract.MetaInfo.Server
+namespace FOPS.Abstract.Builder.Server
 {
     public interface IGitOpr: ITransientDependency
     {
@@ -16,5 +17,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 消除仓库
         /// </summary>
         void Clear(int gitId);
+
+        /// <summary>
+        /// 获取Git存放的路径
+        /// </summary>
+        string GetGitPath(GitVO info);
     }
 }

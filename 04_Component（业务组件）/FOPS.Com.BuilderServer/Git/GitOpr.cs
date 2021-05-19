@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
@@ -32,10 +33,8 @@ namespace FOPS.Com.BuilderServer.Git
             var            info = await GitService.ToInfoAsync(gitId);
             RunShellResult runShellResult;
 
-            
-            var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
-            if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
-            var gitPath                           = SavePath + gitName + "/";
+            // 获取Git存放的路径
+            var gitPath = GetGitPath(info);
             
             // 判断git是否有clone过
             if (!System.IO.Directory.Exists(gitPath))
@@ -63,6 +62,16 @@ namespace FOPS.Com.BuilderServer.Git
             }
 
             return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput);
+        }
+
+        /// <summary>
+        /// 获取Git存放的路径
+        /// </summary>
+        public string GetGitPath(GitVO info)
+        {
+            var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
+            if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
+            return SavePath + gitName + "/";
         }
     }
 }
