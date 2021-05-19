@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 using FS.DI;
@@ -9,7 +10,7 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        Task<RunShellResult> PullAsync(int gitId);
+        Task<RunShellResult> PullAsync(int gitId, Action<string> actReceiveOutput);
 
         /// <summary>
         /// 消除仓库

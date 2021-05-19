@@ -84,7 +84,8 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-5">
-                                        <button class="layui-btn layui-btn-sm" @onclick="() => ClearGit(info.Id)">清除仓库</button>
+                                        <button class="layui-btn layui-btn-sm" @onclick="() => ClearGit(info.Id)">清除</button>
+                                        <button class="layui-btn layui-btn-sm" @onclick="() => PullGit(info.Id)">拉取</button>
                                     </div>
                                 </td>
                             </tr>
@@ -130,4 +131,17 @@
         _iocManager.Resolve<IGitOpr>().Clear(id);
         await js.InvokeVoidAsync("layer.alert", "清除完毕", new {icon = 1});
     }
+
+    private async Task PullGit(int id)
+    {
+        var gitResult = await _iocManager.Resolve<IGitOpr>().PullAsync(id, null);
+        if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "拉取失败"});
+        else
+        {
+            // 更新git拉取时间
+            await _iocManager.Resolve<IGitService>().UpdateAsync(id, DateTime.Now);
+            await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 1, title = "执行结果"});
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 
@@ -14,7 +15,7 @@ namespace FOPS.Infrastructure.Common
         /// <param name="cmd"></param>
         /// <param name="arguments"></param>
         /// <param name="actReceiveOutput">外部第一时间，处理拿到的消息 </param>
-        public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput = null)
+        public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput)
         {
             var psi = new ProcessStartInfo(cmd, arguments) {RedirectStandardOutput = true, RedirectStandardError = true};
 
@@ -45,7 +46,12 @@ namespace FOPS.Infrastructure.Common
 
                     // 外部第一时间，处理拿到的消息
                     if (actReceiveOutput != null) actReceiveOutput(output);
-                    //runShellResult.IsError = true;
+                }
+
+                // 等待退出
+                while (!proc.HasExited)
+                {
+                    await Task.Delay(1000);
                 }
 
                 runShellResult.IsError = proc.ExitCode != 0;

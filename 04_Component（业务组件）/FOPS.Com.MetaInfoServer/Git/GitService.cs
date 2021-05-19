@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
@@ -39,6 +40,15 @@ namespace FOPS.Com.MetaInfoServer.Git
         /// 修改GIT
         /// </summary>
         public Task UpdateAsync(int id, GitVO vo) => MetaInfoContext.Data.Git.Where(o => o.Id == id).UpdateAsync(vo.Map<GitPO>());
+
+
+        /// <summary>
+        /// 修改GIT的拉取时间
+        /// </summary>
+        public Task UpdateAsync(int id, DateTime pullAt) => MetaInfoContext.Data.Git.Where(o => o.Id == id).UpdateAsync(new GitPO
+        {
+            PullAt = pullAt
+        });
 
         /// <summary>
         /// 删除GIT
