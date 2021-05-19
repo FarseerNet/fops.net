@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Infrastructure.Common;
 
 namespace FOPS.Com.K8sServerAA.Deploy
 {
@@ -99,33 +100,7 @@ namespace FOPS.Com.K8sServerAA.Deploy
             System.IO.File.WriteAllText(fileName, yamlContent, Encoding.UTF8);
 
             // 发布
-            var arguments = $"apply -f {fileName} --kubeconfig={clusterConfig}";
-            var psi       = new ProcessStartInfo("kubectl", arguments) {RedirectStandardOutput = true, RedirectStandardError = true};
-
-            var runShellResult = new RunShellResult
-            {
-                IsError = false,
-                Output  = new List<string>()
-            };
-
-            using (var proc = Process.Start(psi))
-            {
-                if (proc == null) throw new Exception("执行失败，请检查是否正确安装了kubectl工具");
-
-                //开始读取
-                while (!proc.StandardOutput.EndOfStream)
-                {
-                    runShellResult.Output.Add(await proc.StandardOutput.ReadLineAsync());
-                }
-
-                while (!proc.StandardError.EndOfStream)
-                {
-                    runShellResult.Output.Add(await proc.StandardError.ReadLineAsync());
-                    runShellResult.IsError = true;
-                }
-            }
-
-            return runShellResult;
+            return await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}");
         }
     }
 }

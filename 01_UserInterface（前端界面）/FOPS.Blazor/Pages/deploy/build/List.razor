@@ -121,9 +121,9 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info.Id)">打包</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info.Id)">部署</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Build(info.Id)">构建</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info)">打包</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info)">部署</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Build(info)">构建</button>
                                     </div>
                                 </td>
                             </tr>
@@ -279,23 +279,29 @@
         }
     }
 
-    private void Release(int infoId)
+    private async Task Release(ProjectVO project)
     {
-        // 拉取最新的Git
-        
-        // 编译
-        // 打包
-        // 上传镜像
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+    // 拉取最新的Git
+        var pullResult = await _iocManager.Resolve<IGitOpr>().PullAsync(project.GitId);
+
+        if (pullResult.IsError) await js.InvokeVoidAsync("alert", pullResult.Output);
+        else await js.InvokeVoidAsync("alert", pullResult.Output, new {icon = 1, title = "执行结果"});
+    // 编译
+    // 打包
+    // 上传镜像
+        await js.InvokeVoidAsync("layer.close", load);
     }
 
-    private void Deploy(int infoId)
+    private void Deploy(ProjectVO project)
     {
-        // 更新集群镜像版本
+    // 更新集群镜像版本
     }
 
-    private void Build(int infoId)
+    private void Build(ProjectVO project)
     {
-        Release(infoId);
-        Deploy(infoId);
+        Release(project);
+        Deploy(project);
     }
+
 }

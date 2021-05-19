@@ -12,6 +12,7 @@
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.MQ.RedisStream\Farseer.Net.MQ.RedisStream.csproj" />
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Utils\Farseer.Net.Utils.csproj" />
         <ProjectReference Include="..\..\03_Abstract（组件接口）\FOPS.Abstract\FOPS.Abstract.csproj" />
+        <ProjectReference Include="..\..\05_Infrastructure（基础设施）\FOPS.Infrastructure.Common\FOPS.Infrastructure.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
