@@ -1,4 +1,4 @@
-@page "/deploy/build/list"
+@page "/builder/list"
 @using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
@@ -85,7 +85,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
-                                        <a href="/deploy/build/update/@info.Id">@info.Name</a>
+                                        <a href="/builder/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -121,9 +121,8 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info)">打包</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info)">部署</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Build(info)">构建</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info)">构建部署</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info)">部署最新</button>
                                     </div>
                                 </td>
                             </tr>
@@ -132,7 +131,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/deploy/build/list/{index}"></PageSplit>
+            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/builder/list/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -195,9 +194,8 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
-            var output = string.Join("<br />", runShellResult.Output);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", output, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", output, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {
@@ -227,8 +225,8 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {
@@ -285,23 +283,19 @@
     // 拉取最新的Git
         var pullResult = await _iocManager.Resolve<IGitOpr>().PullAsync(project.GitId);
 
-        if (pullResult.IsError) await js.InvokeVoidAsync("alert", pullResult.Output);
-        else await js.InvokeVoidAsync("alert", pullResult.Output, new {icon = 1, title = "执行结果"});
+        if (pullResult.IsError) await js.InvokeVoidAsync("layer.alert", pullResult.OutputBr, new {icon = 2, title = "出错了"});
+        else await js.InvokeVoidAsync("alert", pullResult.OutputBr, new {icon = 1, title = "执行结果"});
     // 编译
     // 打包
     // 上传镜像
+    // 更新集群镜像版本
+        Deploy(project);
         await js.InvokeVoidAsync("layer.close", load);
     }
 
     private void Deploy(ProjectVO project)
     {
     // 更新集群镜像版本
-    }
-
-    private void Build(ProjectVO project)
-    {
-        Release(project);
-        Deploy(project);
     }
 
 }

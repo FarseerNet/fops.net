@@ -42,10 +42,7 @@ spec:
 ---
 apiVersion: v1
 data:
-  Database__Items__0__Catalog: ''
-  Database__Items__0__DataType: ''
   Database__Items__0__PassWord: ''
-  Database__Items__0__Port: ''
   Database__Items__0__Server: ''
   Database__Items__0__UserID: ''
   Logging__LogLevel__Default: ''

@@ -198,9 +198,8 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
-            var output = string.Join("<br />", runShellResult.Output);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", output, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", output, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {
@@ -215,6 +214,7 @@
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
+            await js.InvokeVoidAsync("layer.close", load);
             await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
             return;
         }
@@ -222,6 +222,7 @@
         var projectVO = _lst.Find(o => o.Id == id);
         if (projectVO == null)
         {
+            await js.InvokeVoidAsync("layer.close", load);
             await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 0});
             return;
         }
@@ -230,8 +231,8 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.Output, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {

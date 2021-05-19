@@ -13,9 +13,8 @@ namespace FOPS.Infrastructure.Common
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="arguments"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static async Task<RunShellResult> Run(string cmd, string arguments)
+        /// <param name="actReceiveOutput">外部第一时间，处理拿到的消息 </param>
+        public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput = null)
         {
             var psi = new ProcessStartInfo(cmd, arguments) {RedirectStandardOutput = true, RedirectStandardError = true};
 
@@ -32,14 +31,24 @@ namespace FOPS.Infrastructure.Common
                 //开始读取
                 while (!proc.StandardOutput.EndOfStream)
                 {
-                    runShellResult.Output.Add(await proc.StandardOutput.ReadLineAsync());
+                    var output = await proc.StandardOutput.ReadLineAsync();
+                    runShellResult.Output.Add(output);
+
+                    // 外部第一时间，处理拿到的消息
+                    if (actReceiveOutput != null) actReceiveOutput(output);
                 }
 
                 while (!proc.StandardError.EndOfStream)
                 {
-                    runShellResult.Output.Add(await proc.StandardError.ReadLineAsync());
-                    runShellResult.IsError = true;
+                    var output = await proc.StandardError.ReadLineAsync();
+                    runShellResult.Output.Add(output);
+
+                    // 外部第一时间，处理拿到的消息
+                    if (actReceiveOutput != null) actReceiveOutput(output);
+                    //runShellResult.IsError = true;
                 }
+
+                runShellResult.IsError = proc.ExitCode != 0;
             }
 
             return runShellResult;

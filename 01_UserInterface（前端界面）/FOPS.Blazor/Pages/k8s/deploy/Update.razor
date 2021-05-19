@@ -124,7 +124,7 @@
         {
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功");
-            nav.NavigateTo($"/k8s/deploy/update/{_info.Id}");
+            nav.NavigateTo("/k8s/deploy/list");
         }
         catch (Exception e)
         {

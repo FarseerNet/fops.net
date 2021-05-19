@@ -5,6 +5,7 @@
 @using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
+@inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -152,6 +153,7 @@
     private async Task RefreshCache()
     {
         await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
+        await js.InvokeVoidAsync("layer.alert", "刷新成功", new {icon = 1});
         nav.NavigateTo("/fss/task_group/list");
     }
 

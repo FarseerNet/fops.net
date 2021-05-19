@@ -41,9 +41,8 @@ namespace FOPS.Com.FssServer.TaskGroup
                 }
             }
 
+            await TaskGroupAgent.UpdateAsync(vo.Id, vo.Map<TaskGroupPO>());
             await UpdateAsync(vo);
-            var taskGroupPO = vo.Map<TaskGroupPO>();
-            await TaskGroupAgent.UpdateAsync(vo.Id, taskGroupPO);
         }
     }
 }

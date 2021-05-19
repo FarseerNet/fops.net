@@ -67,7 +67,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         public async Task<int> AddAsync(ProjectVO vo)
         {
             var po = vo.Map<ProjectPO>();
-            po.ClusterVer = JsonConvert.SerializeObject(vo.DicClusterVer);
+            po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             await MetaInfoContext.Data.Project.InsertAsync(po, true);
             vo.Id = po.Id.GetValueOrDefault();
             return vo.Id;
@@ -79,7 +79,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         public Task UpdateAsync(int id, ProjectVO vo)
         {
             var po = vo.Map<ProjectPO>();
-            po.ClusterVer = JsonConvert.SerializeObject(vo.DicClusterVer);
+            po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(po);
         }
 

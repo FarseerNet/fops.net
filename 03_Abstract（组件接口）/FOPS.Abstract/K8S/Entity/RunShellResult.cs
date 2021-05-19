@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace FOPS.Abstract.K8S.Entity
@@ -13,5 +14,10 @@ namespace FOPS.Abstract.K8S.Entity
         /// 输出结果
         /// </summary>
         public List<string> Output { get; set; }
+
+        /// <summary>
+        /// 按<br />拼接成一条消息
+        /// </summary>
+        public string OutputBr => String.Join("<br />", Output);
     }
 }

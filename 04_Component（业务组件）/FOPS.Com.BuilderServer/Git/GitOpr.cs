@@ -5,11 +5,12 @@ using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Infrastructure.Common;
 
-namespace FOPS.Com.MetaInfoServer.Git
+namespace FOPS.Com.BuilderServer.Git
 {
     public class GitOpr : IGitOpr
     {
         public IGitService GitService { get; set; }
+        const  string      SavePath = "/var/lib/fops/git/";
 
         /// <summary>
         /// 拉取最新代码
@@ -17,22 +18,20 @@ namespace FOPS.Com.MetaInfoServer.Git
         public async Task<RunShellResult> PullAsync(int gitId)
         {
             var            info = await GitService.ToInfoAsync(gitId);
-            //var            path = "/var/lib/fops/git/";
-            var            path = "/Users/steden/testfops/fops/git/";
             RunShellResult runShellResult;
 
             // 判断目录是否存在
-            if (!System.IO.Directory.Exists(path)) System.IO.Directory.CreateDirectory(path);
+            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
 
             // 判断git是否有clone过
-            path += info.Id + "/";
-            if (!System.IO.Directory.Exists(path))
+            var gitPath = SavePath + info.Id + "/";
+            if (!System.IO.Directory.Exists(SavePath))
             {
-                runShellResult = await CloneAsync(info);
+                runShellResult = await CloneAsync(info, gitPath);
             }
             else
             {
-                runShellResult = await ShellTools.Run("git", $"-C {path} pull");
+                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull");
             }
 
             if (!runShellResult.IsError)
@@ -48,19 +47,16 @@ namespace FOPS.Com.MetaInfoServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        /// <param name="info"></param>
-        /// <returns></returns>
-        private async Task<RunShellResult> CloneAsync(GitVO info)
+        private async Task<RunShellResult> CloneAsync(GitVO info, string path)
         {
-            RunShellResult runShellResult;
-            var            url = info.Hub;
+            var url = info.Hub;
             // 需要密码
             if (!string.IsNullOrWhiteSpace(info.UserPwd))
             {
                 url = url.Replace("//", $"//{info.UserName.Replace("@", "%40")}:{info.UserPwd}@");
             }
 
-            return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {info.Id}");
+            return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}");
         }
     }
 }
