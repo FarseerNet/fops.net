@@ -4,7 +4,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using FS.DI;
 
-namespace FOPS.Com.K8sServerAA
+namespace FOPS.Com.K8SServer
 {
     public class K8SInstaller : IWindsorInstaller
     {

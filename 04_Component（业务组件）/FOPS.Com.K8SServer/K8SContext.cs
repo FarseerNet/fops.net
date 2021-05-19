@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using FOPS.Com.K8sServerAA.YamlTpl.Dal;
+using FOPS.Com.K8SServer.YamlTpl.Dal;
 using FS.Data;
 using FS.Data.Map;
 
-namespace FOPS.Com.K8sServerAA
+namespace FOPS.Com.K8SServer
 {
     /// <summary>
     /// K8S上下文

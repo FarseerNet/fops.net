@@ -3,7 +3,7 @@ using FOPS.Abstract.K8S.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 
-namespace FOPS.Com.K8sServerAA.YamlTpl.Dal
+namespace FOPS.Com.K8SServer.YamlTpl.Dal
 {
     [Map(typeof(YamlTplVO))]
     public class YamlTplPO

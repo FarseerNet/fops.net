@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FOPS.Blazor.Data;
 using FOPS.Com.FssServer;
+using FOPS.Com.K8SServer;
 using FOPS.Com.K8sServerAA;
 using FOPS.Com.MetaInfoServer;
 using FS.Cache.Redis;

@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
-using FOPS.Com.K8sServerAA.YamlTpl.Dal;
+using FOPS.Com.K8SServer.YamlTpl.Dal;
 using FS.Extends;
 
-namespace FOPS.Com.K8sServerAA.YamlTpl
+namespace FOPS.Com.K8SServer.YamlTpl
 {
     public class YamlTplService : IYamlTplService
     {

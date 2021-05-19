@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
@@ -8,7 +7,7 @@ using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Infrastructure.Common;
 
-namespace FOPS.Com.K8sServerAA.Deploy
+namespace FOPS.Com.K8SServer.Deploy
 {
     public class DeployService : IDeployService
     {

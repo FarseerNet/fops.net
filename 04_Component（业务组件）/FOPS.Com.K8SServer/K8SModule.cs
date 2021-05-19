@@ -1,7 +1,7 @@
 using FS.Data;
 using FS.Modules;
 
-namespace FOPS.Com.K8sServerAA
+namespace FOPS.Com.K8SServer
 {
     /// <summary>
     ///     元信息模块
