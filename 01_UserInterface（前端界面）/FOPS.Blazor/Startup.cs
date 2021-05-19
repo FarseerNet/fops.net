@@ -1,19 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using FOPS.Blazor.Data;
 using FOPS.Com.BuilderServer;
 using FOPS.Com.FssServer;
 using FOPS.Com.K8SServer;
-using FOPS.Com.K8sServerAA;
 using FOPS.Com.MetaInfoServer;
 using FS.Cache.Redis;
 using FS.Core;
@@ -58,7 +50,6 @@ namespace FOPS.Blazor
             services.AddSingleton<IIocManager>(FS.DI.IocManager.Instance.Resolve<IIocManager>());
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

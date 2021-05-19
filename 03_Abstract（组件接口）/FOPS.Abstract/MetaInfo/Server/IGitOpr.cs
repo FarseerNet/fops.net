@@ -10,5 +10,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 拉取最新代码
         /// </summary>
         Task<RunShellResult> PullAsync(int gitId);
+
+        /// <summary>
+        /// 消除仓库
+        /// </summary>
+        void Clear(int gitId);
     }
 }

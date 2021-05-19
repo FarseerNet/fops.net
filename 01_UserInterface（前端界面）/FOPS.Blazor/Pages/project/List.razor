@@ -18,27 +18,27 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0">
+                            <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>ID</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>项目组</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>项目名称</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-2">
+                            <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>GIT地址</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-3">
+                            <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>编译路径</span>
                                 </div>
@@ -57,22 +57,22 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         @_lstGroup.Find(o=>o.Id==info.GroupId)?.Name
                                     </div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/project/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-2">
+                                <td data-field="Title">
                                     <div class="laytable-cell-14-0-2">
                                         <a href="@info.GitHub" target="_blank">@info.GitId 【@info.GitName】@info.GitHub</a>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-3">
+                                <td data-field="Title">
                                     <div class="laytable-cell-14-0-3">
                                         @info.Path
                                     </div>

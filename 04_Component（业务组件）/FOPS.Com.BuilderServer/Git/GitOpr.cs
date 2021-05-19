@@ -13,6 +13,18 @@ namespace FOPS.Com.BuilderServer.Git
         const  string      SavePath = "/var/lib/fops/git/";
 
         /// <summary>
+        /// 消除仓库
+        /// </summary>
+        public void Clear(int gitId)
+        {
+            var varLibFopsGit = SavePath + $"{gitId}/";
+            if (System.IO.Directory.Exists(varLibFopsGit))
+            {
+                System.IO.Directory.Delete(varLibFopsGit, true);
+            }
+        }
+        
+        /// <summary>
         /// 拉取最新代码
         /// </summary>
         public async Task<RunShellResult> PullAsync(int gitId)

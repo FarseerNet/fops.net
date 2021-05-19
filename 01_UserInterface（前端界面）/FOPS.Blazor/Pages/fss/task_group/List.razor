@@ -22,47 +22,47 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0" class="">
+                            <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>组ID</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1" class="">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>任务ID</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-2" class="">
+                            <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>任务标题</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-3" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>下次执行</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-4" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>计划设置</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-5" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-5">
                                     <span>活动时间</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-6" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-6">
                                     <span>上次完成</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-7" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-7">
                                     <span>平均耗时</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-8" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-8">
                                     <span>运行次数</span>
                                 </div>
@@ -77,34 +77,34 @@
                         @for (var index = 0; index < _lst.Count; index++)
                         {
                             var info = _lst[index];
-                            <tr data-index="@index" class="">
-                                <td class="">
+                            <tr data-index="@index">
+                                <td>
                                     <div class="laytable-cell-14-0-0">【@(info.IsEnable ? "开启" : "停止")】 @info.Id</div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1" class="">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-1">@info.TaskId</div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-2" class="">
+                                <td data-field="Title">
                                     <div class="laytable-cell-14-0-2">
                                         <a href="/fss/task_group/update/@info.Id">【@info.JobName】@info.Caption</a>
                                     </div>
                                 </td>
-                                <td data-field="Items" data-key="14-0-3" class="">
+                                <td data-field="Items">
                                     <div class="layui-table-cell laytable-cell-14-0-3">@info.NextAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-4" class="">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-4">@GetTimeSetting(info)</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-5" class="">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-5">@info.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-6" class="">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-6">@info.LastRunAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-7">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-7">@info.RunSpeedAvg</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-8">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-8">@info.RunCount</div>
                                 </td>
                             </tr>

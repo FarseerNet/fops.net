@@ -17,32 +17,32 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0" class="">
+                            <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>客户端IP</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1" class="">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>通道端口</span>
                                 </div>
                             </th>
-                            <th data-field="Title" data-key="14-0-2" class="">
+                            <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>注册时间</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-3" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>心跳时间</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-4" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>使用时间</span>
                                 </div>
                             </th>
-                            <th data-field="Games" data-key="14-0-5" class="">
+                            <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-5">
                                     <span>注册的Job</span>
                                 </div>
@@ -57,23 +57,23 @@
                         @for (var index = 0; index < _lst.Count; index++)
                         {
                             var client = _lst[index];
-                            <tr data-index="@index" class="">
-                                <td data-field="Type" data-key="14-0-0" class="">
+                            <tr data-index="@index">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-0">@client.ClientIp</div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1" class="">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-1">@client.ServerHost</div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-2" class="">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Items" data-key="14-0-3" class="">
+                                <td data-field="Items">
                                     <div class="layui-table-cell laytable-cell-14-0-3">@client.HeartbeatAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-4" class="">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-4">@client.UseAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
-                                <td data-field="Games" data-key="14-0-5" class="">
+                                <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-5">@string.Join(',', client.Jobs)</div>
                                 </td>
                             </tr>

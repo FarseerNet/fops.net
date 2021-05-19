@@ -29,37 +29,37 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0">
+                            <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>ID</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>项目名称</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-2">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>Deployment模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-4">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>Service模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-3">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>Ingress模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-5">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-5">
                                     <span>Config模板</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-6">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-6">
                                     <span>操作</span>
                                 </div>
@@ -78,12 +78,12 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-1">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/k8s/deploy/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-2">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-2">
                                         <select @bind="info.K8STplDeployment" style="display:block;">
                                             <option value="0">不需要</option>
@@ -94,7 +94,7 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-4">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-4">
                                         <select @bind="info.K8STplService" style="display:block;">
                                             <option value="0">不需要</option>
@@ -105,7 +105,7 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-3">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
                                         <select @bind="info.K8STplIngress" style="display:block;">
                                             <option value="0">不需要</option>
@@ -116,7 +116,7 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-5">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-5">
                                         <select @bind="info.K8STplConfig" style="display:block;">
                                             <option value="0">不需要</option>
@@ -127,7 +127,7 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td data-field="Title" data-key="14-0-6">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
                                         <button class="layui-btn" @onclick="() => Save(info.Id)">保存</button>
                                         <button class="layui-btn layui-btn-danger" @onclick="() => DeployAsync(info.Id)">发布</button>

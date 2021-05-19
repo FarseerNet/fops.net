@@ -19,17 +19,17 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
-                            <th data-field="ID" data-key="14-0-0">
+                            <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>ID</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-1">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
                                     <span>项目组名称</span>
                                 </div>
                             </th>
-                            <th data-field="Type" data-key="14-0-2">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>集群</span>
                                 </div>
@@ -48,12 +48,12 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-1">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/project_group/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
-                                <td data-field="Type" data-key="14-0-2">
+                                <td data-field="Type">
                                     <div class="layui-table-cell laytable-cell-14-0-2">
                                         @string.Join("、", @_lstCluster.FindAll(o => info.ClusterIds.Contains(o.Id)).Select(o => $"[{o.RuntimeEnvType.ToString()}] {o.Name}"))
                                     </div>
