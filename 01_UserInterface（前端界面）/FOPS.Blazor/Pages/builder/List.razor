@@ -281,9 +281,16 @@
     private async Task Release(ProjectVO project)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        await _iocManager.Resolve<IBuildService>().Add(project.Id);
-
-        await js.InvokeVoidAsync("alert", "已加入到队列", new {icon = 1, title = "执行结果"});
+        try
+        {
+            await _iocManager.Resolve<IBuildService>().Add(project.Id);
+            await js.InvokeVoidAsync("layer.alert", "已加入到队列", new {icon = 1, title = "执行结果"});
+            
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "加入失败"});
+        }
         await js.InvokeVoidAsync("layer.close", load);
     }
 

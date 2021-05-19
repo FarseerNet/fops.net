@@ -27,30 +27,24 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> PullAsync(int gitId)
+        public async Task<RunShellResult> PullAsync(int gitId, Action<string> actReceiveOutput)
         {
             var            info = await GitService.ToInfoAsync(gitId);
             RunShellResult runShellResult;
 
-            // 判断目录是否存在
-            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
-
+            
+            var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
+            if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
+            var gitPath                           = SavePath + gitName + "/";
+            
             // 判断git是否有clone过
-            var gitPath = SavePath + info.Id + "/";
-            if (!System.IO.Directory.Exists(SavePath))
+            if (!System.IO.Directory.Exists(gitPath))
             {
-                runShellResult = await CloneAsync(info, gitPath);
+                runShellResult = await CloneAsync(info, gitPath, actReceiveOutput);
             }
             else
             {
-                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull");
-            }
-
-            if (!runShellResult.IsError)
-            {
-                info        = await GitService.ToInfoAsync(gitId);
-                info.PullAt = DateTime.Now;
-                await GitService.UpdateAsync(gitId, info);
+                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
             }
 
             return runShellResult;
@@ -59,7 +53,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        private async Task<RunShellResult> CloneAsync(GitVO info, string path)
+        private async Task<RunShellResult> CloneAsync(GitVO info, string path, Action<string> actReceiveOutput)
         {
             var url = info.Hub;
             // 需要密码
@@ -68,7 +62,7 @@ namespace FOPS.Com.BuilderServer.Git
                 url = url.Replace("//", $"//{info.UserName.Replace("@", "%40")}:{info.UserPwd}@");
             }
 
-            return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}");
+            return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput);
         }
     }
 }

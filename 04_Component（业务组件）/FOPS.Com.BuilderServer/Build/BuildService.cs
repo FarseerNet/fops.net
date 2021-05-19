@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
+using FS.DI;
+using Microsoft.Extensions.Logging;
 
 namespace FOPS.Com.BuilderServer.Build
 {
@@ -15,7 +19,73 @@ namespace FOPS.Com.BuilderServer.Build
         public IGitOpr         GitOpr         { get; set; }
         public IProjectService ProjectService { get; set; }
         public IGitService     GitService     { get; set; }
+        public IIocManager     IocManager     { get; set; }
 
+        /// <summary>
+        /// 构建
+        /// </summary>
+        public async Task Build()
+        {
+            // 取出未开始的任务
+            var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None).Asc(o => o.Id).ToEntityAsync();
+            if (po == null) return;
+
+            // 设置为构建中
+            var isUpdate = await BuilderContext.Data.Build.Where(o => o.Id == po.Id && o.Status == EumBuildStatus.None).UpdateAsync(new BuildPO
+            {
+                Status = EumBuildStatus.Building
+            }) > 0;
+            // 没有更新成功，说明已经被抢了
+            if (!isUpdate) return;
+
+            // 拿到任务后，先取基本信息
+            IocManager.Logger<BuildService>().LogDebug($"找到构建任务：{po.Id.GetValueOrDefault()}");
+            var project = await ProjectService.ToInfoAsync(po.ProjectId.GetValueOrDefault());
+            if (project == null)
+            {
+                await Fail(po, 0, $"项目ID={po.ProjectId.GetValueOrDefault()}，不存在");
+                return;
+            }
+
+            // Git项目
+            var git = await GitService.ToInfoAsync(project.GitId);
+            if (git == null)
+            {
+                await Fail(po, 0, $"gitID={project.GitId}，不存在");
+                return;
+            }
+
+            var startNew = Stopwatch.StartNew();
+            IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：开始拉取git。");
+
+            // 1、拉取Git
+            var lstOutput = new List<string>();
+            var pullResult = await GitOpr.PullAsync(git.Id, async output =>
+            {
+                lstOutput.Add(output);
+                IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：{output}。");
+                await UpdateOutput(po.Id.GetValueOrDefault(), string.Join("\r\n", lstOutput));
+            });
+
+            // Git拉取完成
+            IocManager.Logger<BuildService>().LogDebug($"构建任务id={po.Id.GetValueOrDefault()}：拉取完成，Error={pullResult.IsError}");
+            if (pullResult.IsError)
+            {
+                await Fail(po, startNew.ElapsedMilliseconds, pullResult.OutputLine);
+                return;
+            }
+
+            // 2、更新git拉取时间
+            await GitService.UpdateAsync(git.Id, DateTime.Now);
+
+            // 3、编译
+            
+            // 4、打包
+            // 5、上传镜像
+            // 6、更新集群镜像版本
+
+            await Success(po, startNew.ElapsedMilliseconds);
+        }
 
         /// <summary>
         /// 创建构建任务
@@ -44,51 +114,6 @@ namespace FOPS.Com.BuilderServer.Build
         }
 
         /// <summary>
-        /// 构建
-        /// </summary>
-        public async Task Build()
-        {
-            // 取出未开始的任务
-            var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None).Asc(o => o.Id).ToEntityAsync();
-            if (po == null) return;
-
-            // 设置为构建中
-            po.Status = EumBuildStatus.Building;
-            var isUpdate = await BuilderContext.Data.Build.Where(o => o.Id == po.Id && o.Status == EumBuildStatus.None).UpdateAsync(po) > 0;
-            // 没有更新成功，说明已经被抢了
-            if (!isUpdate) return;
-
-            // 拿到任务后，先取基本信息
-            var project = await ProjectService.ToInfoAsync(po.ProjectId.GetValueOrDefault());
-            if (project == null)
-            {
-                await Fail(po, $"项目ID={po.ProjectId.GetValueOrDefault()}，不存在");
-                return;
-            }
-
-            // Git项目
-            var git = await GitService.ToInfoAsync(project.GitId);
-            if (git == null)
-            {
-                await Fail(po, $"gitID={project.GitId}，不存在");
-                return;
-            }
-
-            // 1、拉取Git
-            var pullResult = await GitOpr.PullAsync(git.Id);
-            if (pullResult.IsError)
-            {
-                await Fail(po, pullResult.OutputLine);
-                return;
-            }
-
-            // 2、编译
-            // 3、打包
-            // 4、上传镜像
-            // 5、更新集群镜像版本
-        }
-
-        /// <summary>
         /// 主动取消任务
         /// </summary>
         public Task Cancel(int id)
@@ -105,14 +130,40 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务失败
         /// </summary>
-        private Task Fail(BuildPO po, string output)
+        private Task Fail(BuildPO po, long useTime, string output)
         {
             return BuilderContext.Data.Build.Where(o => o.Id == po.Id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = false,
                 FinishAt  = DateTime.Now,
-                Output    = output
+                Output    = output,
+                UseTime   = useTime
+            });
+        }
+
+        /// <summary>
+        /// 设置任务成功
+        /// </summary>
+        private Task Success(BuildPO po, long useTime)
+        {
+            return BuilderContext.Data.Build.Where(o => o.Id == po.Id).UpdateAsync(new BuildPO
+            {
+                Status    = EumBuildStatus.Finish,
+                IsSuccess = true,
+                FinishAt  = DateTime.Now,
+                UseTime   = useTime
+            });
+        }
+
+        /// <summary>
+        /// 更新执行日志
+        /// </summary>
+        private Task UpdateOutput(int id, string output)
+        {
+            return BuilderContext.Data.Build.Where(o => o.Id == id).UpdateAsync(new BuildPO
+            {
+                Output = output
             });
         }
     }

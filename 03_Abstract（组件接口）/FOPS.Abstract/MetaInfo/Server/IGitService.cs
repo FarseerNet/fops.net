@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
@@ -36,5 +37,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 删除GIT
         /// </summary>
         Task DeleteAsync(int id);
+
+        /// <summary>
+        /// 修改GIT的拉取时间
+        /// </summary>
+        Task UpdateAsync(int id, DateTime pullAt);
     }
 }
