@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FOPS.Com.BuilderServer;
+using FOPS.Com.DockerServer;
 using FOPS.Com.FssServer;
 using FOPS.Com.K8SServer;
 using FOPS.Com.MetaInfoServer;
@@ -29,6 +30,7 @@ namespace FOPS.Blazor
         typeof(FssModule),
         typeof(K8SModule),
         typeof(BuilderModule),
+        typeof(DockerModule),
         typeof(MetaInfoModule))]
     public class Startup: FarseerModule
     {
