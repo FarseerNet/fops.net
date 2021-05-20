@@ -28,6 +28,16 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         [Field(Name = "git_id")]
         public int? GitId { get; set; }
         /// <summary>
+        /// DockerHub模板
+        /// </summary>
+        [Field(Name = "docker_hub")]
+        public int? DockerHub { get; set; }
+        /// <summary>
+        /// DockerfileTpl模板
+        /// </summary>
+        [Field(Name = "dockerfile_tpl")]
+        public int? DockerfileTpl { get; set; }
+        /// <summary>
         /// K8SDeployment模板
         /// </summary>
         [Field(Name = "k8s_tpl_deployment")]

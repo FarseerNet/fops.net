@@ -11,7 +11,7 @@
             <div class="layui-card-header">
                 添加任务组
                 <div class="layui-right">
-                    <button class="layui-btn"  @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+                    <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
                 </div>
             </div>
             <div class="layui-card-body layui-row layui-col-space10">
@@ -47,13 +47,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <div class="layui-footer" style="left: 0;">
-                            <button class="layui-btn" @onclick="AddInfo">添加</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -67,6 +60,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="layui-footer" style="left: 0;">
+    <button class="layui-btn" @onclick="AddInfo">添加</button>
 </div>
 
 @code{
@@ -95,4 +92,5 @@
     {
         nav.NavigateTo("/fss/task_group/list");
     }
+
 }

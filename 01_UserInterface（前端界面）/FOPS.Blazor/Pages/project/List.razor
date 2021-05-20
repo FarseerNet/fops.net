@@ -1,12 +1,27 @@
 @page "/project/list"
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.K8S.Enum
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.Docker.Entity
+@using FOPS.Abstract.Docker.Server
+@using FOPS.Abstract.K8S.Server
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
+@inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
         项目
+        <select style="display:inline;width: 200px;" @onchange="GroupChange">
+            <option value="0">全部</option>
+            @foreach (var clusterVO in _lstGroup)
+            {
+                <option value="@clusterVO.Id">@clusterVO.Name</option>
+            }
+        </select>
         <div class="layui-right">
             <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加项目</button>
         </div>
@@ -25,22 +40,52 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>项目名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>项目组</span>
                                 </div>
                             </th>
                             <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-1">
-                                    <span>项目名称</span>
-                                </div>
-                            </th>
-                            <th data-field="Title">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>GIT地址</span>
+                                    <span>Git</span>
                                 </div>
                             </th>
-                            <th data-field="Title">
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>镜像仓库</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>Dockerfile</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>Deployment模板</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>Service模板</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>Ingress模板</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>Config模板</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
-                                    <span>编译路径</span>
+                                    <span>操作</span>
                                 </div>
                             </th>
                         </tr>
@@ -57,24 +102,102 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">
-                                        @_lstGroup.Find(o=>o.Id==info.GroupId)?.Name
-                                    </div>
-                                </td>
-                                <td data-field="Type">
+                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
                                         <a href="/project/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
-                                    <div class="laytable-cell-14-0-2">
-                                        <a href="@info.GitHub" target="_blank">@info.GitId 【@info.GitName】@info.GitHub</a>
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.GroupId" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var projectGroupVO in _lstGroup)
+                                            {
+                                                <option value="@projectGroupVO.Id">@projectGroupVO.Name</option>
+                                            }
+                                        </select>
                                     </div>
                                 </td>
                                 <td data-field="Title">
-                                    <div class="laytable-cell-14-0-3">
-                                        @info.Path
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.GitId" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var gitVO in _lstGit)
+                                            {
+                                                <option value="@gitVO.Id">@gitVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.DockerHub" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var dockerHubVO in _lstDockerHub)
+                                            {
+                                                <option value="@dockerHubVO.Id">@dockerHubVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.DockerfileTpl" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var dockerfileTplVO in _lstDockerfileTpl)
+                                            {
+                                                <option value="@dockerfileTplVO.Id">@dockerfileTplVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.K8STplDeployment" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
+                                            {
+                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.K8STplService" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
+                                            {
+                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.K8STplIngress" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
+                                            {
+                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <select @bind="info.K8STplConfig" style="display:block;">
+                                            <option value="0">不需要</option>
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
+                                            {
+                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        <button class="layui-btn layui-btn-sm" @onclick="() => Save(info.Id)">保存</button>
                                     </div>
                                 </td>
                             </tr>
@@ -90,8 +213,9 @@
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 150px; }
-    .laytable-cell-14-0-2{ width: 500px; }
-    .laytable-cell-14-0-3{ width: 500px; }
+    .laytable-cell-14-0-2{ width: 120px; }
+    .laytable-cell-14-0-3{ width: 120px; }
+    select { width: 90px; }
 </style>
 
 @code{
@@ -99,32 +223,59 @@
     private int _totalCount;
     private int _pageSize = 999;
 
+    private int _groupId;
     private List<ProjectVO> _lst = new();
+    private List<YamlTplVO> _lstTpl = new();
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
-    
+    private List<DockerfileTplVO> _lstDockerfileTpl = new();
+    private List<DockerHubVO> _lstDockerHub = new();
+
     protected override async Task OnParametersSetAsync()
     {
         _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
-        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
-        _totalCount = _lst.Count;
+        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync();
+        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync();
 
-        foreach (var projectVO in _lst)
-        {
-            var gitVO = _lstGit.Find(o => o.Id == projectVO.GitId);
-            if (gitVO == null) continue;
-            projectVO.GitId = gitVO.Id;
-            projectVO.GitPullAt = gitVO.PullAt;
-            projectVO.GitName = gitVO.Name;
-            projectVO.GitHub = gitVO.Hub;
-        }
+    // 模板
+        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
+        _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
+
+        await GetList();
+    }
+
+    private async Task Save(int id)
+    {
+        var projectVO = _lst.Find(o => o.Id == id);
+        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
+        await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
+    }
+
+    private async Task GroupChange(ChangeEventArgs args)
+    {
+        _groupId = args.Value.ConvertType(0);
+        await GetList();
     }
 
     private void GotoAdd()
     {
         nav.NavigateTo("/project/add");
+    }
+
+    private async Task GetList()
+    {
+    // 重新读取所有项目列表
+        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
+
+    // 如果项目组不包含当前选中的组，则移除项目
+        if (_groupId > 0)
+        {
+            _lst.RemoveAll(o => o.GroupId != _groupId);
+        }
+
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _totalCount = _lst.Count;
     }
 
 }

@@ -34,6 +34,14 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public string GitHub { get; set; }
         /// <summary>
+        /// DockerHub模板
+        /// </summary>
+        public int DockerHub { get; set; }
+        /// <summary>
+        /// DockerfileTpl模板
+        /// </summary>
+        public int DockerfileTpl { get; set; }
+        /// <summary>
         /// K8SDeployment模板
         /// </summary>
         public int K8STplDeployment { get; set; }

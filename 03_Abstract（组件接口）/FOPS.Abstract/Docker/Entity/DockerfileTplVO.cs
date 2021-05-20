@@ -5,7 +5,7 @@ namespace FOPS.Abstract.Docker.Entity
         /// <summary>
         /// 主键
         /// </summary>
-        public int? Id { get; set; }
+        public int Id { get; set; }
         
         /// <summary>
         /// 模板名称
