@@ -22,18 +22,14 @@ namespace FOPS.Infrastructure.Common
                 RedirectStandardOutput = true,
                 RedirectStandardError  = true,
                 UseShellExecute        = false,
-                
             };
 
-            var runShellResult = new RunShellResult
-            {
-                IsError = false,
-                Output  = new List<string>()
-            };
+            var runShellResult = new RunShellResult {IsError = false, Output = new List<string>()};
 
             using (var proc = Process.Start(psi))
             {
                 proc.EnableRaisingEvents = true;
+
                 void ProcOnOutputDataReceived(object sender, DataReceivedEventArgs args)
                 {
                     runShellResult.Output.Add(args.Data);
@@ -46,25 +42,6 @@ namespace FOPS.Infrastructure.Common
                 proc.BeginOutputReadLine();
                 proc.BeginErrorReadLine();
 
-                //开始读取
-                //while (!proc.StandardOutput.EndOfStream)
-                //{
-                //    var output = await proc.StandardOutput.ReadLineAsync();
-                //    runShellResult.Output.Add(output);
-//
-                //    // 外部第一时间，处理拿到的消息
-                //    if (actReceiveOutput != null) actReceiveOutput(output);
-                //}
-//
-                //while (!proc.StandardError.EndOfStream)
-                //{
-                //    var output = await proc.StandardError.ReadLineAsync();
-                //    runShellResult.Output.Add(output);
-//
-                //    // 外部第一时间，处理拿到的消息
-                //    if (actReceiveOutput != null) actReceiveOutput(output);
-                //}
-
                 // 等待退出
                 proc.WaitForExit();
                 runShellResult.IsError = proc.ExitCode != 0;
@@ -74,3 +51,23 @@ namespace FOPS.Infrastructure.Common
         }
     }
 }
+
+
+//开始读取
+//while (!proc.StandardOutput.EndOfStream)
+//{
+//    var output = await proc.StandardOutput.ReadLineAsync();
+//    runShellResult.Output.Add(output);
+//
+//    // 外部第一时间，处理拿到的消息
+//    if (actReceiveOutput != null) actReceiveOutput(output);
+//}
+//
+//while (!proc.StandardError.EndOfStream)
+//{
+//    var output = await proc.StandardError.ReadLineAsync();
+//    runShellResult.Output.Add(output);
+//
+//    // 外部第一时间，处理拿到的消息
+//    if (actReceiveOutput != null) actReceiveOutput(output);
+//}
