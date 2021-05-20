@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
@@ -11,6 +12,8 @@ namespace FOPS.Com.K8SServer.Deploy
 {
     public class DeployService : IDeployService
     {
+        public IBuildService BuildService { get; set; }
+
         /// <summary>
         /// 发布
         /// </summary>
@@ -67,20 +70,10 @@ namespace FOPS.Com.K8SServer.Deploy
             if (projectVO.K8STplIngress > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplIngress).Template);
             if (projectVO.K8STplConfig > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplConfig).Template);
 
+            // 替换模板
             for (var index = 0; index < lstYaml.Count; index++)
             {
-                // 替换项目名称
-                lstYaml[index] = lstYaml[index].Replace("${project_name}", projectVO.Name)
-                    .Replace("${entry_point}", projectVO.EntryPoint)
-                    .Replace("${entry_port}", projectVO.EntryPort.ToString());
-
-                // 替换模板变量
-                foreach (var kv in projectVO.K8STplVariable.Split(','))
-                {
-                    var kvGroup = kv.Split('=');
-                    if (kvGroup.Length != 2) continue;
-                    lstYaml[index] = lstYaml[index].Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
-                }
+                lstYaml[index] = BuildService.ReplaceTpl(projectVO, lstYaml[index]);
             }
 
             return lstYaml;
@@ -101,7 +94,7 @@ namespace FOPS.Com.K8SServer.Deploy
             System.IO.File.WriteAllText(fileName, yamlContent, Encoding.UTF8);
 
             // 发布
-            return await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}",null);
+            return await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}", null);
         }
     }
 }

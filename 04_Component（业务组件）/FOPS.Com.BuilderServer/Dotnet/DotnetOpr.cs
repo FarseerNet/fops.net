@@ -17,8 +17,6 @@ namespace FOPS.Com.BuilderServer.Dotnet
 
         public IGitOpr          GitOpr          { get; set; }
         public IBuildLogService BuildLogService { get; set; }
-        public IProjectService  ProjectService  { get; set; }
-        public IGitService      GitService      { get; set; }
         public IIocManager      IocManager      { get; set; }
 
         /// <summary>

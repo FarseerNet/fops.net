@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Docker" />
       <Folder Include="Kubectl" />
     </ItemGroup>
 </Project>

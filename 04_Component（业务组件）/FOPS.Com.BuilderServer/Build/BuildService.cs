@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
+using FOPS.Abstract.Docker.Server;
+using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
+using FOPS.Com.BuilderServer.Docker;
 using FS.DI;
 using FS.Extends;
 using Microsoft.Extensions.Logging;
@@ -18,12 +21,14 @@ namespace FOPS.Com.BuilderServer.Build
     /// </summary>
     public class BuildService : IBuildService
     {
-        public IGitOpr          GitOpr          { get; set; }
-        public IDotnetOpr       DotnetOpr       { get; set; }
-        public IProjectService  ProjectService  { get; set; }
-        public IGitService      GitService      { get; set; }
-        public IBuildLogService BuildLogService { get; set; }
-        public IIocManager      IocManager      { get; set; }
+        public IGitOpr           GitOpr           { get; set; }
+        public IDotnetOpr        DotnetOpr        { get; set; }
+        public IProjectService   ProjectService   { get; set; }
+        public IGitService       GitService       { get; set; }
+        public IBuildLogService  BuildLogService  { get; set; }
+        public IDockerHubService DockerHubService { get; set; }
+        public IDockerOpr        DockerOpr        { get; set; }
+        public IIocManager       IocManager       { get; set; }
 
         /// <summary>
         /// 构建
@@ -44,7 +49,7 @@ namespace FOPS.Com.BuilderServer.Build
             // 没有更新成功，说明已经被抢了
             if (!isUpdate) return;
 
-            // 拿到任务后，先取基本信息
+            // 项目
             BuildLogService.Write(build.Id, $"找到构建任务：{build.Id}");
             var project = await ProjectService.ToInfoAsync(build.ProjectId);
             if (project == null)
@@ -63,12 +68,18 @@ namespace FOPS.Com.BuilderServer.Build
                 return;
             }
 
+            // Docker仓库
+            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
+            if (docker == null)
+            {
+                await Fail(build, 0);
+                BuildLogService.Write(build.Id, $"DockerHub={project.DockerHub}，不存在");
+                return;
+            }
+
             var startNew = Stopwatch.StartNew();
 
-            void ActWriteLog(string output)
-            {
-                BuildLogService.Write(build.Id, output);
-            }
+            void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
 
             // 1、拉取Git
             var pullResult = await GitOpr.PullAsync(build, project, git, ActWriteLog);
@@ -84,7 +95,11 @@ namespace FOPS.Com.BuilderServer.Build
             await DotnetOpr.Publish(build, project, git, ActWriteLog);
 
             // 3、打包
+            await DockerOpr.Build(build, project, ActWriteLog);
+
             // 4、上传镜像
+            await DockerOpr.Upload(build, project, ActWriteLog);
+            
             // 5、更新集群镜像版本
             await Success(build, startNew.ElapsedMilliseconds);
         }
@@ -125,6 +140,27 @@ namespace FOPS.Com.BuilderServer.Build
                 IsSuccess = false,
                 FinishAt  = DateTime.Now,
             });
+        }
+
+        /// <summary>
+        /// 替换模板
+        /// </summary>
+        public string ReplaceTpl(ProjectVO project, string tpl)
+        {
+            // 替换项目名称
+            tpl = tpl.Replace("${project_name}", project.Name)
+                .Replace("${entry_point}", project.EntryPoint)
+                .Replace("${entry_port}",  project.EntryPort.ToString());
+
+            // 替换模板变量
+            foreach (var kv in project.K8STplVariable.Split(','))
+            {
+                var kvGroup = kv.Split('=');
+                if (kvGroup.Length != 2) continue;
+                tpl = tpl.Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
+            }
+
+            return tpl;
         }
 
         /// <summary>
