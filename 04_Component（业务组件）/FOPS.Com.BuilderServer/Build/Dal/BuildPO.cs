@@ -22,6 +22,12 @@ namespace FOPS.Com.BuilderServer.Build.Dal
         public int? ProjectId { get; set; }
         
         /// <summary>
+        /// 集群ID
+        /// </summary>
+        [Field(Name = "cluster_id")]
+        public int? ClusterId { get; set; }
+        
+        /// <summary>
         /// 构建号
         /// </summary>
         [Field(Name = "build_number")]

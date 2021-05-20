@@ -16,6 +16,11 @@ namespace FOPS.Abstract.Builder.Entity
         public int ProjectId { get; set; }
         
         /// <summary>
+        /// 集群ID
+        /// </summary>
+        public int ClusterId { get; set; }
+        
+        /// <summary>
         /// 构建号
         /// </summary>
         public int BuildNumber { get; set; }

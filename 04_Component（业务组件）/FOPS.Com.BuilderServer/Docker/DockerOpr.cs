@@ -68,7 +68,7 @@ namespace FOPS.Com.BuilderServer.Docker
         /// <summary>
         /// 取得dockerHub
         /// </summary>
-        private string GetDockerHub(DockerHubVO docker)
+        public string GetDockerHub(DockerHubVO docker)
         {
             var dockerHub = "";
             if (docker != null)

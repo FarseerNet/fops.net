@@ -28,6 +28,7 @@ namespace FOPS.Com.BuilderServer.Build
         public IBuildLogService  BuildLogService  { get; set; }
         public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
+        public IKubectlOpr       KubectlOpr      { get; set; }
         public IIocManager       IocManager       { get; set; }
 
         /// <summary>
@@ -82,32 +83,47 @@ namespace FOPS.Com.BuilderServer.Build
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
 
             // 1、拉取Git
-            var pullResult = await GitOpr.PullAsync(build, project, git, ActWriteLog);
-
-            // Git拉取完成
-            if (pullResult.IsError)
+            if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
             {
                 await Fail(build, startNew.ElapsedMilliseconds);
                 return;
             }
 
             // 2、编译
-            await DotnetOpr.Publish(build, project, git, ActWriteLog);
-
+            if ((await DotnetOpr.Publish(build, project, git, ActWriteLog)).IsError)
+            {
+                await Fail(build, startNew.ElapsedMilliseconds);
+                return;
+            }
+            
             // 3、打包
-            await DockerOpr.Build(build, project, ActWriteLog);
-
+            if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
+            {
+                await Fail(build, startNew.ElapsedMilliseconds);
+                return;
+            }
+            
             // 4、上传镜像
-            await DockerOpr.Upload(build, project, ActWriteLog);
+            if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
+            {
+                await Fail(build, startNew.ElapsedMilliseconds);
+                return;
+            }
             
             // 5、更新集群镜像版本
+            if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
+            {
+                await Fail(build, startNew.ElapsedMilliseconds);
+                return;
+            }
+            
             await Success(build, startNew.ElapsedMilliseconds);
         }
 
         /// <summary>
         /// 创建构建任务
         /// </summary>
-        public async Task<int> Add(int projectId)
+        public async Task<int> Add(int projectId, int clusterId)
         {
             var isHave = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId && (o.Status == EumBuildStatus.None || o.Status == EumBuildStatus.Building)).IsHavingAsync();
             if (isHave) throw new Exception("当前队列存在未完成的构建");
@@ -117,6 +133,7 @@ namespace FOPS.Com.BuilderServer.Build
             var po = new BuildPO
             {
                 ProjectId   = projectId,
+                ClusterId   = clusterId,
                 BuildNumber = ++buildNumber,
                 Status      = EumBuildStatus.None,
                 IsSuccess   = false,

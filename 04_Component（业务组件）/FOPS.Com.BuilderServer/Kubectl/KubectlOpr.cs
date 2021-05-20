@@ -1,0 +1,64 @@
+using System;
+using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
+using FOPS.Abstract.Builder.Server;
+using FOPS.Abstract.Docker.Server;
+using FOPS.Abstract.K8S.Entity;
+using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Abstract.MetaInfo.Server;
+using FOPS.Com.BuilderServer.Docker;
+using FOPS.Infrastructure.Common;
+
+namespace FOPS.Com.BuilderServer.Kubectl
+{
+    public class KubectlOpr : IKubectlOpr
+    {
+        public IClusterService   ClusterService   { get; set; }
+        public IDockerHubService DockerHubService { get; set; }
+        public IDockerOpr         DockerOpr        { get; set; }
+        
+        /// <summary>
+        /// 更新k8s版本
+        /// </summary>
+        public async Task<RunShellResult> SetImages(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
+        {
+            var cluster = await ClusterService.ToInfoAsync(build.ClusterId);
+
+            // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
+            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
+            
+            // 登陆 docker
+            if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
+            {
+                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+            }
+            
+            // 取得dockerHub
+            var dockerHub  = DockerOpr.GetDockerHub(docker);
+            var dockerName = $"{dockerHub}{project.Name}:${build.BuildNumber}";
+            return await ShellTools.Run("kubectl", $"set image deployment/${project.Name} ${project.Name}=${dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+        }
+        
+        /// <summary>
+        /// 更新k8s版本
+        /// </summary>
+        public async Task<RunShellResult> SetImages(int clusterId,string dockerVer, ProjectVO project, Action<string> actReceiveOutput)
+        {
+            var cluster = await ClusterService.ToInfoAsync(clusterId);
+
+            // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
+            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
+            
+            // 登陆 docker
+            if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
+            {
+                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+            }
+            
+            // 取得dockerHub
+            var dockerHub  = DockerOpr.GetDockerHub(docker);
+            var dockerName = $"{dockerHub}{project.Name}:${dockerVer}";
+            return await ShellTools.Run("kubectl", $"set image deployment/${project.Name} ${project.Name}=${dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+        }
+    }
+}

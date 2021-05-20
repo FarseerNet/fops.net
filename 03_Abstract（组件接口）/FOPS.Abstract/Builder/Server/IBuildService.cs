@@ -9,7 +9,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 创建构建任务
         /// </summary>
-        Task<int> Add(int projectId);
+        Task<int> Add(int projectId, int clusterId);
 
         /// <summary>
         /// 构建
