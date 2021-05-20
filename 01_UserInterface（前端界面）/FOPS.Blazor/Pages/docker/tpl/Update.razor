@@ -4,13 +4,15 @@
 @using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
 @using FS.Extends
+@using FOPS.Abstract.Docker.Entity
+@using FOPS.Abstract.Docker.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header">
-        添加Yaml模板
+        添加Dockerfile模板
         <div class="layui-right">
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
         </div>
@@ -25,26 +27,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">模板名称</label>
             <div class="layui-input-inline">
-                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Yaml模板名称" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">k8s类型</label>
-                <div class="layui-input-block">
-                    <select @bind="_info.K8SKindType">
-                        @foreach (var eumK8SKind in Enum.GetValues<EumK8SKind>())
-                        {
-                            <option value="@eumK8SKind.ToString()">@eumK8SKind.ToString()</option>
-                        }
-                    </select>
-                </div>
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Dockerfile模板名称" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">模板内容</label>
             <div class="layui-input-block">
-                <textarea @bind="_info.Template" placeholder="Yaml模板内容" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
+                <textarea @bind="_info.Template" placeholder="Dockerfile模板内容" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
             </div>
         </div>
         <div class="layui-form-item layui-layout-admin">
@@ -61,20 +50,20 @@
 
     [Parameter] public int Id { get; set; }
 
-    private YamlTplVO _info = new() {};
+    private DockerfileTplVO _info = new() {};
 
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/k8s/tpl/list");
+            await js.InvokeVoidAsync("layer.alert", "Dockerfile模板不存在", new {icon = 2, title = "出错了"});
+            nav.NavigateTo($"/docker/tpl/list");
         }
         try
         {
-            await _iocManager.Resolve<IYamlTplService>().UpdateAsync(Id, _info);
+            await _iocManager.Resolve<IDockerfileTplService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/k8s/tpl/update/{_info.Id}");
+            nav.NavigateTo($"/docker/tpl/update/{_info.Id}");
         }
         catch (Exception e)
         {
@@ -86,8 +75,8 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/k8s/tpl/list");
+            await js.InvokeVoidAsync("layer.alert", "Dockerfile模板不存在", new {icon = 2, title = "出错了"});
+            nav.NavigateTo($"/docker/tpl/list");
         }
     }
 
@@ -95,18 +84,18 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IYamlTplService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<IDockerfileTplService>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-                nav.NavigateTo($"/k8s/tpl/list");
+                await js.InvokeVoidAsync("layer.alert", "Dockerfile模板不存在", new {icon = 2, title = "出错了"});
+                nav.NavigateTo($"/docker/tpl/list");
             }
         }
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/k8s/tpl/list");
+        nav.NavigateTo("/docker/tpl/list");
     }
 
 }

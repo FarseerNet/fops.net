@@ -1,14 +1,14 @@
 @page "/docker/tpl/list"
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.K8S.Server
+@using FOPS.Abstract.Docker.Entity
+@using FOPS.Abstract.Docker.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        Yaml模板
+        Dockerfile模板
         <div class="layui-right">
-            <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加Yaml模板</button>
+            <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加Dockerfile模板</button>
         </div>
     </div>
     <div class="layui-card-body">
@@ -21,11 +21,6 @@
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>ID</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-1">
-                                    <span>k8s类型</span>
                                 </div>
                             </th>
                             <th data-field="Title">
@@ -47,13 +42,8 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                 </td>
-                                <td data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">
-                                        @info.K8SKindType.ToString()
-                                    </div>
-                                </td>
                                 <td data-field="Title">
-                                    <div class="laytable-cell-14-0-2">
+                                    <div class="laytable-cell-14-0-1">
                                         <a href="/k8s/tpl/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
@@ -69,8 +59,7 @@
 </div>
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
-    .laytable-cell-14-0-1{ width: 150px; }
-    .laytable-cell-14-0-2{ width: 500px; }
+    .laytable-cell-14-0-1{ width: 500px; }
 </style>
 
 @code{
@@ -78,17 +67,17 @@
     private int _totalCount;
     private int _pageSize = 999;
 
-    private List<YamlTplVO> _lst = new();
+    private List<DockerfileTplVO> _lst = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        _lst = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
+        _lst = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/k8s/tpl/add");
+        nav.NavigateTo("/docker/tpl/add");
     }
 }
