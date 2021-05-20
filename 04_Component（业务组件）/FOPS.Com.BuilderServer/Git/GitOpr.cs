@@ -63,6 +63,9 @@ namespace FOPS.Com.BuilderServer.Git
             var pullResult = await PullAsync(git, actReceiveOutput);
 
             BuildLogService.Write(build.Id, $"构建任务id={build.Id}：拉取完成，Error={pullResult.IsError}");
+            
+            // 更新git拉取时间
+            await GitService.UpdateAsync(git.Id, DateTime.Now);
             return pullResult;
         }
 

@@ -1,9 +1,9 @@
-@page "/cluster/update/{id:int}"
+@page "/docker/tpl/update/{id:int}"
 @using Microsoft.AspNetCore.Components
 @using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
-@using FOPS.Abstract.MetaInfo.Enum
-@using FOPS.Abstract.MetaInfo.Server
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -23,28 +23,28 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">集群名称</label>
+            <label class="layui-form-label">模板名称</label>
             <div class="layui-input-inline">
-                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入集群名称" class="layui-input">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入Yaml模板名称" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">集群类型</label>
-                <div class="layui-input-inline">
-                    <select @bind="_info.RuntimeEnvType">
-                        @foreach (var eumRuntimeEnv in Enum.GetValues<EumRuntimeEnv>())
+                <label class="layui-form-label">k8s类型</label>
+                <div class="layui-input-block">
+                    <select @bind="_info.K8SKindType">
+                        @foreach (var eumK8SKind in Enum.GetValues<EumK8SKind>())
                         {
-                            <option value="@eumRuntimeEnv.ToString()">@eumRuntimeEnv.ToString()</option>
+                            <option value="@eumK8SKind.ToString()">@eumK8SKind.ToString()</option>
                         }
                     </select>
                 </div>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">kubectl地址</label>
+            <label class="layui-form-label">模板内容</label>
             <div class="layui-input-block">
-                <input type="text" @bind="_info.ConfigName" autocomplete="off" placeholder="请输入kubectl配置地址" class="layui-input" style="width:700px;">
+                <textarea @bind="_info.Template" placeholder="Yaml模板内容" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
             </div>
         </div>
         <div class="layui-form-item layui-layout-admin">
@@ -56,29 +56,25 @@
         </div>
     </div>
 </div>
-<style>
-.layui-form-label {
-    width: 120px;
-}
-</style>
+
 @code{
 
     [Parameter] public int Id { get; set; }
 
-    private ClusterVO _info = new() {};
+    private YamlTplVO _info = new() {};
 
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/cluster/list");
+            nav.NavigateTo($"/k8s/tpl/list");
         }
         try
         {
-            await _iocManager.Resolve<IClusterService>().UpdateAsync(Id, _info);
+            await _iocManager.Resolve<IYamlTplService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/cluster/update/{_info.Id}");
+            nav.NavigateTo($"/k8s/tpl/update/{_info.Id}");
         }
         catch (Exception e)
         {
@@ -91,7 +87,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/cluster/list");
+            nav.NavigateTo($"/k8s/tpl/list");
         }
     }
 
@@ -99,18 +95,18 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IClusterService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<IYamlTplService>().ToInfoAsync(Id);
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-                nav.NavigateTo($"/cluster/list");
+                nav.NavigateTo($"/k8s/tpl/list");
             }
         }
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/cluster/list");
+        nav.NavigateTo("/k8s/tpl/list");
     }
 
 }

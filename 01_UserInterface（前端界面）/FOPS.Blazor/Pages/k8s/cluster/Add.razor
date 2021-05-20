@@ -1,4 +1,4 @@
-@page "/cluster/add"
+@page "/k8s/cluster/add"
 @using Microsoft.AspNetCore.Components
 @using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Server
@@ -72,7 +72,7 @@
 
             await _iocManager.Resolve<IClusterService>().AddAsync(_info);
             await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
-            nav.NavigateTo("/cluster/list");
+            nav.NavigateTo("/k8s/cluster/list");
         }
         catch (Exception e)
         {
@@ -82,7 +82,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/cluster/list");
+        nav.NavigateTo("/k8s/cluster/list");
     }
 
 }

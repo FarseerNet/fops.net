@@ -46,12 +46,29 @@
                     </dd>
                 </dl>
             </li>
+            <li data-name="docker" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="镜像" lay-direction="2">
+                    <i class="layui-icon layui-icon-template"></i>
+                    <cite>容器</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <NavLink href="/docker/tpl/list">模板管理</NavLink>
+                    </dd>
+                    <dd>
+                        <NavLink href="/docker/hub/list">仓库管理</NavLink>
+                    </dd>
+                </dl>
+            </li>
             <li data-name="k8s" class="layui-nav-item">
                 <a href="javascript:;" lay-tips="K8S" lay-direction="2">
                     <i class="layui-icon layui-icon-template"></i>
                     <cite>K8S</cite>
                 </a>
                 <dl class="layui-nav-child">
+                    <dd>
+                        <NavLink href="/k8s/cluster/list">集群管理</NavLink>
+                    </dd>
                     <dd>
                         <NavLink href="/k8s/tpl/list">模板管理</NavLink>
                     </dd>
@@ -96,9 +113,6 @@
                     <cite>设置</cite>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd>
-                        <NavLink href="/cluster/list">集群管理</NavLink>
-                    </dd>
                     <dd>
                         <NavLink href="/project_group/list">项目组设置</NavLink>
                     </dd>

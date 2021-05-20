@@ -1,4 +1,4 @@
-@page "/cluster/list"
+@page "/k8s/cluster/list"
 @using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Server
 @using FOPS.Abstract.MetaInfo.Server
@@ -60,7 +60,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <a href="/cluster/update/@info.Id">@info.Name</a>
+                                        <a href="/k8s/cluster/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
                                 <td data-field="Type">
@@ -74,7 +74,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/cluster/list/{index}"></PageSplit>
+            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/k8s/cluster/list/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -101,6 +101,6 @@
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/cluster/add");
+        nav.NavigateTo("/k8s/cluster/add");
     }
 }

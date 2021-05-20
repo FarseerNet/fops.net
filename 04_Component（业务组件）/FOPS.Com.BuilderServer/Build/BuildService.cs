@@ -80,15 +80,12 @@ namespace FOPS.Com.BuilderServer.Build
                 return;
             }
 
-            // 2、更新git拉取时间
-            await GitService.UpdateAsync(git.Id, DateTime.Now);
-
-            // 3、编译
+            // 2、编译
             await DotnetOpr.Publish(build, project, git, ActWriteLog);
 
-            // 4、打包
-            // 5、上传镜像
-            // 6、更新集群镜像版本
+            // 3、打包
+            // 4、上传镜像
+            // 5、更新集群镜像版本
             await Success(build, startNew.ElapsedMilliseconds);
         }
 
