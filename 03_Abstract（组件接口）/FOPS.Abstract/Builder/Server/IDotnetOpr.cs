@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.K8S.Entity;
+using FOPS.Abstract.MetaInfo.Entity;
 using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
@@ -10,6 +12,6 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 编译.net core
         /// </summary>
-        Task<RunShellResult> Publish(string project, string source, Action<string> actReceiveOutput);
+        Task<RunShellResult> Publish(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
     }
 }

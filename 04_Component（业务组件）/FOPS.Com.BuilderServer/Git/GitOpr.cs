@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
@@ -16,30 +17,32 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 消除仓库
         /// </summary>
-        public void Clear(int gitId)
+        public async Task ClearAsync(int gitId)
         {
-            var varLibFopsGit = SavePath + $"{gitId}/";
-            if (System.IO.Directory.Exists(varLibFopsGit))
-            {
-                System.IO.Directory.Delete(varLibFopsGit, true);
-            }
-        }
-        
-        /// <summary>
-        /// 拉取最新代码
-        /// </summary>
-        public async Task<RunShellResult> PullAsync(int gitId, Action<string> actReceiveOutput)
-        {
-            var            info = await GitService.ToInfoAsync(gitId);
-            RunShellResult runShellResult;
+            var info = await GitService.ToInfoAsync(gitId);
 
             // 获取Git存放的路径
             var gitPath = GetGitPath(info);
-            
+            if (System.IO.Directory.Exists(gitPath))
+            {
+                System.IO.Directory.Delete(gitPath, true);
+            }
+        }
+
+        /// <summary>
+        /// 拉取最新代码
+        /// </summary>
+        public async Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        {
+            RunShellResult runShellResult;
+
+            // 获取Git存放的路径
+            var gitPath = GetGitPath(git);
+
             // 判断git是否有clone过
             if (!System.IO.Directory.Exists(gitPath))
             {
-                runShellResult = await CloneAsync(info, gitPath, actReceiveOutput);
+                runShellResult = await CloneAsync(git, gitPath, actReceiveOutput);
             }
             else
             {

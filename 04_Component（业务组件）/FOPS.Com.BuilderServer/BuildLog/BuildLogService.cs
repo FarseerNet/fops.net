@@ -13,13 +13,13 @@ namespace FOPS.Com.BuilderServer.BuildLog
         /// <summary>
         /// 写入构建日志
         /// </summary>
-        public void Write(int id, string log)
+        public void Write(int buildId, string log)
         {
-            var path = SavePath + $"{id}.txt";
+            var path = SavePath + $"{buildId}.txt";
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
-            System.IO.File.AppendAllText(path, log);
+            System.IO.File.AppendAllText(path, log + "\r\n");
 
-            IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={id}：{log}。");
+            IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={buildId}：{log}。");
         }
     }
 }

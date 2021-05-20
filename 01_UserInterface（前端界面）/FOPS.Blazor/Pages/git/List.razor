@@ -139,7 +139,7 @@
 
     private async Task ClearGit(int id)
     {
-        _iocManager.Resolve<IGitOpr>().Clear(id);
+        await _iocManager.Resolve<IGitOpr>().ClearAsync(id);
         await js.InvokeVoidAsync("layer.alert", "清除完毕", new {icon = 1});
     }
 
