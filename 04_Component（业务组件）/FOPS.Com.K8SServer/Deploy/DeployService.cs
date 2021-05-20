@@ -70,7 +70,9 @@ namespace FOPS.Com.K8SServer.Deploy
             for (var index = 0; index < lstYaml.Count; index++)
             {
                 // 替换项目名称
-                lstYaml[index] = lstYaml[index].Replace("${project_name}", projectVO.Name);
+                lstYaml[index] = lstYaml[index].Replace("${project_name}", projectVO.Name)
+                    .Replace("${entry_point}", projectVO.EntryPoint)
+                    .Replace("${entry_port}", projectVO.EntryPort.ToString());
 
                 // 替换模板变量
                 foreach (var kv in projectVO.K8STplVariable.Split(','))

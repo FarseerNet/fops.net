@@ -16,7 +16,7 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// <summary>
         /// 程序入口名
         /// </summary>
-        public string EntryName { get; set; }
+        public string EntryPoint { get; set; }
         /// <summary>
         /// 程序启动端口
         /// </summary>

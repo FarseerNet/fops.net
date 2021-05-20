@@ -20,8 +20,8 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// <summary>
         /// 程序入口名称
         /// </summary>
-        [Field(Name = "entry_name")]
-        public string EntryName { get; set; }
+        [Field(Name = "entry_point")]
+        public string EntryPoint { get; set; }
         /// <summary>
         /// 程序启动端口
         /// </summary>
