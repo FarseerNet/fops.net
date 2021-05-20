@@ -13,7 +13,15 @@
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
         构建
-        <select style="display:inline;" @onchange="ClusterChange">
+        <select style="display:inline;width: 200px;" @onchange="GroupChange">
+            <option value="0">全部</option>
+            @foreach (var clusterVO in _lstGroup)
+            {
+                <option value="@clusterVO.Id">@clusterVO.Name</option>
+            }
+        </select>
+        
+        <select style="display:inline;width: 200px;" @onchange="ClusterChange">
             @foreach (var clusterVO in _lstCluster)
             {
                 <option value="@clusterVO.Id">@clusterVO.Name - @clusterVO.RuntimeEnvType</option>
@@ -155,10 +163,13 @@
     private List<YamlTplVO> _lstTpl = new();
     private List<ClusterVO> _lstCluster = new();
     private List<GitVO> _lstGit = new();
+    private List<ProjectGroupVO> _lstGroup = new();
     private int _clusterId;
+    private int _groupId;
 
     protected override async Task OnInitializedAsync()
     {
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
     // Git
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
 
@@ -242,11 +253,23 @@
         await GetList();
     }
 
+    private async Task GroupChange(ChangeEventArgs args)
+    {
+        _groupId = args.Value.ConvertType(0);
+        await GetList();
+    }
+
     private async Task GetList()
     {
     // 重新读取所有项目列表
         _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
 
+    // 如果项目组不包含当前选中的组，则移除项目
+        if (_groupId > 0)
+        {
+            _lst.RemoveAll(o => o.GroupId != _groupId);
+        }
+        
     // 遍历项目组ID
         var projectGroupIds = _lst.Select(o => o.GroupId).ToList();
         for (var i = 0; i < projectGroupIds.Count; i++)
