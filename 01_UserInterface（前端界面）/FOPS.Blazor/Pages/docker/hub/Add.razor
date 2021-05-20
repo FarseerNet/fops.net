@@ -1,0 +1,80 @@
+@page "/docker/hub/add"
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.Docker.Server
+@using FOPS.Abstract.Docker.Entity
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加镜像仓库
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入仓库名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">托管地址</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.Hub" autocomplete="off" placeholder="请输入托管地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账户名称</label>
+            <div class="layui-input-inline">
+                <input type="text" @bind="_info.UserName" placeholder="请输入账户名称" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">如没有，则留空</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">Git账户密码</label>
+            <div class="layui-input-inline">
+                <input type="text" @bind="_info.UserPwd" placeholder="请输入账户密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">如没有，则留空</div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="AddInfo">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    private readonly DockerHubVO _info = new() {};
+
+    private async Task AddInfo()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_info.Name) || string.IsNullOrWhiteSpace(_info.Hub))
+            {
+                throw new Exception("Git名称、托管地址必须填写。");
+            }
+            await _iocManager.Resolve<IDockerHubService>().AddAsync(_info);
+            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            nav.NavigateTo("/docker/hub/list");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/docker/hub/list");
+    }
+
+}

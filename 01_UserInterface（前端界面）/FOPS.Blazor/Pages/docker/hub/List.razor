@@ -1,0 +1,104 @@
+@page "/docker/hub/list"
+@using FOPS.Abstract.Docker.Entity
+@using FOPS.Abstract.Docker.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        镜像仓库
+        <div class="layui-right">
+            <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加Git</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-0">
+                                    <span>ID</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>仓库名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Title">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>托管地址</span>
+                                </div>
+                            </th>
+                            <th data-field="Games">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>账户名称</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
+                                </td>
+                                <td data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
+                                        <a href="/docker/hub/update/@info.Id">@info.Name</a>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="laytable-cell-14-0-2">
+                                        <a href="@info.Hub" target="_blank">@info.Hub</a>
+                                    </div>
+                                </td>
+                                <td data-field="Items">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">@info.UserName</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/docker/hub/list/{index}"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+    .laytable-cell-14-0-0{ width: 80px; }
+    .laytable-cell-14-0-1{ width: 150px; }
+    .laytable-cell-14-0-2{ width: 450px; }
+    .laytable-cell-14-0-3{ width: 150px; }
+</style>
+
+@code{
+
+    private int _totalCount;
+    private int _pageSize = 999;
+
+    private List<DockerHubVO> _lst = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _lst = await _iocManager.Resolve<IDockerHubService>().ToListAsync();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _totalCount = _lst.Count;
+    }
+
+    private void GotoAdd()
+    {
+        nav.NavigateTo("/docker/hub/add");
+    }
+}

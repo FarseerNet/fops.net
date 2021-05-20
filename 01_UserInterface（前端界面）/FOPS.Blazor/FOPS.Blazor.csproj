@@ -47,8 +47,4 @@
       </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Pages\docker\hub" />
-    </ItemGroup>
-
 </Project>
