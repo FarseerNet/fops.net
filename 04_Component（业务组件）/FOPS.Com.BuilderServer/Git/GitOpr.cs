@@ -11,8 +11,9 @@ namespace FOPS.Com.BuilderServer.Git
 {
     public class GitOpr : IGitOpr
     {
-        public IGitService GitService { get; set; }
-        const  string      SavePath = "/var/lib/fops/git/";
+        public IGitService      GitService      { get; set; }
+        public IBuildLogService BuildLogService { get; set; }
+        const  string           SavePath = "/var/lib/fops/git/";
 
         /// <summary>
         /// 消除仓库
@@ -32,7 +33,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> PullAsync(GitVO git, Action<string> actReceiveOutput)
         {
             RunShellResult runShellResult;
 
@@ -50,6 +51,19 @@ namespace FOPS.Com.BuilderServer.Git
             }
 
             return runShellResult;
+        }
+
+        /// <summary>
+        /// 拉取最新代码
+        /// </summary>
+        public async Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        {
+            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始拉取git。");
+
+            var pullResult = await PullAsync(git, actReceiveOutput);
+
+            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：拉取完成，Error={pullResult.IsError}");
+            return pullResult;
         }
 
         /// <summary>

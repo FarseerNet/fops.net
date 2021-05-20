@@ -28,9 +28,17 @@ namespace FOPS.Com.BuilderServer.Dotnet
         {
             BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始编译。");
 
-            var savePath                             = SavePath + project.Name;
-            var source = project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path;
+            var savePath = SavePath + project.Name;
+            var source   = project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path;
             source = GitOpr.GetGitPath(git) + source;
+            return await  Publish(savePath, source, actReceiveOutput);
+        }
+
+        /// <summary>
+        /// 编译.net core
+        /// </summary>
+        public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
+        {
             return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath} {source}", actReceiveOutput);
         }
     }

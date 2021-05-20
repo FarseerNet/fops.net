@@ -71,11 +71,9 @@ namespace FOPS.Com.BuilderServer.Build
             }
 
             // 1、拉取Git
-            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始拉取git。");
             var pullResult = await GitOpr.PullAsync(build, project, git, ActWriteLog);
 
             // Git拉取完成
-            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：拉取完成，Error={pullResult.IsError}");
             if (pullResult.IsError)
             {
                 await Fail(build, startNew.ElapsedMilliseconds);

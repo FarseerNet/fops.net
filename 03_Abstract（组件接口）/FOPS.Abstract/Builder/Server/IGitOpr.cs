@@ -23,5 +23,10 @@ namespace FOPS.Abstract.Builder.Server
         /// 拉取最新代码
         /// </summary>
         Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
+
+        /// <summary>
+        /// 拉取最新代码
+        /// </summary>
+        Task<RunShellResult> PullAsync(GitVO git, Action<string> actReceiveOutput);
     }
 }
