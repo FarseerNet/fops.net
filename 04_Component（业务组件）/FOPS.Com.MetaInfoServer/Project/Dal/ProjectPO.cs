@@ -18,6 +18,16 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         [Field(Name = "name")]
         public string Name { get; set; }
         /// <summary>
+        /// 程序入口名称
+        /// </summary>
+        [Field(Name = "entry_name")]
+        public string EntryName { get; set; }
+        /// <summary>
+        /// 程序启动端口
+        /// </summary>
+        [Field(Name = "entry_port")]
+        public int? EntryPort { get; set; }
+        /// <summary>
         /// 项目组ID
         /// </summary>
         [Field(Name = "group_id")]

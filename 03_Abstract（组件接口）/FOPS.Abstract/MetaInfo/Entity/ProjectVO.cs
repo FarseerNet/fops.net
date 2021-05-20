@@ -14,6 +14,14 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// 程序入口名
+        /// </summary>
+        public string EntryName { get; set; }
+        /// <summary>
+        /// 程序启动端口
+        /// </summary>
+        public int? EntryPort { get; set; }
+        /// <summary>
         /// 项目组ID
         /// </summary>
         public int GroupId { get; set; }

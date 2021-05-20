@@ -39,6 +39,18 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-form-label">程序入口点</label>
+                    <div class="layui-input-inline">
+                        <input type="text" @bind="_info.EntryName" autocomplete="off" placeholder="Docker启动的程序名" class="layui-input" style="width:300px;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">程序启动端口</label>
+                    <div class="layui-input-inline">
+                        <input type="text" @bind="_info.EntryPort" autocomplete="off" placeholder="web启动后监听的端口（Docker）" class="layui-input" style="width:300px;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label">Git仓库</label>
                         <div class="layui-input-inline">
@@ -178,7 +190,7 @@
 
 @code{
 
-    private readonly ProjectVO _info = new() {};
+    private readonly ProjectVO _info = new() {EntryPort = 80};
     private List<YamlTplVO> _lstTpl = new();
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
