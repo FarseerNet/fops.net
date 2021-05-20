@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Com.MetaInfoServer", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Com.BuilderServer", "04_Component（业务组件）\FOPS.Com.BuilderServer\FOPS.Com.BuilderServer.csproj", "{34360BD7-AB46-4824-A0F0-8C6DE513D34C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Com.DockerServer", "04_Component（业务组件）\FOPS.Com.DockerServer\FOPS.Com.DockerServer.csproj", "{78588E73-7529-484A-BEB3-ECC556D9052D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,7 @@ Global
 		{3E146417-BC63-4BF5-B986-AD59B7E8F6F4} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 		{0CBE8833-C5C4-4163-8804-A045D7AEA285} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 		{34360BD7-AB46-4824-A0F0-8C6DE513D34C} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
+		{78588E73-7529-484A-BEB3-ECC556D9052D} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4831230E-2AA0-426D-A7A6-13BC59345ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -152,5 +155,9 @@ Global
 		{34360BD7-AB46-4824-A0F0-8C6DE513D34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34360BD7-AB46-4824-A0F0-8C6DE513D34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34360BD7-AB46-4824-A0F0-8C6DE513D34C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78588E73-7529-484A-BEB3-ECC556D9052D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78588E73-7529-484A-BEB3-ECC556D9052D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78588E73-7529-484A-BEB3-ECC556D9052D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78588E73-7529-484A-BEB3-ECC556D9052D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

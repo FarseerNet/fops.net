@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Docker\Enum" />
       <Folder Include="Tmp\Entity" />
       <Folder Include="Tmp\Enum" />
       <Folder Include="Tmp\Server" />
