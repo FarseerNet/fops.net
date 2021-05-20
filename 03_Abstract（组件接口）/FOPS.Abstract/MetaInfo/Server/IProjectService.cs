@@ -36,5 +36,15 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 删除项目
         /// </summary>
         Task DeleteAsync(int id);
+
+        /// <summary>
+        /// 修改镜像版本
+        /// </summary>
+        Task UpdateAsync(int id, string dockerVer);
+
+        /// <summary>
+        /// 修改集群的镜像版本
+        /// </summary>
+        Task UpdateAsync(int id, Dictionary<int,ClusterVer> dicClusterVer);
     }
 }

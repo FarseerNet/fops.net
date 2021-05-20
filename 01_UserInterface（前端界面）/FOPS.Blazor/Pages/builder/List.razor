@@ -20,7 +20,7 @@
                 <option value="@clusterVO.Id">@clusterVO.Name</option>
             }
         </select>
-        
+
         <select style="display:inline;width: 200px;" @onchange="ClusterChange">
             @foreach (var clusterVO in _lstCluster)
             {
@@ -130,8 +130,8 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Release(info)">构建部署</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => Deploy(info)">部署最新</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => AddBuild(info)">构建部署</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => SetImages(info)">部署最新</button>
                                     </div>
                                 </td>
                             </tr>
@@ -269,7 +269,7 @@
         {
             _lst.RemoveAll(o => o.GroupId != _groupId);
         }
-        
+
     // 遍历项目组ID
         var projectGroupIds = _lst.Select(o => o.GroupId).ToList();
         for (var i = 0; i < projectGroupIds.Count; i++)
@@ -301,14 +301,13 @@
         }
     }
 
-    private async Task Release(ProjectVO project)
+    private async Task AddBuild(ProjectVO project)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
             await _iocManager.Resolve<IBuildService>().Add(project.Id, _clusterId);
             await js.InvokeVoidAsync("layer.alert", "已加入到队列", new {icon = 1, title = "执行结果"});
-            
         }
         catch (Exception e)
         {
@@ -317,8 +316,28 @@
         await js.InvokeVoidAsync("layer.close", load);
     }
 
-    private void Deploy(ProjectVO project)
+    /// 更新集群镜像版本
+    private async Task SetImages(ProjectVO project)
     {
-    // 更新集群镜像版本
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        if (project.DicClusterVer.ContainsKey(_clusterId) && project.DockerVer == project.DicClusterVer[_clusterId].DockerVer)
+        {
+            await js.InvokeVoidAsync("layer.alert", "与镜像仓库版本一致，不需要更新", new {icon = 0});
+            return;
+        }
+        
+        try
+        {
+            var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer, project, null);
+            
+            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
+            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "加入失败"});
+        }
+        await js.InvokeVoidAsync("layer.close", load);
     }
+
 }

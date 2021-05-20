@@ -84,6 +84,28 @@ namespace FOPS.Com.MetaInfoServer.Project
         }
 
         /// <summary>
+        /// 修改镜像版本
+        /// </summary>
+        public Task UpdateAsync(int id, string dockerVer)
+        {
+            return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(new ProjectPO
+            {
+                DockerVer = dockerVer
+            });
+        }
+
+        /// <summary>
+        /// 修改集群的镜像版本
+        /// </summary>
+        public Task UpdateAsync(int id, Dictionary<int,ClusterVer> dicClusterVer)
+        {
+            return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(new ProjectPO
+            {
+                ClusterVer = JsonConvert.SerializeObject(dicClusterVer)
+            });
+        }
+
+        /// <summary>
         /// 删除项目
         /// </summary>
         public Task DeleteAsync(int id) => MetaInfoContext.Data.Project.Where(o => o.Id == id).DeleteAsync();

@@ -109,6 +109,10 @@ namespace FOPS.Com.BuilderServer.Build
                 await Fail(build, startNew.ElapsedMilliseconds);
                 return;
             }
+
+            // 修改项目的镜像版本
+            project.DockerVer = build.BuildNumber.ToString();
+            await ProjectService.UpdateAsync(project.Id, project.DockerVer);
             
             // 5、更新集群镜像版本
             if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
@@ -116,6 +120,11 @@ namespace FOPS.Com.BuilderServer.Build
                 await Fail(build, startNew.ElapsedMilliseconds);
                 return;
             }
+
+            // 修改集群的镜像版本
+            project.DicClusterVer[build.ClusterId].DockerVer = project.DockerVer;
+            project.DicClusterVer[build.ClusterId].DeploySuccessAt = DateTime.Now;
+            await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
             
             await Success(build, startNew.ElapsedMilliseconds);
         }
