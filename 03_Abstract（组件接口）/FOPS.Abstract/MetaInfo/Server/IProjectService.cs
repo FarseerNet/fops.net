@@ -46,5 +46,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 修改集群的镜像版本
         /// </summary>
         Task UpdateAsync(int id, Dictionary<int,ClusterVer> dicClusterVer);
+
+        /// <summary>
+        /// 项目信息
+        /// </summary>
+        ProjectVO ToInfo(int id);
     }
 }

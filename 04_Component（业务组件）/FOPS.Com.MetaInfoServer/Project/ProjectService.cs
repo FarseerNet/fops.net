@@ -24,12 +24,12 @@ namespace FOPS.Com.MetaInfoServer.Project
                 try
                 {
                     vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
-
                 }
                 catch
                 {
                     vo.DicClusterVer = new Dictionary<int, ClusterVer>();
                 }
+
                 lst.Add(vo);
             }
 
@@ -46,7 +46,25 @@ namespace FOPS.Com.MetaInfoServer.Project
             try
             {
                 vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
+            }
+            catch
+            {
+                vo.DicClusterVer = new Dictionary<int, ClusterVer>();
+            }
 
+            return vo;
+        }
+
+        /// <summary>
+        /// 项目信息
+        /// </summary>
+        public ProjectVO ToInfo(int id)
+        {
+            var po = MetaInfoContext.Data.Project.Where(o => o.Id == id).ToEntity();
+            var vo = po.Map<ProjectVO>();
+            try
+            {
+                vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
             }
             catch
             {
@@ -97,7 +115,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// <summary>
         /// 修改集群的镜像版本
         /// </summary>
-        public Task UpdateAsync(int id, Dictionary<int,ClusterVer> dicClusterVer)
+        public Task UpdateAsync(int id, Dictionary<int, ClusterVer> dicClusterVer)
         {
             return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(new ProjectPO
             {

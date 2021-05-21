@@ -6,152 +6,264 @@
 @using FOPS.Abstract.MetaInfo.Server
 @using FS.Extends
 @using FOPS.Abstract.Builder.Server
+@using FOPS.Abstract.Builder.Entity
+@using FOPS.Abstract.Builder.Enum
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
-<div class="layui-card">
-    <div class="layui-card-header" id="anchor-play-header">
-        构建
-        <select style="display:inline;width: 200px;" @onchange="GroupChange">
-            <option value="0">全部</option>
-            @foreach (var clusterVO in _lstGroup)
-            {
-                <option value="@clusterVO.Id">@clusterVO.Name</option>
-            }
-        </select>
+<div class="layui-row layui-col-space10">
+<div class="layui-col-xs6 layui-col-md8">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            构建
+            <select style="display:inline;width: 200px;" @onchange="GroupChange">
+                <option value="0">全部</option>
+                @foreach (var clusterVO in _lstGroup)
+                {
+                    <option value="@clusterVO.Id">@clusterVO.Name</option>
+                }
+            </select>
 
-        <select style="display:inline;width: 200px;" @onchange="ClusterChange">
-            @foreach (var clusterVO in _lstCluster)
-            {
-                <option value="@clusterVO.Id">@clusterVO.Name - @clusterVO.RuntimeEnvType</option>
-            }
-        </select>
-        <div class="layui-right">
-            <button class="layui-btn layui-btn-danger" @onclick="DeployAsync"><i class="am-icon-plus"></i> 全部构建</button>
+            <select style="display:inline;width: 200px;" @onchange="ClusterChange">
+                @foreach (var clusterVO in _lstCluster)
+                {
+                    <option value="@clusterVO.Id">@clusterVO.Name - @clusterVO.RuntimeEnvType</option>
+                }
+            </select>
+            <div class="layui-right">
+                <button class="layui-btn layui-btn-danger" @onclick="DeployAsync"><i class="am-icon-plus"></i> 全部构建</button>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="">
+                <div class="layui-table-box">
+                    <div class="layui-table-header">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                            <thead>
+                            <tr>
+                                <th data-field="ID">
+                                    <div class="layui-table-cell laytable-cell-14-0-0">
+                                        <span>ID</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
+                                        <span>项目名称</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        <span>git拉取</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        <span>镜像版本</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        <span>集群版本</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        <span>上次成功</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-5">
+                                        <span>上次失败</span>
+                                    </div>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-6">
+                                        <span>操作</span>
+                                    </div>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="layui-table-body layui-table-main">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                            <tbody>
+                            @for (var index = 0; index < _lst.Count; index++)
+                            {
+                                var info = _lst[index];
+                                <tr data-index="@index">
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-1">
+                                            <a href="/project/update/@info.Id">@info.Name</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-2">
+                                            <span>@((DateTime.Now - info.GitPullAt).GetDateDesc())</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-3">
+                                            @info.DockerVer
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-3">
+                                            @info.DicClusterVer[_clusterId].DockerVer
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-4">
+                                            @if (info.DicClusterVer[_clusterId].DeploySuccessAt.Year >= 2021)
+                                            {
+                                                <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-5">
+                                            @if (info.DicClusterVer[_clusterId].DeployFailAt.Year >= 2021)
+                                            {
+                                                <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-6">
+                                            <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => AddBuild(info)">构建</button>
+                                            <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => SetImages(info)">同步</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/builder/list/{index}"></PageSplit>
+            </div>
         </div>
     </div>
-    <div class="layui-card-body">
-        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style="">
-            <div class="layui-table-box">
-                <div class="layui-table-header">
-                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
-                        <thead>
-                        <tr>
-                            <th data-field="ID">
-                                <div class="layui-table-cell laytable-cell-14-0-0">
-                                    <span>ID</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-1">
-                                    <span>项目名称</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>git拉取</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-3">
-                                    <span>镜像版本</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-3">
-                                    <span>集群版本</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>上次成功</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-5">
-                                    <span>上次失败</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-6">
-                                    <span>操作</span>
-                                </div>
-                            </th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div class="layui-table-body layui-table-main">
-                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
-                        <tbody>
-                        @for (var index = 0; index < _lst.Count; index++)
-                        {
-                            var info = _lst[index];
-                            <tr data-index="@index">
-                                <td>
-                                    <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">
-                                        <a href="/project/update/@info.Id">@info.Name</a>
+</div>
+<div class="layui-col-xs6 layui-col-md4">
+    <div class="layui-card">
+        <div class="layui-card-header" id="anchor-play-header">
+            构建队列
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1">
+                <div class="layui-table-box">
+                    <div class="layui-table-header">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                            <thead>
+                            <tr>
+                                <th data-field="ID">
+                                    <div class="layui-table-cell laytable-cell-14-0-7">
+                                        <span>ID</span>
                                     </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <span>@((DateTime.Now - info.GitPullAt).GetDateDesc())</span>
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-8">
+                                        <span>项目名称</span>
                                     </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">
-                                        @info.DockerVer
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-9">
+                                        <span>状态</span>
                                     </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">
-                                        @info.DicClusterVer[_clusterId].DockerVer
+                                </th>
+                                <th data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-14-0-10">
+                                        <span>操作</span>
                                     </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">
-                                        @if (info.DicClusterVer[_clusterId].DeploySuccessAt.Year >=2021)
-                                        {
-                                            <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</span>
-                                        }
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-5">
-                                        @if (info.DicClusterVer[_clusterId].DeployFailAt.Year >=2021)
-                                        {
-                                            <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</span>
-                                        }
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-6">
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => AddBuild(info)">构建部署</button>
-                                        <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => SetImages(info)">部署最新</button>
-                                    </div>
-                                </td>
+                                </th>
                             </tr>
-                        }
-                        </tbody>
-                    </table>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="layui-table-body layui-table-main">
+                        <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                            <tbody>
+                            @for (var index = 0; index < _lstBuild.Count; index++)
+                            {
+                                var info = _lstBuild[index];
+                                <tr data-index="@index">
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-7"> @info.Id</div>
+                                    </td>
+                                    <td>
+                                        <div class="laytable-cell-14-0-8">
+                                            @{
+                                                var projectVO = _lst.Find(o=>o.Id==info.ProjectId);
+                                                if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId);
+                                            }
+                                            <a href="/project/update/@info.Id">@projectVO.Name</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-9">
+                                            @{
+                                                switch (info.Status)
+                                                {
+                                                    case EumBuildStatus.None:
+                                                        <button class="layui-btn layui-btn-xs layui-btn-primary">未开始</button>
+                                                        break;
+                                                    case EumBuildStatus.Building:
+                                                        <button class="layui-btn layui-btn-xs layui-btn-normal">构建中</button>
+                                                        break;
+                                                    case EumBuildStatus.Finish:
+                                                        if (info.IsSuccess)
+                                                        {
+                                                            <button class="layui-btn layui-btn-xs">成功</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="layui-btn layui-btn-xs layui-btn-danger">失败</button>
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-table-cell laytable-cell-14-0-10">
+                                            @{
+                                                if (info.Status == EumBuildStatus.Building)
+                                                {
+                                                    <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
+                                                        <i class="layui-icon"></i>
+                                                    </button>
+                                                }
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/builder/list/{index}"></PageSplit>
         </div>
     </div>
+</div>
 </div>
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 150px; }
-    .laytable-cell-14-0-2{ width: 120px; }
-    .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 120px; }
-    .laytable-cell-14-0-5{ width: 120px; }
-    .laytable-cell-14-0-6{ width: 350px; }
+    .laytable-cell-14-0-2{ width: 110px; }
+    .laytable-cell-14-0-3{ width: 90px; }
+    .laytable-cell-14-0-4{ width: 90px; }
+    .laytable-cell-14-0-5{ width: 100px; }
+    .laytable-cell-14-0-6{ width: 140px; }
+    .laytable-cell-14-0-7{ width: 70px; }
+    .laytable-cell-14-0-8{ width: 150px; }
+    .laytable-cell-14-0-9{ width: 80px; }
+    .laytable-cell-14-0-9{ width: 80px; }
 </style>
 
 @code{
@@ -164,6 +276,7 @@
     private List<ClusterVO> _lstCluster = new();
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
+    private List<BuildVO> _lstBuild = new();
     private int _clusterId;
     private int _groupId;
 
@@ -185,13 +298,6 @@
         await GetList();
     }
 
-    private async Task Save(int id)
-    {
-        var projectVO = _lst.Find(o => o.Id == id);
-        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
-    }
-
     private async Task DeployAsync()
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
@@ -207,38 +313,6 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
-        }
-        catch (Exception e)
-        {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
-        }
-        await js.InvokeVoidAsync("layer.close", load);
-    }
-
-    private async Task DeployAsync(int id)
-    {
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
-        if (clusterVO == null)
-        {
-            await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
-            return;
-        }
-
-        var projectVO = _lst.Find(o => o.Id == id);
-        if (projectVO == null)
-        {
-            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 0});
-            return;
-        }
-
-        var deployService = _iocManager.Resolve<IDeployService>();
-        try
-        {
-            var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
             else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
@@ -301,6 +375,8 @@
             if (!projectVO.DicClusterVer.ContainsKey(_clusterId))
                 projectVO.DicClusterVer[_clusterId] = new ClusterVer {DockerVer = "0"};
         }
+
+        _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
     }
 
     private async Task AddBuild(ProjectVO project)
@@ -309,6 +385,7 @@
         try
         {
             await _iocManager.Resolve<IBuildService>().Add(project.Id, _clusterId);
+            await GetList();
             await js.InvokeVoidAsync("layer.alert", "已加入到队列", new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
@@ -325,7 +402,7 @@
         try
         {
             var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer, project, null);
-            
+            await GetList();
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
             else
             {
@@ -340,4 +417,9 @@
         await js.InvokeVoidAsync("layer.close", load);
     }
 
+    private async Task CancelBuild(BuildVO info)
+    {
+        await _iocManager.Resolve<IBuildService>().Cancel(info.Id);
+        await GetList();
+    }
 }

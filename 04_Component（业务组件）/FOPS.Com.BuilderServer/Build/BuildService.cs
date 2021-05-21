@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
@@ -225,5 +226,11 @@ namespace FOPS.Com.BuilderServer.Build
         /// 当前构建的队列数量
         /// </summary>
         public Task<int> CountAsync() => BuilderContext.Data.Build.Where(o => o.Status != EumBuildStatus.Finish).CountAsync();
+
+        /// <summary>
+        /// 获取构建队列前30
+        /// </summary>
+        /// <returns></returns>
+        public Task<List<BuildVO>> ToBuildingList() => BuilderContext.Data.Build.Desc(o=>o.Id).ToListAsync(20).MapAsync<BuildVO,BuildPO>();
     }
 }

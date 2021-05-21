@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
 using FS.DI;
 
@@ -30,5 +32,11 @@ namespace FOPS.Abstract.Builder.Server
         /// 当前构建的队列数量
         /// </summary>
         Task<int> CountAsync();
+
+        /// <summary>
+        /// 获取构建队列前30
+        /// </summary>
+        /// <returns></returns>
+        Task<List<BuildVO>> ToBuildingList();
     }
 }
