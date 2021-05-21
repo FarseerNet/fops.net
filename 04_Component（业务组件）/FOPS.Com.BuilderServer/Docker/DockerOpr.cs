@@ -42,7 +42,7 @@ namespace FOPS.Com.BuilderServer.Docker
             }
 
             // 替换模板
-            var tpl      = BuildService.ReplaceTpl(project, dockerfileTpl.Template);
+            var tpl      = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
             var savePath = SavePath + project.Name + "/Dockerfile";
 
             // 如果已存在Dockerfile，则根据模板创建

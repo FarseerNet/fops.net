@@ -20,10 +20,5 @@ namespace FOPS.Abstract.Builder.Server
         /// 主动取消任务
         /// </summary>
         Task Cancel(int id);
-
-        /// <summary>
-        /// 替换模板
-        /// </summary>
-        string ReplaceTpl(ProjectVO project, string tpl);
     }
 }

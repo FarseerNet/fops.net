@@ -73,7 +73,7 @@ namespace FOPS.Com.K8SServer.Deploy
             // 替换模板
             for (var index = 0; index < lstYaml.Count; index++)
             {
-                lstYaml[index] = BuildService.ReplaceTpl(projectVO, lstYaml[index]);
+                lstYaml[index] = TplTools.ReplaceTpl(projectVO, lstYaml[index]);
             }
 
             return lstYaml;

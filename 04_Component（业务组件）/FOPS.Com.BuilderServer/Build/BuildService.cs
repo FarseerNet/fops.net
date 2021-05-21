@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
@@ -9,11 +8,8 @@ using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
-using FOPS.Com.BuilderServer.Docker;
 using FS.DI;
 using FS.Extends;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace FOPS.Com.BuilderServer.Build
 {
@@ -156,27 +152,6 @@ namespace FOPS.Com.BuilderServer.Build
                 IsSuccess = false,
                 FinishAt  = DateTime.Now,
             });
-        }
-
-        /// <summary>
-        /// 替换模板
-        /// </summary>
-        public string ReplaceTpl(ProjectVO project, string tpl)
-        {
-            // 替换项目名称
-            tpl = tpl.Replace("${project_name}", project.Name)
-                .Replace("${entry_point}", project.EntryPoint)
-                .Replace("${entry_port}",  project.EntryPort.ToString());
-
-            // 替换模板变量
-            foreach (var kv in project.K8STplVariable.Split(','))
-            {
-                var kvGroup = kv.Split('=');
-                if (kvGroup.Length != 2) continue;
-                tpl = tpl.Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
-            }
-
-            return tpl;
         }
 
         /// <summary>
