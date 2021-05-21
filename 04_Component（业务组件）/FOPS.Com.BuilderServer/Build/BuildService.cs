@@ -19,14 +19,14 @@ namespace FOPS.Com.BuilderServer.Build
     /// </summary>
     public class BuildService : IBuildService
     {
-        public IGitOpr           GitOpr           { get; set; }
-        public IDotnetOpr        DotnetOpr        { get; set; }
-        public IProjectService   ProjectService   { get; set; }
-        public IGitService       GitService       { get; set; }
-        public IBuildLogService  BuildLogService  { get; set; }
-        public IDockerOpr        DockerOpr        { get; set; }
-        public IKubectlOpr       KubectlOpr       { get; set; }
-        public IIocManager       IocManager       { get; set; }
+        public IGitOpr          GitOpr          { get; set; }
+        public IDotnetOpr       DotnetOpr       { get; set; }
+        public IProjectService  ProjectService  { get; set; }
+        public IGitService      GitService      { get; set; }
+        public IBuildLogService BuildLogService { get; set; }
+        public IDockerOpr       DockerOpr       { get; set; }
+        public IKubectlOpr      KubectlOpr      { get; set; }
+        public IIocManager      IocManager      { get; set; }
 
         /// <summary>
         /// 构建
@@ -72,6 +72,9 @@ namespace FOPS.Com.BuilderServer.Build
             try
             {
                 // 1、拉取Git
+                build = await ToInfoAsync(build.Id);
+                if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
+                
                 var lstGit = await GitService.ToListAsync();
                 foreach (var gitVO in lstGit)
                 {
@@ -83,6 +86,8 @@ namespace FOPS.Com.BuilderServer.Build
                 }
 
                 // 2、编译
+                build = await ToInfoAsync(build.Id);
+                if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
                 if ((await DotnetOpr.Publish(build, project, git, ActWriteLog)).IsError)
                 {
                     await Fail(build, project, startNew.ElapsedMilliseconds);
@@ -90,6 +95,8 @@ namespace FOPS.Com.BuilderServer.Build
                 }
 
                 // 3、打包
+                build = await ToInfoAsync(build.Id);
+                if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
                 if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project, startNew.ElapsedMilliseconds);
@@ -97,6 +104,8 @@ namespace FOPS.Com.BuilderServer.Build
                 }
 
                 // 4、上传镜像
+                build = await ToInfoAsync(build.Id);
+                if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
                 if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project, startNew.ElapsedMilliseconds);
@@ -108,6 +117,8 @@ namespace FOPS.Com.BuilderServer.Build
                 await ProjectService.UpdateAsync(project.Id, project.DockerVer);
 
                 // 5、更新集群镜像版本
+                build = await ToInfoAsync(build.Id);
+                if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
                 if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project, startNew.ElapsedMilliseconds);
@@ -151,7 +162,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// </summary>
         public Task Cancel(int id)
         {
-            BuildLogService.Write(id,"手动取消");
+            BuildLogService.Write(id, "手动取消");
             return BuilderContext.Data.Build.Where(o => o.Id == id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
@@ -228,7 +239,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// 获取构建队列前30
         /// </summary>
         /// <returns></returns>
-        public Task<List<BuildVO>> ToBuildingList() => BuilderContext.Data.Build.Desc(o=>o.Id).ToListAsync(20).MapAsync<BuildVO,BuildPO>();
+        public Task<List<BuildVO>> ToBuildingList() => BuilderContext.Data.Build.Desc(o => o.Id).ToListAsync(20).MapAsync<BuildVO, BuildPO>();
 
         /// <summary>
         /// 查看构建信息
