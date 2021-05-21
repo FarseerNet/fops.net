@@ -220,5 +220,10 @@ namespace FOPS.Com.BuilderServer.Build
             project.DicClusterVer[clusterId].DeploySuccessAt = DateTime.Now;
             return ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
         }
+
+        /// <summary>
+        /// 当前构建的队列数量
+        /// </summary>
+        public Task<int> CountAsync() => BuilderContext.Data.Build.Where(o => o.Status != EumBuildStatus.Finish).CountAsync();
     }
 }

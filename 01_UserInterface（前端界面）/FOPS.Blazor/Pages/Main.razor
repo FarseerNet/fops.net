@@ -4,6 +4,9 @@
 @using FS.Extends
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.Docker.Server
+@using FOPS.Abstract.K8S.Server
+@using FOPS.Abstract.Builder.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -11,14 +14,30 @@
     <div class="layui-col-sm6 layui-col-md3">
         <div class="layui-card">
             <div class="layui-card-header">
-                项目数
+                集群
+                <span class="layui-badge layui-bg-orange layuiadmin-badge">C</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+
+                <p class="layuiadmin-big-font">@_clusterCount</p>
+                <p>
+                    K8S模板
+                    <span class="layuiadmin-span-color">@_yamlTplCount <i class="layui-inline layui-icon layui-icon-user"></i></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-sm6 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                项目
                 <span class="layui-badge layui-bg-blue layuiadmin-badge">P</span>
             </div>
             <div class="layui-card-body layuiadmin-card-list">
                 <p class="layuiadmin-big-font">@_projectCount</p>
                 <p>
-                    Git数量
-                    <span class="layuiadmin-span-color">@_gitCount <i class="layui-inline layui-icon layui-icon-flag"></i></span>
+                    项目组
+                    <span class="layuiadmin-span-color">@_projectGroupCount <i class="layui-inline layui-icon layui-icon-flag"></i></span>
                 </p>
             </div>
         </div>
@@ -26,46 +45,30 @@
     <div class="layui-col-sm6 layui-col-md3">
         <div class="layui-card">
             <div class="layui-card-header">
-                未展示
+                容器
+                <span class="layui-badge layui-bg-green layuiadmin-badge">D</span>
+            </div>
+            <div class="layui-card-body layuiadmin-card-list">
+
+                <p class="layuiadmin-big-font">@_dockerHubCount</p>
+                <p>
+                    模板
+                    <span class="layuiadmin-span-color">@_dockerfileTplCount <i class="layui-inline layui-icon layui-icon-dollar"></i></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-sm6 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                构建
                 <span class="layui-badge layui-bg-cyan layuiadmin-badge">月</span>
             </div>
             <div class="layui-card-body layuiadmin-card-list">
-                <p class="layuiadmin-big-font">0</p>
+                <p class="layuiadmin-big-font">@_buildCount</p>
                 <p>
-                    未展示
-                    <span class="layuiadmin-span-color">0 <i class="layui-inline layui-icon layui-icon-face-smile-b"></i></span>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="layui-col-sm6 layui-col-md3">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                未展示
-                <span class="layui-badge layui-bg-green layuiadmin-badge">年</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-
-                <p class="layuiadmin-big-font">0</p>
-                <p>
-                    未展示
-                    <span class="layuiadmin-span-color">*** <i class="layui-inline layui-icon layui-icon-dollar"></i></span>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="layui-col-sm6 layui-col-md3">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                未展示
-                <span class="layui-badge layui-bg-orange layuiadmin-badge">月</span>
-            </div>
-            <div class="layui-card-body layuiadmin-card-list">
-
-                <p class="layuiadmin-big-font">0</p>
-                <p>
-                    未展示
-                    <span class="layuiadmin-span-color">0 <i class="layui-inline layui-icon layui-icon-user"></i></span>
+                    Git仓库
+                    <span class="layuiadmin-span-color">@_gitCount <i class="layui-inline layui-icon layui-icon-face-smile-b"></i></span>
                 </p>
             </div>
         </div>
@@ -303,8 +306,14 @@
     long _clientCount;
     int _todayFailCount;
     int _projectCount;
+    int _projectGroupCount;
     int _gitCount;
-
+    int _dockerHubCount;
+    int _dockerfileTplCount;
+    int _clusterCount;
+    int _yamlTplCount;
+    int _buildCount;
+    
     protected override async Task OnInitializedAsync()
     {
         // FSS 任务组数
@@ -318,8 +327,17 @@
         _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
         // 项目数量
         _projectCount = await _iocManager.Resolve<IProjectService>().CountAsync();
+        _projectGroupCount = await _iocManager.Resolve<IProjectGroupService>().CountAsync();
         // Git数量
         _gitCount = await _iocManager.Resolve<IGitService>().CountAsync();
+        
+        _dockerHubCount = await _iocManager.Resolve<IDockerHubService>().CountAsync();
+        _dockerfileTplCount = await _iocManager.Resolve<IDockerfileTplService>().CountAsync();
+        
+        _clusterCount = await _iocManager.Resolve<IClusterService>().CountAsync();
+        _yamlTplCount = await _iocManager.Resolve<IYamlTplService>().CountAsync();
+        
+        _buildCount = await _iocManager.Resolve<IBuildService>().CountAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
