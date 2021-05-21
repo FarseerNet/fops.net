@@ -94,7 +94,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
-                                        <a href="/builder/update/@info.Id">@info.Name</a>
+                                        <a href="/project/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -198,6 +198,7 @@
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
+            await js.InvokeVoidAsync("layer.close", load);
             await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
             return;
         }
@@ -222,6 +223,7 @@
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
+            await js.InvokeVoidAsync("layer.close", load);
             await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
             return;
         }
@@ -322,6 +324,7 @@
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         if (project.DicClusterVer.ContainsKey(_clusterId) && project.DockerVer == project.DicClusterVer[_clusterId].DockerVer)
         {
+            await js.InvokeVoidAsync("layer.close", load);
             await js.InvokeVoidAsync("layer.alert", "与镜像仓库版本一致，不需要更新", new {icon = 0});
             return;
         }

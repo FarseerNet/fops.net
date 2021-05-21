@@ -13,6 +13,7 @@ using FOPS.Com.BuilderServer.Docker;
 using FS.DI;
 using FS.Extends;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace FOPS.Com.BuilderServer.Build
 {
@@ -28,7 +29,7 @@ namespace FOPS.Com.BuilderServer.Build
         public IBuildLogService  BuildLogService  { get; set; }
         public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
-        public IKubectlOpr       KubectlOpr      { get; set; }
+        public IKubectlOpr       KubectlOpr       { get; set; }
         public IIocManager       IocManager       { get; set; }
 
         /// <summary>
@@ -51,7 +52,6 @@ namespace FOPS.Com.BuilderServer.Build
             if (!isUpdate) return;
 
             // 项目
-            BuildLogService.Write(build.Id, $"找到构建任务：{build.Id}");
             var project = await ProjectService.ToInfoAsync(build.ProjectId);
             if (project == null)
             {
@@ -69,24 +69,19 @@ namespace FOPS.Com.BuilderServer.Build
                 return;
             }
 
-            // Docker仓库
-            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-            if (docker == null)
-            {
-                await Fail(build, 0);
-                BuildLogService.Write(build.Id, $"DockerHub={project.DockerHub}，不存在");
-                return;
-            }
-
             var startNew = Stopwatch.StartNew();
 
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
 
             // 1、拉取Git
-            if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
+            var lstGit = await GitService.ToListAsync();
+            foreach (var gitVO in lstGit)
             {
-                await Fail(build, startNew.ElapsedMilliseconds);
-                return;
+                if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
+                {
+                    await Fail(build, startNew.ElapsedMilliseconds);
+                    return;
+                }
             }
 
             // 2、编译
@@ -95,14 +90,14 @@ namespace FOPS.Com.BuilderServer.Build
                 await Fail(build, startNew.ElapsedMilliseconds);
                 return;
             }
-            
+
             // 3、打包
             if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
             {
                 await Fail(build, startNew.ElapsedMilliseconds);
                 return;
             }
-            
+
             // 4、上传镜像
             if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
             {
@@ -113,7 +108,7 @@ namespace FOPS.Com.BuilderServer.Build
             // 修改项目的镜像版本
             project.DockerVer = build.BuildNumber.ToString();
             await ProjectService.UpdateAsync(project.Id, project.DockerVer);
-            
+
             // 5、更新集群镜像版本
             if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
             {
@@ -121,12 +116,7 @@ namespace FOPS.Com.BuilderServer.Build
                 return;
             }
 
-            // 修改集群的镜像版本
-            project.DicClusterVer[build.ClusterId].DockerVer = project.DockerVer;
-            project.DicClusterVer[build.ClusterId].DeploySuccessAt = DateTime.Now;
-            await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
-            
-            await Success(build, startNew.ElapsedMilliseconds);
+            await Success(build, project, startNew.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -134,8 +124,8 @@ namespace FOPS.Com.BuilderServer.Build
         /// </summary>
         public async Task<int> Add(int projectId, int clusterId)
         {
-            var isHave = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId && (o.Status == EumBuildStatus.None || o.Status == EumBuildStatus.Building)).IsHavingAsync();
-            if (isHave) throw new Exception("当前队列存在未完成的构建");
+            //var isHave = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId && (o.Status == EumBuildStatus.None || o.Status == EumBuildStatus.Building)).IsHavingAsync();
+            //if (isHave) throw new Exception("当前队列存在未完成的构建");
 
             // 获取数据库中最后一个编译版本号
             var buildNumber = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId).Desc(o => o.Id).GetValueAsync(o => o.BuildNumber.GetValueOrDefault());
@@ -192,9 +182,11 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务失败
         /// </summary>
-        private Task Fail(BuildVO po, long useTime)
+        private Task Fail(BuildVO build, long useTime)
         {
-            return BuilderContext.Data.Build.Where(o => o.Id == po.Id).UpdateAsync(new BuildPO
+            BuildLogService.Write(build.Id, "---------------------------------------------------------");
+            BuildLogService.Write(build.Id, "执行失败，提前退出。");
+            return BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = false,
@@ -206,14 +198,22 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务成功
         /// </summary>
-        private Task Success(BuildVO po, long useTime)
+        private async Task Success(BuildVO build, ProjectVO project, long useTime)
         {
-            return BuilderContext.Data.Build.Where(o => o.Id == po.Id).UpdateAsync(new BuildPO
+            BuildLogService.Write(build.Id, "---------------------------------------------------------");
+            BuildLogService.Write(build.Id, "成功执行。");
+            
+            // 修改集群的镜像版本
+            project.DicClusterVer[build.ClusterId].DockerVer       = project.DockerVer;
+            project.DicClusterVer[build.ClusterId].DeploySuccessAt = DateTime.Now;
+            await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
+
+            await BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = true,
                 FinishAt  = DateTime.Now,
-                UseTime   = useTime
+                UseTime   = useTime,
             });
         }
     }

@@ -24,12 +24,18 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         public async Task<RunShellResult> Publish(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
+            BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始编译。");
 
             var savePath = SavePath + project.Name;
             var source   = project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path;
             source = GitOpr.GetGitPath(git) + source;
-            return await  Publish(savePath, source, actReceiveOutput);
+            
+            // 先删除之前编译的目标文件
+            if (System.IO.Directory.Exists(savePath)) System.IO.Directory.Delete(savePath, true);
+            System.IO.Directory.CreateDirectory(savePath);
+            
+            return await Publish(savePath, source, actReceiveOutput);
         }
 
         /// <summary>
@@ -37,7 +43,8 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
         {
-            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath} {source}", actReceiveOutput);
+            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
+            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
         }
     }
 }

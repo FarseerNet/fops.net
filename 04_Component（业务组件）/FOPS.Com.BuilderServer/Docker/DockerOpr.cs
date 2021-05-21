@@ -27,6 +27,7 @@ namespace FOPS.Com.BuilderServer.Docker
         /// </summary>
         public async Task<RunShellResult> Build(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
+            BuildLogService.Write(build.Id, "---------------------------------------------------------");
             // Dockerfile
             var dockerfileTpl = await DockerfileTplService.ToInfoAsync(project.DockerfileTpl);
             if (dockerfileTpl == null)
@@ -62,7 +63,7 @@ namespace FOPS.Com.BuilderServer.Docker
             var dockerHub = GetDockerHub(docker);
 
             // 打包
-            return await ShellTools.Run("docker", $"build -f {savePath} -t {dockerHub}{project.Name}:${build.BuildNumber} --network=host .", actReceiveOutput);
+            return await ShellTools.Run("docker", $"build -t {dockerHub}{project.Name}:${build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
         }
 
         /// <summary>
@@ -85,6 +86,7 @@ namespace FOPS.Com.BuilderServer.Docker
         /// </summary>
         public async Task<RunShellResult> Upload(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
+            BuildLogService.Write(build.Id, "---------------------------------------------------------");
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
             

@@ -15,13 +15,15 @@ namespace FOPS.Infrastructure.Common
         /// <param name="cmd"></param>
         /// <param name="arguments"></param>
         /// <param name="actReceiveOutput">外部第一时间，处理拿到的消息 </param>
-        public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput)
+        public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput, string workingDirectory = null)
         {
+            if (actReceiveOutput != null) actReceiveOutput($"{cmd} {arguments}");
             var psi = new ProcessStartInfo(cmd, arguments)
             {
                 RedirectStandardOutput = true,
                 RedirectStandardError  = true,
                 UseShellExecute        = false,
+                WorkingDirectory       = workingDirectory
             };
 
             var runShellResult = new RunShellResult {IsError = false, Output = new List<string>()};
