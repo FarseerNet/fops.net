@@ -68,10 +68,10 @@ namespace FOPS.Com.BuilderServer.Git
             await GitService.UpdateAsync(git.Id, DateTime.Now);
             switch (result.IsError)
             {
-                case true:
+                case false:
                     BuildLogService.Write(build.Id, $"拉取完成。");
                     break;
-                case false:
+                case true:
                     BuildLogService.Write(build.Id, $"拉取出错了。");
                     break;
             }

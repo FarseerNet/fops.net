@@ -39,10 +39,10 @@ namespace FOPS.Com.BuilderServer.Dotnet
 
             switch (result.IsError)
             {
-                case true:
+                case false:
                     BuildLogService.Write(build.Id, $"编译完成。");
                     break;
-                case false:
+                case true:
                     BuildLogService.Write(build.Id, $"编译出错了。");
                     break;
             }

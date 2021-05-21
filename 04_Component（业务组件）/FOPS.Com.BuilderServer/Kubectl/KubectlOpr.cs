@@ -36,10 +36,10 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var result= await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
             switch (result.IsError)
             {
-                case true:
+                case false:
                     BuildLogService.Write(build.Id, $"更新镜像版本完成。");
                     break;
-                case false:
+                case true:
                     BuildLogService.Write(build.Id, $"更新镜像版本出错了。");
                     break;
             }

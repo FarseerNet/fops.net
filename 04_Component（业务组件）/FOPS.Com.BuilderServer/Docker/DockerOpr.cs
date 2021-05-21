@@ -66,10 +66,10 @@ namespace FOPS.Com.BuilderServer.Docker
 
             switch (result.IsError)
             {
-                case true:
+                case false:
                     BuildLogService.Write(build.Id, $"镜像打包完成。");
                     break;
-                case false:
+                case true:
                     BuildLogService.Write(build.Id, $"镜像打包出错了。");
                     break;
             }
@@ -116,10 +116,10 @@ namespace FOPS.Com.BuilderServer.Docker
             
             switch (result.IsError)
             {
-                case true:
+                case false:
                     BuildLogService.Write(build.Id, $"镜像上传完成。");
                     break;
-                case false:
+                case true:
                     BuildLogService.Write(build.Id, $"镜像上传出错了。");
                     break;
             }
