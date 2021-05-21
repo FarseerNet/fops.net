@@ -46,6 +46,17 @@
                     </dd>
                 </dl>
             </li>
+            <li data-name="deploy" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="构建" lay-direction="2">
+                    <i class="layui-icon layui-icon-app"></i>
+                    <cite>构建</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="content">
+                        <NavLink href="/builder/list">立即</NavLink>
+                    </dd>
+                </dl>
+            </li>
             <li data-name="docker" class="layui-nav-item">
                 <a href="javascript:;" lay-tips="镜像" lay-direction="2">
                     <i class="layui-icon layui-icon-template"></i>
@@ -77,17 +88,6 @@
                     </dd>
                     <dd>
                         <NavLink href="/k8s/single/deploy">yaml发布</NavLink>
-                    </dd>
-                </dl>
-            </li>
-            <li data-name="deploy" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="构建" lay-direction="2">
-                    <i class="layui-icon layui-icon-app"></i>
-                    <cite>构建</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd data-name="content">
-                        <NavLink href="/builder/list">立即</NavLink>
                     </dd>
                 </dl>
             </li>

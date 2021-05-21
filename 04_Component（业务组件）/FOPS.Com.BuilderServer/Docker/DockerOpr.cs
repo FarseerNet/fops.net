@@ -28,6 +28,7 @@ namespace FOPS.Com.BuilderServer.Docker
         public async Task<RunShellResult> Build(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
+            BuildLogService.Write(build.Id, $"开始镜像打包。");
             // Dockerfile
             var dockerfileTpl = await DockerfileTplService.ToInfoAsync(project.DockerfileTpl);
             if (dockerfileTpl == null)
@@ -57,13 +58,23 @@ namespace FOPS.Com.BuilderServer.Docker
             }
 
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
-            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-
-            // 取得dockerHub
+            var docker    = await DockerHubService.ToInfoAsync(project.DockerHub);
             var dockerHub = GetDockerHub(docker);
 
             // 打包
-            return await ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
+            var result = await ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
+
+            switch (result.IsError)
+            {
+                case true:
+                    BuildLogService.Write(build.Id, $"镜像打包完成。");
+                    break;
+                case false:
+                    BuildLogService.Write(build.Id, $"镜像打包出错了。");
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -75,7 +86,6 @@ namespace FOPS.Com.BuilderServer.Docker
             if (docker != null)
             {
                 dockerHub = docker.Hub;
-                //if (!dockerHub.EndsWith("/")) dockerHub += "/";
                 if (dockerHub.EndsWith("/")) dockerHub.Substring(0, dockerHub.Length - 1);
             }
 
@@ -88,6 +98,7 @@ namespace FOPS.Com.BuilderServer.Docker
         public async Task<RunShellResult> Upload(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
+            BuildLogService.Write(build.Id, $"开始上传镜像。");
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 
@@ -101,7 +112,19 @@ namespace FOPS.Com.BuilderServer.Docker
             var dockerHub = GetDockerHub(docker);
 
             // 上传
-            return await ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
+            var result= await ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
+            
+            switch (result.IsError)
+            {
+                case true:
+                    BuildLogService.Write(build.Id, $"镜像上传完成。");
+                    break;
+                case false:
+                    BuildLogService.Write(build.Id, $"镜像上传出错了。");
+                    break;
+            }
+
+            return result;
         }
     }
 }

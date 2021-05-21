@@ -24,21 +24,27 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public async Task<RunShellResult> SetImages(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
+            BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");
             var cluster = await ClusterService.ToInfoAsync(build.ClusterId);
 
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
             
-            // 登陆 docker
-            //if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
-            //{
-            //    await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
-            //}
-            
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
             var dockerName = $"{dockerHub}:{project.Name}-{build.BuildNumber}";
-            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+            var result= await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+            switch (result.IsError)
+            {
+                case true:
+                    BuildLogService.Write(build.Id, $"更新镜像版本完成。");
+                    break;
+                case false:
+                    BuildLogService.Write(build.Id, $"更新镜像版本出错了。");
+                    break;
+            }
+
+            return result;
         }
         
         /// <summary>
@@ -50,12 +56,6 @@ namespace FOPS.Com.BuilderServer.Kubectl
 
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-            
-            // 登陆 docker
-            //if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
-            //{
-            //    await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
-            //}
             
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);

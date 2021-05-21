@@ -60,14 +60,23 @@ namespace FOPS.Com.BuilderServer.Git
         public async Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
-            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始拉取git {git.Name} 分支：{git.Branch} 仓库：{git.Hub}。");
+            BuildLogService.Write(build.Id, $"开始拉取git {git.Name} 分支：{git.Branch} 仓库：{git.Hub}。");
 
-            var pullResult = await PullAsync(git, actReceiveOutput);
+            var result = await PullAsync(git, actReceiveOutput);
 
-            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：拉取完成，Error={pullResult.IsError}");
             // 更新git拉取时间
             await GitService.UpdateAsync(git.Id, DateTime.Now);
-            return pullResult;
+            switch (result.IsError)
+            {
+                case true:
+                    BuildLogService.Write(build.Id, $"拉取完成。");
+                    break;
+                case false:
+                    BuildLogService.Write(build.Id, $"拉取出错了。");
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>

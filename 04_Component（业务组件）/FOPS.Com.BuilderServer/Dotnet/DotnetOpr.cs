@@ -25,17 +25,29 @@ namespace FOPS.Com.BuilderServer.Dotnet
         public async Task<RunShellResult> Publish(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
-            BuildLogService.Write(build.Id, $"构建任务id={build.Id}：开始编译。");
+            BuildLogService.Write(build.Id, $"开始编译。");
 
             var savePath = SavePath + project.Name;
             var source   = project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path;
             source = GitOpr.GetGitPath(git) + source;
-            
+
             // 先删除之前编译的目标文件
             if (System.IO.Directory.Exists(savePath)) System.IO.Directory.Delete(savePath, true);
             System.IO.Directory.CreateDirectory(savePath);
-            
-            return await Publish(savePath, source, actReceiveOutput);
+
+            var result = await Publish(savePath, source, actReceiveOutput);
+
+            switch (result.IsError)
+            {
+                case true:
+                    BuildLogService.Write(build.Id, $"编译完成。");
+                    break;
+                case false:
+                    BuildLogService.Write(build.Id, $"编译出错了。");
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>
