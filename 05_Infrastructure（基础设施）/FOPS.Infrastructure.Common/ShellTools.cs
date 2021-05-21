@@ -34,6 +34,7 @@ namespace FOPS.Infrastructure.Common
 
                 void ProcOnOutputDataReceived(object sender, DataReceivedEventArgs args)
                 {
+                    if (string.IsNullOrWhiteSpace(args.Data)) return;
                     runShellResult.Output.Add(args.Data);
                     // 外部第一时间，处理拿到的消息
                     if (actReceiveOutput != null) actReceiveOutput(args.Data);

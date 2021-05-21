@@ -63,7 +63,7 @@ namespace FOPS.Com.BuilderServer.Docker
             var dockerHub = GetDockerHub(docker);
 
             // 打包
-            return await ShellTools.Run("docker", $"build -t {dockerHub}{project.Name}:${build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
+            return await ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
         }
 
         /// <summary>
@@ -71,11 +71,12 @@ namespace FOPS.Com.BuilderServer.Docker
         /// </summary>
         public string GetDockerHub(DockerHubVO docker)
         {
-            var dockerHub = "";
+            var dockerHub = "localhost";
             if (docker != null)
             {
                 dockerHub = docker.Hub;
-                if (!dockerHub.EndsWith("/")) dockerHub += "/";
+                //if (!dockerHub.EndsWith("/")) dockerHub += "/";
+                if (dockerHub.EndsWith("/")) dockerHub.Substring(0, dockerHub.Length - 1);
             }
 
             return dockerHub;
@@ -89,7 +90,7 @@ namespace FOPS.Com.BuilderServer.Docker
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-            
+
             // 登陆 docker
             if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
             {
@@ -98,9 +99,9 @@ namespace FOPS.Com.BuilderServer.Docker
 
             // 取得dockerHub
             var dockerHub = GetDockerHub(docker);
-            
+
             // 上传
-            return await ShellTools.Run("docker", $"push {dockerHub}{project.Name}:${build.BuildNumber}", actReceiveOutput);
+            return await ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
         }
     }
 }

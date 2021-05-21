@@ -114,7 +114,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-4">
-                                        @if (!string.IsNullOrWhiteSpace(info.DicClusterVer[_clusterId].DockerVer) && info.DicClusterVer[_clusterId].DockerVer != "0")
+                                        @if (info.DicClusterVer[_clusterId].DeploySuccessAt.Year >=2021)
                                         {
                                             <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</span>
                                         }
@@ -122,7 +122,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-5">
-                                        @if (!string.IsNullOrWhiteSpace(info.DicClusterVer[_clusterId].DockerVer) && info.DicClusterVer[_clusterId].DockerVer != "0")
+                                        @if (info.DicClusterVer[_clusterId].DeployFailAt.Year >=2021)
                                         {
                                             <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</span>
                                         }
@@ -322,19 +322,16 @@
     private async Task SetImages(ProjectVO project)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        if (project.DicClusterVer.ContainsKey(_clusterId) && project.DockerVer == project.DicClusterVer[_clusterId].DockerVer)
-        {
-            await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "与镜像仓库版本一致，不需要更新", new {icon = 0});
-            return;
-        }
-        
         try
         {
             var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer, project, null);
             
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            else
+            {
+                await _iocManager.Resolve<IBuildService>().Success(_clusterId, project);
+                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            }
         }
         catch (Exception e)
         {

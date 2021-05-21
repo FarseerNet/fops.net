@@ -51,7 +51,7 @@ namespace FOPS.Com.BuilderServer.Build
             var project = await ProjectService.ToInfoAsync(build.ProjectId);
             if (project == null)
             {
-                await Fail(build, 0);
+                await Fail(build, null, 0);
                 BuildLogService.Write(build.Id, $"项目ID={build.ProjectId}，不存在");
                 return;
             }
@@ -60,7 +60,7 @@ namespace FOPS.Com.BuilderServer.Build
             var git = await GitService.ToInfoAsync(project.GitId);
             if (git == null)
             {
-                await Fail(build, 0);
+                await Fail(build, project, 0);
                 BuildLogService.Write(build.Id, $"gitID={project.GitId}，不存在");
                 return;
             }
@@ -69,50 +69,58 @@ namespace FOPS.Com.BuilderServer.Build
 
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
 
-            // 1、拉取Git
-            var lstGit = await GitService.ToListAsync();
-            foreach (var gitVO in lstGit)
+            try
             {
-                if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
+                // 1、拉取Git
+                var lstGit = await GitService.ToListAsync();
+                foreach (var gitVO in lstGit)
                 {
-                    await Fail(build, startNew.ElapsedMilliseconds);
+                    if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
+                    {
+                        await Fail(build, project, startNew.ElapsedMilliseconds);
+                        return;
+                    }
+                }
+
+                // 2、编译
+                if ((await DotnetOpr.Publish(build, project, git, ActWriteLog)).IsError)
+                {
+                    await Fail(build, project, startNew.ElapsedMilliseconds);
                     return;
                 }
-            }
 
-            // 2、编译
-            if ((await DotnetOpr.Publish(build, project, git, ActWriteLog)).IsError)
+                // 3、打包
+                if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
+                {
+                    await Fail(build, project, startNew.ElapsedMilliseconds);
+                    return;
+                }
+
+                // 4、上传镜像
+                if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
+                {
+                    await Fail(build, project, startNew.ElapsedMilliseconds);
+                    return;
+                }
+
+                // 修改项目的镜像版本
+                project.DockerVer = build.BuildNumber.ToString();
+                await ProjectService.UpdateAsync(project.Id, project.DockerVer);
+
+                // 5、更新集群镜像版本
+                if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
+                {
+                    await Fail(build, project, startNew.ElapsedMilliseconds);
+                    return;
+                }
+
+                await Success(build, project, startNew.ElapsedMilliseconds);
+            }
+            catch (Exception e)
             {
-                await Fail(build, startNew.ElapsedMilliseconds);
-                return;
+                await Fail(build, project, startNew.ElapsedMilliseconds);
+                BuildLogService.Write(build.Id, e.ToString());
             }
-
-            // 3、打包
-            if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
-            {
-                await Fail(build, startNew.ElapsedMilliseconds);
-                return;
-            }
-
-            // 4、上传镜像
-            if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
-            {
-                await Fail(build, startNew.ElapsedMilliseconds);
-                return;
-            }
-
-            // 修改项目的镜像版本
-            project.DockerVer = build.BuildNumber.ToString();
-            await ProjectService.UpdateAsync(project.Id, project.DockerVer);
-
-            // 5、更新集群镜像版本
-            if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
-            {
-                await Fail(build, startNew.ElapsedMilliseconds);
-                return;
-            }
-
-            await Success(build, project, startNew.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -157,11 +165,23 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务失败
         /// </summary>
-        private Task Fail(BuildVO build, long useTime)
+        private async Task Fail(BuildVO build, ProjectVO project, long useTime)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, "执行失败，提前退出。");
-            return BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
+
+            if (project != null)
+            {
+                if (!project.DicClusterVer.ContainsKey(build.ClusterId))
+                    project.DicClusterVer[build.ClusterId] = new()
+                    {
+                        DockerVer = "0"
+                    };
+                project.DicClusterVer[build.ClusterId].DeployFailAt = DateTime.Now;
+                await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
+            }
+
+            await BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
                 IsSuccess = false,
@@ -177,11 +197,8 @@ namespace FOPS.Com.BuilderServer.Build
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, "成功执行。");
-            
-            // 修改集群的镜像版本
-            project.DicClusterVer[build.ClusterId].DockerVer       = project.DockerVer;
-            project.DicClusterVer[build.ClusterId].DeploySuccessAt = DateTime.Now;
-            await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
+
+            await Success(build.ClusterId, project);
 
             await BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
             {
@@ -190,6 +207,18 @@ namespace FOPS.Com.BuilderServer.Build
                 FinishAt  = DateTime.Now,
                 UseTime   = useTime,
             });
+        }
+
+        /// <summary>
+        /// 设置任务成功
+        /// </summary>
+        public Task Success(int clusterId, ProjectVO project)
+        {
+            // 修改集群的镜像版本
+            if (!project.DicClusterVer.ContainsKey(clusterId)) project.DicClusterVer[clusterId] = new();
+            project.DicClusterVer[clusterId].DockerVer       = project.DockerVer;
+            project.DicClusterVer[clusterId].DeploySuccessAt = DateTime.Now;
+            return ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
         }
     }
 }

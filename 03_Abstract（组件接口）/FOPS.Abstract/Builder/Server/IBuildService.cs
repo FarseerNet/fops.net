@@ -20,5 +20,10 @@ namespace FOPS.Abstract.Builder.Server
         /// 主动取消任务
         /// </summary>
         Task Cancel(int id);
+
+        /// <summary>
+        /// 设置任务成功
+        /// </summary>
+        Task Success(int clusterId, ProjectVO project);
     }
 }

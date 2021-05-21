@@ -30,15 +30,15 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
             
             // 登陆 docker
-            if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
-            {
-                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
-            }
+            //if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
+            //{
+            //    await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+            //}
             
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
-            var dockerName = $"{dockerHub}{project.Name}:${build.BuildNumber}";
-            return await ShellTools.Run("kubectl", $"set image deployment/${project.Name} ${project.Name}=${dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+            var dockerName = $"{dockerHub}:{project.Name}-{build.BuildNumber}";
+            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
         }
         
         /// <summary>
@@ -52,15 +52,15 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
             
             // 登陆 docker
-            if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
-            {
-                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
-            }
+            //if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
+            //{
+            //    await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+            //}
             
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
-            var dockerName = $"{dockerHub}{project.Name}:${dockerVer}";
-            return await ShellTools.Run("kubectl", $"set image deployment/${project.Name} ${project.Name}=${dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
+            var dockerName = $"{dockerHub}:{project.Name}-{dockerVer}";
+            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={cluster.ConfigName}", actReceiveOutput);
         }
     }
 }
