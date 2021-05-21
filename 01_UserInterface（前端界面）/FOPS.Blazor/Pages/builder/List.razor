@@ -1,6 +1,5 @@
 @page "/builder/list"
 @using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.K8S.Enum
 @using FOPS.Abstract.K8S.Server
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
@@ -8,6 +7,7 @@
 @using FOPS.Abstract.Builder.Server
 @using FOPS.Abstract.Builder.Entity
 @using FOPS.Abstract.Builder.Enum
+@using System.Timers
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -201,7 +201,7 @@
                                                 var projectVO = _lst.Find(o=>o.Id==info.ProjectId);
                                                 if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId);
                                             }
-                                            <a href="/project/update/@info.Id">@projectVO.Name</a>
+                                            <a href="/builder/log/@info.Id">@projectVO.Name</a>
                                         </div>
                                     </td>
                                     <td>
@@ -257,13 +257,13 @@
     .laytable-cell-14-0-1{ width: 150px; }
     .laytable-cell-14-0-2{ width: 110px; }
     .laytable-cell-14-0-3{ width: 90px; }
-    .laytable-cell-14-0-4{ width: 90px; }
-    .laytable-cell-14-0-5{ width: 100px; }
+    .laytable-cell-14-0-4{ width: 110px; }
+    .laytable-cell-14-0-5{ width: 110px; }
     .laytable-cell-14-0-6{ width: 140px; }
     .laytable-cell-14-0-7{ width: 70px; }
     .laytable-cell-14-0-8{ width: 150px; }
     .laytable-cell-14-0-9{ width: 80px; }
-    .laytable-cell-14-0-9{ width: 80px; }
+    .laytable-cell-14-0-10{ width: 80px; }
 </style>
 
 @code{
@@ -277,6 +277,7 @@
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
     private List<BuildVO> _lstBuild = new();
+    private Timer _timer;
     private int _clusterId;
     private int _groupId;
 
@@ -296,6 +297,15 @@
         if (_lstCluster != null) _clusterId = _lstCluster[0].Id;
 
         await GetList();
+        
+        _timer = new Timer(1000);
+        _timer.Elapsed += async (sender, args) =>
+        {
+            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
+            // 刷新页面
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
     }
 
     private async Task DeployAsync()

@@ -31,6 +31,16 @@
   }).extend({
     index: 'lib/index' //主入口模块
   });
+  
+  Blazor.defaultReconnectionHandler._reconnectCallback = function(d) {
+          document.location.reload(); 
+     }
+     
+     // 将页面滚动到最底部
+     function ScrollBodyTop()
+     {
+        document.getElementById('curtBody').scrollTop = document.getElementById('curtBody').scrollHeight;
+     }
   </script>
 </body>
 </html>

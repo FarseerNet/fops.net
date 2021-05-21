@@ -1,0 +1,123 @@
+@page "/builder/log/{id:int}"
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.Builder.Server
+@using FOPS.Abstract.Builder.Entity
+@using FOPS.Abstract.Builder.Enum
+@using System.Timers
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        @_info.Id 构建日志
+        @{
+            switch (_info.Status)
+            {
+                case EumBuildStatus.None:
+                    <button class="layui-btn layui-btn-xs layui-btn-primary">未开始</button>
+                    break;
+                case EumBuildStatus.Building:
+                    <button class="layui-btn layui-btn-xs layui-btn-normal">构建中</button>
+                    break;
+                case EumBuildStatus.Finish:
+                    if (_info.IsSuccess)
+                    {
+                        <button class="layui-btn layui-btn-xs">成功</button>
+                    }
+                    else
+                    {
+                        <button class="layui-btn layui-btn-xs layui-btn-danger">失败</button>
+                    }
+                    break;
+            }
+        }
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form-item">
+            <pre class="layui-code layui-box layui-code-view" id="preLog">
+                <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3>
+                <ol class="layui-code-ol">
+                @for (var index = 0; index < _lstLog.Length; index++)
+                {
+                    var log = _lstLog[index];
+                    <li>@(index + 1) : @log</li>
+                }
+                </ol>
+                </pre>
+        </div>
+        @{
+            if (_info.Status == EumBuildStatus.Building)
+            {
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;">
+                            <button class="layui-btn" @onclick="CancelBuild">取消</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private BuildVO _info = new();
+    private string[] _lstLog = new string[0];
+    private Timer _timer;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id > 0 && _info.Id == 0)
+        {
+            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+            if (_info == null)
+            {
+                await js.InvokeVoidAsync("layer.alert", "构建队列不存在", new {icon = 2, title = "出错了"});
+                GotoList();
+                return;
+            }
+
+            _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+            if (_info.Status != EumBuildStatus.Finish)
+            {
+                _timer = new Timer(1000);
+                _timer.Elapsed += async (sender, args) =>
+                {
+                    var oldLineCount = _lstLog.Length;
+                    _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                    _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+                    // 刷新页面
+                    await InvokeAsync(StateHasChanged);
+                    // 完成状态，则停止时间器
+                    if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
+                    // 有新内容时，滚屏到底部
+                    if (oldLineCount != _lstLog.Length) await js.InvokeVoidAsync("ScrollBodyTop");
+                };
+                _timer.Enabled = true;
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("ScrollBodyTop");
+    }
+
+    private async Task CancelBuild()
+    {
+        await _iocManager.Resolve<IBuildService>().Cancel(Id);
+        _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/builder/list");
+    }
+
+}

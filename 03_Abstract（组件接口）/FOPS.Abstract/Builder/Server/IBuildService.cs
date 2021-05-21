@@ -38,5 +38,10 @@ namespace FOPS.Abstract.Builder.Server
         /// </summary>
         /// <returns></returns>
         Task<List<BuildVO>> ToBuildingList();
+
+        /// <summary>
+        /// 查看构建信息
+        /// </summary>
+        Task<BuildVO> ToInfoAsync(int id);
     }
 }

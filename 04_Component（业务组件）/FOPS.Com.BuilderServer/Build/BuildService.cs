@@ -24,7 +24,6 @@ namespace FOPS.Com.BuilderServer.Build
         public IProjectService   ProjectService   { get; set; }
         public IGitService       GitService       { get; set; }
         public IBuildLogService  BuildLogService  { get; set; }
-        public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
         public IKubectlOpr       KubectlOpr       { get; set; }
         public IIocManager       IocManager       { get; set; }
@@ -129,9 +128,6 @@ namespace FOPS.Com.BuilderServer.Build
         /// </summary>
         public async Task<int> Add(int projectId, int clusterId)
         {
-            //var isHave = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId && (o.Status == EumBuildStatus.None || o.Status == EumBuildStatus.Building)).IsHavingAsync();
-            //if (isHave) throw new Exception("当前队列存在未完成的构建");
-
             // 获取数据库中最后一个编译版本号
             var buildNumber = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId).Desc(o => o.Id).GetValueAsync(o => o.BuildNumber.GetValueOrDefault());
             var po = new BuildPO
@@ -155,6 +151,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// </summary>
         public Task Cancel(int id)
         {
+            BuildLogService.Write(id,"手动取消");
             return BuilderContext.Data.Build.Where(o => o.Id == id).UpdateAsync(new BuildPO
             {
                 Status    = EumBuildStatus.Finish,
@@ -232,5 +229,10 @@ namespace FOPS.Com.BuilderServer.Build
         /// </summary>
         /// <returns></returns>
         public Task<List<BuildVO>> ToBuildingList() => BuilderContext.Data.Build.Desc(o=>o.Id).ToListAsync(20).MapAsync<BuildVO,BuildPO>();
+
+        /// <summary>
+        /// 查看构建信息
+        /// </summary>
+        public Task<BuildVO> ToInfoAsync(int id) => BuilderContext.Data.Build.Where(o => o.Id == id).ToEntityAsync().MapAsync<BuildVO, BuildPO>();
     }
 }

@@ -19,7 +19,7 @@
             }
             <a href="@GetUrl(_nextIndex)" class="layui-laypage-next @_nextClass">
                 <i class="layui-icon"></i>
-            </a><span class="layui-laypage-skip">到第<input type="text" min="1" @bind="_jumpIndex" class="layui-input">页<button type="button" class="layui-laypage-btn" @onclick="Jump">确定</button></span><span class="layui-laypage-count">共 @TotalCount 条</span>
+            </a><span class="layui-laypage-skip">到第<input type="text" min="1" @bind="_jumpIndex" @bind:event="oninput" class="layui-input">页<button type="button" class="layui-laypage-btn" @onclick="Jump">确定</button></span><span class="layui-laypage-count">共 @TotalCount 条</span>
             <span class="layui-laypage-limits">
                 @PageSize 条/页
             </span>
