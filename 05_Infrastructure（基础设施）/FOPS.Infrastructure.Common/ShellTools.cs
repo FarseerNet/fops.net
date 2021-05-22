@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
-using FOPS.Abstract.K8S.Entity;
+using FS.Core.Entity;
 
 namespace FOPS.Infrastructure.Common
 {
@@ -17,40 +16,47 @@ namespace FOPS.Infrastructure.Common
         /// <param name="actReceiveOutput">外部第一时间，处理拿到的消息 </param>
         public static async Task<RunShellResult> Run(string cmd, string arguments, Action<string> actReceiveOutput, string workingDirectory = null)
         {
-            if (actReceiveOutput != null) actReceiveOutput($"{cmd} {arguments}");
-            var psi = new ProcessStartInfo(cmd, arguments)
+            try
             {
-                RedirectStandardOutput = true,
-                RedirectStandardError  = true,
-                UseShellExecute        = false,
-                WorkingDirectory       = workingDirectory
-            };
-
-            var runShellResult = new RunShellResult {IsError = false, Output = new List<string>()};
-
-            using (var proc = Process.Start(psi))
-            {
-                proc.EnableRaisingEvents = true;
-
-                void ProcOnOutputDataReceived(object sender, DataReceivedEventArgs args)
+                if (actReceiveOutput != null) actReceiveOutput($"{cmd} {arguments}");
+                var psi = new ProcessStartInfo(cmd, arguments)
                 {
-                    if (string.IsNullOrWhiteSpace(args.Data)) return;
-                    runShellResult.Output.Add(args.Data);
-                    // 外部第一时间，处理拿到的消息
-                    if (actReceiveOutput != null) actReceiveOutput(args.Data);
+                    RedirectStandardOutput = true,
+                    RedirectStandardError  = true,
+                    UseShellExecute        = false,
+                    WorkingDirectory       = workingDirectory
+                };
+
+                var runShellResult = new RunShellResult {IsError = false, Output = new List<string>()};
+
+                using (var proc = Process.Start(psi))
+                {
+                    proc.EnableRaisingEvents = true;
+
+                    void ProcOnOutputDataReceived(object sender, DataReceivedEventArgs args)
+                    {
+                        if (string.IsNullOrWhiteSpace(args.Data)) return;
+                        runShellResult.Output.Add(args.Data);
+                        // 外部第一时间，处理拿到的消息
+                        if (actReceiveOutput != null) actReceiveOutput(args.Data);
+                    }
+
+                    proc.OutputDataReceived += ProcOnOutputDataReceived;
+                    proc.ErrorDataReceived  += ProcOnOutputDataReceived;
+                    proc.BeginOutputReadLine();
+                    proc.BeginErrorReadLine();
+
+                    // 等待退出
+                    proc.WaitForExit();
+                    runShellResult.IsError = proc.ExitCode != 0;
                 }
 
-                proc.OutputDataReceived += ProcOnOutputDataReceived;
-                proc.ErrorDataReceived  += ProcOnOutputDataReceived;
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-
-                // 等待退出
-                proc.WaitForExit();
-                runShellResult.IsError = proc.ExitCode != 0;
+                return runShellResult;
             }
-
-            return runShellResult;
+            catch (Exception e)
+            {
+                return new RunShellResult() {IsError = true, Output = new List<string>() {e.Message}};
+            }
         }
     }
 }

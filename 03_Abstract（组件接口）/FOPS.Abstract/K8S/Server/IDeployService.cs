@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
+using FS.Core.Entity;
 using FS.DI;
 
 namespace FOPS.Abstract.K8S.Server

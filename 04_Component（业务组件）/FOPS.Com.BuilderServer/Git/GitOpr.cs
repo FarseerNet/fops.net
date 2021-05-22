@@ -2,10 +2,10 @@ using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
-using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Infrastructure.Common;
+using FS.Core.Entity;
 
 namespace FOPS.Com.BuilderServer.Git
 {

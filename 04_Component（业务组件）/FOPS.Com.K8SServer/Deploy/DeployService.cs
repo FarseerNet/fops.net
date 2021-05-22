@@ -7,6 +7,7 @@ using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Infrastructure.Common;
+using FS.Core.Entity;
 
 namespace FOPS.Com.K8SServer.Deploy
 {

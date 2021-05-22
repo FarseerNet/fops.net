@@ -7,6 +7,7 @@ using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.BuildLog;
 using FOPS.Infrastructure.Common;
+using FS.Core.Entity;
 using FS.DI;
 
 namespace FOPS.Com.BuilderServer.Dotnet
