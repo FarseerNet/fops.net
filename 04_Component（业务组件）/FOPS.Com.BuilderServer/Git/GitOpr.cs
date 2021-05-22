@@ -6,6 +6,7 @@ using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
+using FS.Utils.Component;
 
 namespace FOPS.Com.BuilderServer.Git
 {
@@ -35,7 +36,6 @@ namespace FOPS.Com.BuilderServer.Git
         /// </summary>
         public async Task<RunShellResult> PullAsync(GitVO git, Action<string> actReceiveOutput)
         {
-            
             RunShellResult runShellResult;
 
             // 获取Git存放的路径
@@ -44,11 +44,11 @@ namespace FOPS.Com.BuilderServer.Git
             // 判断git是否有clone过
             if (!System.IO.Directory.Exists(gitPath))
             {
-                runShellResult = await CloneAsync(git, gitPath, actReceiveOutput);
+                runShellResult = Clone(git, gitPath, actReceiveOutput);
             }
             else
             {
-                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
+                runShellResult = ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
             }
 
             return runShellResult;
@@ -82,7 +82,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        private async Task<RunShellResult> CloneAsync(GitVO info, string path, Action<string> actReceiveOutput)
+        private RunShellResult Clone(GitVO info, string path, Action<string> actReceiveOutput)
         {
             var url = info.Hub;
             // 需要密码
@@ -91,7 +91,7 @@ namespace FOPS.Com.BuilderServer.Git
                 url = url.Replace("//", $"//{info.UserName.Replace("@", "%40")}:{info.UserPwd}@");
             }
 
-            return await ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput);
+            return ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput);
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
+using FS.Utils.Component;
 
 namespace FOPS.Com.K8SServer.Deploy
 {
@@ -95,7 +96,7 @@ namespace FOPS.Com.K8SServer.Deploy
             System.IO.File.WriteAllText(fileName, yamlContent, Encoding.UTF8);
 
             // 发布
-            return await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}", null);
+            return ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}", null);
         }
     }
 }

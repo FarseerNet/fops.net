@@ -1,10 +1,10 @@
 @using FOPS.Abstract.MetaInfo.Server
 @using FOPS.Abstract.Builder.Enum
-@using FOPS.Abstract.Builder.Enum
-@using System.Timers
-@using FOPS.Abstract.Builder.Entity
 @using FOPS.Abstract.Builder.Server
 @using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.Builder.Entity
+@using System.Timers
+
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -58,38 +58,34 @@
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-14-0-9">
-                        @{
-                            switch (info.Status)
-                            {
-                                case EumBuildStatus.None:
-                                    <button class="layui-btn layui-btn-xs layui-btn-primary">未开始</button>
-                                    break;
-                                case EumBuildStatus.Building:
-                                    <button class="layui-btn layui-btn-xs layui-btn-normal">构建中</button>
-                                    break;
-                                case EumBuildStatus.Finish:
-                                    if (info.IsSuccess)
-                                    {
-                                        <button class="layui-btn layui-btn-xs">成功</button>
-                                    }
-                                    else
-                                    {
-                                        <button class="layui-btn layui-btn-xs layui-btn-danger">失败</button>
-                                    }
-                                    break;
-                            }
+                        @switch (info.Status)
+                        {
+                            case EumBuildStatus.None:
+                                <button class="layui-btn layui-btn-xs layui-btn-primary">未开始</button>
+                                break;
+                            case EumBuildStatus.Building:
+                                <button class="layui-btn layui-btn-xs layui-btn-normal">构建中</button>
+                                break;
+                            case EumBuildStatus.Finish:
+                                if (info.IsSuccess)
+                                {
+                                    <button class="layui-btn layui-btn-xs">成功</button>
+                                }
+                                else
+                                {
+                                    <button class="layui-btn layui-btn-xs layui-btn-danger">失败</button>
+                                }
+                                break;
                         }
                     </div>
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-14-0-10">
-                        @{
-                            if (info.Status == EumBuildStatus.Building)
-                            {
-                                <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
-                                    <i class="layui-icon"></i>
-                                </button>
-                            }
+                        @if (info.Status == EumBuildStatus.Building)
+                        {
+                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
+                                <i class="layui-icon"></i>
+                            </button>
                         }
                     </div>
                 </td>
@@ -99,11 +95,11 @@
     </table>
 </div>
 
-@{
+@code{
         private List<BuildVO> _lstBuild = new();
         private List<ProjectVO> _lst = new();
         private Timer _timer;
-        
+
         private async Task CancelBuild(BuildVO info)
         {
             await _iocManager.Resolve<IBuildService>().Cancel(info.Id);
@@ -113,7 +109,7 @@
         protected override async Task OnInitializedAsync()
         {
             _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
-        
+
             _timer = new Timer(1000);
             _timer.Elapsed += async (_, _) =>
             {

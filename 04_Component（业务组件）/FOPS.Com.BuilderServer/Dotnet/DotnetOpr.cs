@@ -9,6 +9,7 @@ using FOPS.Com.BuilderServer.BuildLog;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
 using FS.DI;
+using FS.Utils.Component;
 
 namespace FOPS.Com.BuilderServer.Dotnet
 {
@@ -56,8 +57,8 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
         {
-            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
-            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
+            ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
+            return ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
         }
     }
 }
