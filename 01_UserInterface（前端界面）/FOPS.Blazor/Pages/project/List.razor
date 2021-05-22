@@ -8,6 +8,7 @@
 @using FOPS.Abstract.Docker.Server
 @using FOPS.Abstract.K8S.Server
 @using FS.Extends
+@using Newtonsoft.Json
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -198,6 +199,7 @@
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
                                         <button class="layui-btn layui-btn-sm" @onclick="() => Save(info.Id)">保存</button>
+                                        <button class="layui-btn layui-btn-sm layui-btn-normal" @onclick="() => Copy(info)">复制</button>
                                     </div>
                                 </td>
                             </tr>
@@ -276,6 +278,17 @@
 
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
+    }
+
+    /// 复制项目
+    private async Task Copy(ProjectVO info)
+    {
+        var newInfo=JsonConvert.DeserializeObject<ProjectVO>(JsonConvert.SerializeObject(info));
+        newInfo.Name += "复制";
+        newInfo.Id = 0;
+        await _iocManager.Resolve<IProjectService>().AddAsync(newInfo);
+        await GetList();
+        await js.InvokeVoidAsync("layer.alert", "复制成功", new {icon = 1});
     }
 
 }
