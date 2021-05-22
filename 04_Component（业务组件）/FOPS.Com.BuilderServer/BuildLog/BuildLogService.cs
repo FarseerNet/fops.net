@@ -30,7 +30,7 @@ namespace FOPS.Com.BuilderServer.BuildLog
         public string[] View(int buildId)
         {
             var path = SavePath + $"{buildId}.txt";
-            return System.IO.File.ReadAllLines(path);
+            return !System.IO.File.Exists(path) ? new string[0] : System.IO.File.ReadAllLines(path);
         }
     }
 }
