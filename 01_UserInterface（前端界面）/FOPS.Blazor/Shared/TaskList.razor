@@ -5,6 +5,7 @@
 @using FOPS.Abstract.Builder.Entity
 @using System.Timers
 @using FOPS.Abstract.Fss.Entity
+@using FOPS.Abstract.Fss.Enum
 @using FOPS.Abstract.Fss.Server
 @using FS.Extends
 
@@ -67,7 +68,29 @@
                     <div class="layui-table-cell laytable-cell-task-3">@info.Progress%</div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-task-4">@info.Status.GetName()</div>
+                    <div class="layui-table-cell laytable-cell-task-4">
+                        @switch (info.Status)
+                        {
+                            case EumTaskType.None:
+                                <button class="layui-btn layui-btn-xs layui-btn-primary">@info.Status.GetName()</button>
+                                break;
+                            case EumTaskType.Scheduler:
+                                <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
+                                break;
+                            case EumTaskType.Working:
+                                <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
+                                break;
+                            case EumTaskType.Fail:
+                                <button class="layui-btn layui-btn-xs layui-btn-danger">@info.Status.GetName()</button>
+                                break;
+                            case EumTaskType.Success:
+                                <button class="layui-btn layui-btn-xs">@info.Status.GetName()</button>
+                                break;
+                            case EumTaskType.ReScheduler:
+                                <button class="layui-btn layui-btn-xs layui-btn-danger">@info.Status.GetName()</button>
+                                break;
+                        }
+                    </div>
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-task-5">@info.ClientIp</div>
