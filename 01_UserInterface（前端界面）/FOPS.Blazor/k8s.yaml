@@ -39,6 +39,23 @@ spec:
           env:
             - name: TZ
               value: Asia/Shanghai
+          volumeMounts:
+            - name: fops
+              mountPath: /root/.kube/ # K8S集群管理的配置路径
+              subPath: kube
+            - name: fops
+              mountPath: /var/lib/fops/log/ # 构建日志
+              subPath: log
+            - name: fops
+              mountPath: /var/lib/fops/dist/  # 编译后存放的路径
+              subPath: dist
+            - name: fops
+              mountPath: /var/lib/fops/git/   # GIT仓库存放的路径
+              subPath: git
+      volumes:
+        - name: fops
+          persistentVolumeClaim:
+            claimName: pvc-fops
 ---
 apiVersion: v1
 data:
