@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FS;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,15 @@ namespace FOPS.Blazor
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(log => log.ClearProviders())
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    //Setup a HTTP/2 endpoint without TLS.
+                    webBuilder.ConfigureKestrel(options => options.Listen(IPAddress.Any, 80)).UseStartup<Startup>();
+                });
+        }
     }
 }
