@@ -10,7 +10,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        Task<List<TaskVO>> ToListAsync();
+        Task<List<TaskVO>> ToTopListAsync(int top);
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表

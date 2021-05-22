@@ -14,7 +14,7 @@ namespace FOPS.Com.FssServer.Tasks.Dal
         /// <summary>
         /// 获取所有任务列表
         /// </summary>
-        public Task<List<TaskPO>> ToListAsync() => FssContext.Data.Task.ToListAsync();
+        public Task<List<TaskPO>> ToTopListAsync(int top) => FssContext.Data.Task.Desc(o => o.Id).ToListAsync(top);
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表

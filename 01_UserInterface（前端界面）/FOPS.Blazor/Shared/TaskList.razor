@@ -1,0 +1,109 @@
+@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.Builder.Enum
+@using FOPS.Abstract.Builder.Server
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.Builder.Entity
+@using System.Timers
+@using FOPS.Abstract.Fss.Entity
+@using FOPS.Abstract.Fss.Server
+@using FS.Extends
+
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-table-header">
+    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+        <thead>
+        <tr>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-1">
+                    <span>任务名称</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-2">
+                    <span>开始时间</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-3">
+                    <span>进度</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-4">
+                    <span>状态</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-5">
+                    <span>客户端IP</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-6">
+                    <span>创建时间</span>
+                </div>
+            </th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div class="layui-table-body layui-table-main">
+    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+        <tbody>
+        @for (var index = 0; index < _lst.Count; index++)
+        {
+            var info = _lst[index];
+            <tr data-index="@index">
+                <td>
+                    <div class="laytable-cell-task-1">@info.Caption</div>
+                </td>
+                <td>
+                    <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-3">@info.Progress%</div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-4">@info.Status.GetName()</div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-5">@info.ClientIp</div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<style>
+.laytable-cell-task-1 {width: 80px;}
+.laytable-cell-task-2 {width: 150px;}
+.laytable-cell-task-3 {width: 80px;}
+.laytable-cell-task-4 {width: 80px;}
+.laytable-cell-task-5 {width: 120px;}
+.laytable-cell-task-6 {width: 120px;}
+</style>
+
+@code{
+        private List<TaskVO> _lst = new();
+        private Timer _timer;
+
+        protected override async Task OnInitializedAsync()
+        {
+            _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+
+            _timer = new Timer(1000);
+            _timer.Elapsed += async (_, _) =>
+            {
+                _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+                // 刷新页面
+                await InvokeAsync(StateHasChanged);
+            };
+            _timer.Enabled = true;
+        }
+}
