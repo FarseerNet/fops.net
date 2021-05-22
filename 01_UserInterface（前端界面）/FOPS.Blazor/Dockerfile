@@ -1,5 +1,5 @@
 ﻿# 添加基础镜像
-FROM mcr.microsoft.com/dotnet/sdk:5.0
+FROM farseernet/dotnet:sdk_kubectl-5.0
 WORKDIR /app
 COPY . ./
 
