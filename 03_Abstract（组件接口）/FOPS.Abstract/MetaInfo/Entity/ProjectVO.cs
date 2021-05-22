@@ -33,14 +33,14 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// 拉取时间
         /// </summary>
         public DateTime GitPullAt { get; set; }
-        /// <summary>
-        /// Git名称
-        /// </summary>
-        public string GitName { get; set; }
-        /// <summary>
-        /// 托管地址
-        /// </summary>
-        public string GitHub { get; set; }
+        // /// <summary>
+        // /// Git名称
+        // /// </summary>
+        // public string GitName { get; set; }
+        // /// <summary>
+        // /// 托管地址
+        // /// </summary>
+        // public string GitHub { get; set; }
         /// <summary>
         /// DockerHub模板
         /// </summary>
