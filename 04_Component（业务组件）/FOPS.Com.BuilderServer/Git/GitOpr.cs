@@ -4,7 +4,6 @@ using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
-using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
 using FS.Utils.Component;
 
@@ -38,6 +37,9 @@ namespace FOPS.Com.BuilderServer.Git
         {
             RunShellResult runShellResult;
 
+            // 如果Git存放的目录不存在，则创建
+            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            
             // 获取Git存放的路径
             var gitPath = GetGitPath(git);
 
