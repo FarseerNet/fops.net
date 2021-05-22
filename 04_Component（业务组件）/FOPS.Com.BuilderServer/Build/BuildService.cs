@@ -78,7 +78,7 @@ namespace FOPS.Com.BuilderServer.Build
                 var lstGit = await GitService.ToListAsync();
                 foreach (var gitVO in lstGit)
                 {
-                    if ((await GitOpr.PullAsync(build, project, git, ActWriteLog)).IsError)
+                    if ((await GitOpr.PullAsync(build, project, gitVO, ActWriteLog)).IsError)
                     {
                         await Fail(build, project, startNew.ElapsedMilliseconds);
                         return;
