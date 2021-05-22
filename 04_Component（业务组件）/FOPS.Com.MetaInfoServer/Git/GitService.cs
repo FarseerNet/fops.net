@@ -31,6 +31,7 @@ namespace FOPS.Com.MetaInfoServer.Git
         public async Task<int> AddAsync(GitVO vo)
         {
             var po = vo.Map<GitPO>();
+            po.PullAt = DateTime.MinValue;
             await MetaInfoContext.Data.Git.InsertAsync(po, true);
             vo.Id = po.Id.GetValueOrDefault();
             return vo.Id;
