@@ -1,0 +1,145 @@
+@page "/fss/task_group/tasklist/{GroupId:int}/{pageIndex:int}"
+@page "/fss/task_group/tasklist/{GroupId:int}"
+@using FOPS.Abstract.Fss.Server
+@using FOPS.Abstract.Fss.Entity
+@using FOPS.Abstract.Fss.Enum
+@using FS.Extends
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        任务列表
+        <div class="layui-right">
+            <button class="layui-btn layui-btn-right" @onclick=GotoList><i class="am-icon-plus"></i>列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-1">
+                                    <span>任务名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-2">
+                                    <span>开始时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-3">
+                                    <span>进度</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-4">
+                                    <span>状态</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-5">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-6">
+                                    <span>创建时间</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="laytable-cell-task-1">@info.Caption</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-3">@info.Progress%</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-4">
+                                        @switch (info.Status)
+                                        {
+                                            case EumTaskType.None:
+                                                <button class="layui-btn layui-btn-xs layui-btn-primary">@info.Status.GetName()</button>
+                                                break;
+                                            case EumTaskType.Scheduler:
+                                                <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
+                                                break;
+                                            case EumTaskType.Working:
+                                                <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
+                                                break;
+                                            case EumTaskType.Fail:
+                                                <button class="layui-btn layui-btn-xs layui-btn-danger">@info.Status.GetName()</button>
+                                                break;
+                                            case EumTaskType.Success:
+                                                <button class="layui-btn layui-btn-xs">@info.Status.GetName()</button>
+                                                break;
+                                            case EumTaskType.ReScheduler:
+                                                <button class="layui-btn layui-btn-xs layui-btn-danger">@info.Status.GetName()</button>
+                                                break;
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-5">@info.ClientIp</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="@pageUrl"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+.laytable-cell-task-1 {width: 300px;}
+.laytable-cell-task-2 {width: 150px;}
+.laytable-cell-task-3 {width: 60px;}
+.laytable-cell-task-4 {width: 80px;}
+.laytable-cell-task-5 {width: 120px;}
+.laytable-cell-task-6 {width: 150px;}
+</style>
+
+@code{
+
+    [Parameter] public int PageIndex { get; set; } = 1;
+    [Parameter] public int GroupId { get; set; }
+    private int _totalCount;
+    private int _pageSize = 20;
+    private string pageUrl => "/fss/task_group/tasklist/" + GroupId + "/{index}";
+    private List<TaskVO> _lst = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (PageIndex < 1) PageIndex = 1;
+        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/fss/task_group/list");
+    }
+
+}

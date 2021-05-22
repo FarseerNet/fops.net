@@ -21,6 +21,14 @@ namespace FOPS.Com.FssServer.Tasks
         public Task<List<TaskVO>> ToTopListAsync(int top) => TaskAgent.ToTopListAsync(top).MapAsync<TaskVO, TaskPO>();
 
         /// <summary>
+        /// 获取指定任务组的任务列表
+        /// </summary>
+        public Task<List<TaskVO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount)
+        {
+            return TaskAgent.ToListAsync(groupId, pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+        }
+
+        /// <summary>
         /// 获取指定任务组执行成功的任务列表
         /// </summary>
         public Task<List<TaskVO>> ToSuccessListAsync(int groupId, int top) => TaskAgent.ToSuccessListAsync(groupId, top).MapAsync<TaskVO, TaskPO>();

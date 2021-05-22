@@ -21,5 +21,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 清除成功的任务记录（1天前）
         /// </summary>
         Task ClearSuccessAsync(int groupId, int taskId);
+
+        /// <summary>
+        /// 获取指定任务组的任务列表
+        /// </summary>
+        Task<List<TaskVO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount);
     }
 }

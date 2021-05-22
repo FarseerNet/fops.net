@@ -67,6 +67,11 @@
                                     <span>运行次数</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-9">
+                                    <span>操作</span>
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                     </table>
@@ -86,7 +91,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="laytable-cell-14-0-2">
-                                        <a href="/fss/task_group/update/@info.Id">【@info.JobName】@info.Caption</a>
+                                        <a href="/fss/task_group/tasklist/@info.Id">【@info.JobName】@info.Caption</a>
                                     </div>
                                 </td>
                                 <td data-field="Items">
@@ -106,6 +111,11 @@
                                 </td>
                                 <td data-field="Games">
                                     <div class="layui-table-cell laytable-cell-14-0-8">@info.RunCount</div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-9">
+                                        <button class="layui-btn layui-btn-sm" @onclick="()=>GotoUpdate(info.Id)">编辑</button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -127,6 +137,7 @@
     .laytable-cell-14-0-6{ width: 150px; }
     .laytable-cell-14-0-7{ width: 80px; }
     .laytable-cell-14-0-8{ width: 80px; }
+    .laytable-cell-14-0-9{ width: 140px; }
 </style>
 
 @code{
@@ -160,5 +171,10 @@
     private void GotoAdd()
     {
         nav.NavigateTo("/fss/task_group/add");
+    }
+
+    private void GotoUpdate(int id)
+    {
+        nav.NavigateTo($"/fss/task_group/update/{id}");
     }
 }
