@@ -22,7 +22,7 @@ namespace FOPS.Com.K8SServer.Cluster.Dal
         /// <summary>
         /// 本地kubectl配置地址
         /// </summary>
-        [Field(Name = "config_name")]
+        [Field(Name = "config")]
         public string Config { get; set; }
         
         /// <summary>
