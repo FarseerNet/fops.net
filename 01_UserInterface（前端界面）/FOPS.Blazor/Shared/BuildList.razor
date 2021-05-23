@@ -4,6 +4,7 @@
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.Builder.Entity
 @using System.Timers
+@using FS.Extends
 
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
@@ -14,22 +15,22 @@
         <thead>
         <tr>
             <th data-field="ID">
-                <div class="layui-table-cell laytable-cell-14-0-7">
+                <div class="layui-table-cell laytable-cell-build-0">
                     <span>ID</span>
                 </div>
             </th>
             <th data-field="Type">
-                <div class="layui-table-cell laytable-cell-14-0-8">
+                <div class="layui-table-cell laytable-cell-build-1">
                     <span>项目名称</span>
                 </div>
             </th>
             <th data-field="Type">
-                <div class="layui-table-cell laytable-cell-14-0-9">
+                <div class="layui-table-cell laytable-cell-build-2">
                     <span>状态</span>
                 </div>
             </th>
             <th data-field="Type">
-                <div class="layui-table-cell laytable-cell-14-0-10">
+                <div class="layui-table-cell laytable-cell-build-3">
                     <span>操作</span>
                 </div>
             </th>
@@ -45,10 +46,10 @@
             var info = _lstBuild[index];
             <tr data-index="@index">
                 <td>
-                    <div class="layui-table-cell laytable-cell-14-0-7"> @info.Id</div>
+                    <div class="layui-table-cell laytable-cell-build-0"> @info.Id</div>
                 </td>
                 <td>
-                    <div class="laytable-cell-14-0-8">
+                    <div class="laytable-cell-build-1">
                         @{
                             var projectVO = _lst.Find(o => o.Id == info.ProjectId);
                             if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId);
@@ -57,7 +58,7 @@
                     </div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-14-0-9">
+                    <div class="layui-table-cell laytable-cell-build-2">
                         @switch (info.Status)
                         {
                             case EumBuildStatus.None:
@@ -80,12 +81,16 @@
                     </div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-14-0-10">
+                    <div class="layui-table-cell laytable-cell-build-3">
                         @if (info.Status == EumBuildStatus.Building)
                         {
                             <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
                                 <i class="layui-icon"></i>
                             </button>
+                        }
+                        @if (info.Status == EumBuildStatus.Finish)
+                        {
+                            <span>@((DateTime.Now - info.FinishAt).GetDateDesc())</span>
                         }
                     </div>
                 </td>
@@ -95,6 +100,12 @@
     </table>
 </div>
 
+<style>
+    .laytable-cell-build-0{ width: 70px; }
+    .laytable-cell-build-1{ width: 150px; }
+    .laytable-cell-build-2{ width: 80px; }
+    .laytable-cell-build-3{ width: 110px; }
+</style>
 @code{
         private List<BuildVO> _lstBuild = new();
         private List<ProjectVO> _lst = new();
