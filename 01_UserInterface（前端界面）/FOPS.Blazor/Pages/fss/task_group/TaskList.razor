@@ -81,7 +81,12 @@
                                     <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-3">@info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-task-3">
+                                        @if (info.Status is EumTaskType.Working or EumTaskType.Fail or EumTaskType.Success)
+                                        {
+                                            info.RunAt.ToString("yyyy-MM-dd HH:mm:ss");
+                                        }
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-4">@info.RunSpeed ms</div>
@@ -160,7 +165,7 @@
         _timer.Elapsed += async (_, _) =>
         {
             _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
-            // 刷新页面
+    // 刷新页面
             await InvokeAsync(StateHasChanged);
         };
         _timer.Enabled = true;
