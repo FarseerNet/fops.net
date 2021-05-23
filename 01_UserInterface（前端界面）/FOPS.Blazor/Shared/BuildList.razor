@@ -92,9 +92,6 @@
                         @if (info.Status == EumBuildStatus.Finish)
                         {
                             <span>@((info.FinishAt - info.CreateAt).GetDateDesc())</span>
-                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
-                                <i class="layui-icon"></i>
-                            </button>
                         }
                     </div>
                 </td>
