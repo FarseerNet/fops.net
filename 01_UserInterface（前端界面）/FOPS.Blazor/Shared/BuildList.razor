@@ -109,12 +109,12 @@
         protected override async Task OnInitializedAsync()
         {
             _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
-            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
+            await GetList();
 
             _timer = new Timer(2000);
             _timer.Elapsed += async (_, _) =>
             {
-                _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
+                await GetList();
                 // 刷新页面
                 await InvokeAsync(StateHasChanged);
             };
@@ -124,6 +124,6 @@
         private async Task GetList()
         {
             // 重新读取所有列表
-            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
+            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20);
         }
 }

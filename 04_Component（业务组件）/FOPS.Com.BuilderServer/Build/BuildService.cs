@@ -239,7 +239,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// 获取构建队列前30
         /// </summary>
         /// <returns></returns>
-        public Task<List<BuildVO>> ToBuildingList() => BuilderContext.Data.Build.Select(o => new {o.Id, o.Status, o.BuildNumber, o.IsSuccess, o.ProjectId,o.UseTime}).Desc(o => o.Id).ToListAsync(20).MapAsync<BuildVO, BuildPO>();
+        public Task<List<BuildVO>> ToBuildingList(int top) => BuilderContext.Data.Build.Select(o => new {o.Id, o.Status, o.BuildNumber, o.IsSuccess, o.ProjectId,o.UseTime}).Desc(o => o.Id).ToListAsync(top).MapAsync<BuildVO, BuildPO>();
 
         /// <summary>
         /// 查看构建信息
