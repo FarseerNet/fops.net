@@ -29,26 +29,36 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-2">
-                                    <span>开始时间</span>
+                                    <span>计划时间</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-3">
-                                    <span>进度</span>
+                                    <span>实际运行</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-4">
-                                    <span>状态</span>
+                                    <span>耗时</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-5">
-                                    <span>客户端IP</span>
+                                    <span>进度</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-6">
+                                    <span>状态</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-7">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-8">
                                     <span>创建时间</span>
                                 </div>
                             </th>
@@ -70,10 +80,16 @@
                                     <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-3">@info.Progress%</div>
+                                    <div class="layui-table-cell laytable-cell-task-3">@info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-4">
+                                    <div class="layui-table-cell laytable-cell-task-4">@info.RunSpeed ms</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-5">@info.Progress%</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-6">
                                         @switch (info.Status)
                                         {
                                             case EumTaskType.None:
@@ -98,10 +114,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-5">@info.ClientIp</div>
+                                    <div class="layui-table-cell laytable-cell-task-7">@info.ClientIp</div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                             </tr>
                         }
@@ -116,10 +132,12 @@
 <style>
 .laytable-cell-task-1 {width: 300px;}
 .laytable-cell-task-2 {width: 150px;}
-.laytable-cell-task-3 {width: 60px;}
-.laytable-cell-task-4 {width: 80px;}
-.laytable-cell-task-5 {width: 120px;}
-.laytable-cell-task-6 {width: 150px;}
+.laytable-cell-task-3 {width: 150px;}
+.laytable-cell-task-4 {width: 100px;}
+.laytable-cell-task-5 {width: 100px;}
+.laytable-cell-task-6 {width: 80px;}
+.laytable-cell-task-7 {width: 120px;}
+.laytable-cell-task-8 {width: 150px;}
 </style>
 
 @code{

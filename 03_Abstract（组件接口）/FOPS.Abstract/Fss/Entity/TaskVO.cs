@@ -32,6 +32,11 @@ namespace FOPS.Abstract.Fss.Entity
         /// 开始时间
         /// </summary>
         public DateTime StartAt { get; set; }
+
+        /// <summary>
+        /// 实际执行时间
+        /// </summary>
+        public DateTime RunAt { get; set; }
         
         /// <summary>
         /// 运行耗时

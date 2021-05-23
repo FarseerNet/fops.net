@@ -19,7 +19,7 @@ namespace FOPS.Com.FssServer.Tasks.Dal
         /// <summary>
         /// 获取指定任务组的任务列表
         /// </summary>
-        public Task<List<TaskPO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId).Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp}).Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount);
+        public Task<List<TaskPO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId).Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt}).Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount);
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表
