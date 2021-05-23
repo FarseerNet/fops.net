@@ -214,7 +214,7 @@
 </div>
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
-    .laytable-cell-14-0-1{ width: 150px; }
+    .laytable-cell-14-0-1{ width: 180px; }
     .laytable-cell-14-0-2{ width: 115px; }
     .laytable-cell-14-0-3{ width: 140px; }
     select { width: 90px; }
@@ -286,9 +286,8 @@
         var newInfo=JsonConvert.DeserializeObject<ProjectVO>(JsonConvert.SerializeObject(info));
         newInfo.Name += "复制";
         newInfo.Id = 0;
-        await _iocManager.Resolve<IProjectService>().AddAsync(newInfo);
-        await GetList();
-        await js.InvokeVoidAsync("layer.alert", "复制成功", new {icon = 1});
+        var id=await _iocManager.Resolve<IProjectService>().AddAsync(newInfo);
+        nav.NavigateTo($"/project/update/{id}");
     }
 
 }

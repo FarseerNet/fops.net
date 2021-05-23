@@ -56,19 +56,6 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Git仓库</label>
-                        <div class="layui-input-inline">
-                            <select @bind="_info.GitId">
-                                @foreach (var gitVO in _lstGit)
-                                {
-                                    <option value="@gitVO.Id">@gitVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
                     <label class="layui-form-label">自定义变量</label>
                     <div class="layui-input-inline">
                         <input type="text" @bind="_info.K8STplVariable" autocomplete="off" placeholder="自定义变量，K1=V1,K2=V2" class="layui-input" style="width:500px;">
@@ -179,6 +166,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">Git仓库</label>
+                        <div class="layui-input-inline">
+                            <select @bind="_info.GitId">
+                                @foreach (var gitVO in _lstGit)
+                                {
+                                    <option value="@gitVO.Id">@gitVO.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -221,7 +221,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/project/list");
+            GotoList();
         }
         try
         {
@@ -234,8 +234,7 @@
             else if (!_info.Path.StartsWith('/')) _info.Path = "/" + _info.Path;
 
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/project/update/{_info.Id}");
+            GotoList();
         }
         catch (Exception e)
         {
@@ -248,7 +247,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/project/list");
+            GotoList();
         }
     }
 
@@ -260,7 +259,7 @@
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
-                nav.NavigateTo($"/project/list");
+                GotoList();
             }
             _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
             _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
