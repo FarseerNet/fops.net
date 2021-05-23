@@ -52,12 +52,6 @@ namespace FOPS.Com.BuilderServer.Build.Dal
         public DateTime? CreateAt { get; set; }
         
         /// <summary>
-        /// 耗时
-        /// </summary>
-        [Field(Name = "use_time")]
-        public long? UseTime { get; set; }
-        
-        /// <summary>
         /// 完成时间
         /// </summary>
         [Field(Name = "finish_at")]

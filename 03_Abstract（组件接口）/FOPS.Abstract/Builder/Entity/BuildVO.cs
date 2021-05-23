@@ -41,11 +41,6 @@ namespace FOPS.Abstract.Builder.Entity
         public DateTime CreateAt { get; set; }
         
         /// <summary>
-        /// 耗时
-        /// </summary>
-        public long UseTime { get; set; }
-        
-        /// <summary>
         /// 完成时间
         /// </summary>
         public DateTime FinishAt { get; set; }

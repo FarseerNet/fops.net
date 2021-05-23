@@ -84,13 +84,17 @@
                     <div class="layui-table-cell laytable-cell-build-3">
                         @if (info.Status == EumBuildStatus.Building)
                         {
+                            <span>@((DateTime.Now - info.CreateAt).GetDateDesc())</span>
                             <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
                                 <i class="layui-icon"></i>
                             </button>
                         }
                         @if (info.Status == EumBuildStatus.Finish)
                         {
-                            <span>@((DateTime.Now - info.FinishAt).GetDateDesc())</span>
+                            <span>@((info.FinishAt - info.CreateAt).GetDateDesc())</span>
+                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
+                                <i class="layui-icon"></i>
+                            </button>
                         }
                     </div>
                 </td>
@@ -101,10 +105,10 @@
 </div>
 
 <style>
-    .laytable-cell-build-0{ width: 70px; }
+    .laytable-cell-build-0{ width: 60px; }
     .laytable-cell-build-1{ width: 150px; }
-    .laytable-cell-build-2{ width: 80px; }
-    .laytable-cell-build-3{ width: 110px; }
+    .laytable-cell-build-2{ width: 70px; }
+    .laytable-cell-build-3{ width: 130px; }
 </style>
 
 @code{
