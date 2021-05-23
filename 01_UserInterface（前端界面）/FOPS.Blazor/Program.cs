@@ -22,7 +22,7 @@ namespace FOPS.Blazor
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(log => log.ClearProviders())
+                //.ConfigureLogging(log => log.ClearProviders())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     //Setup a HTTP/2 endpoint without TLS.

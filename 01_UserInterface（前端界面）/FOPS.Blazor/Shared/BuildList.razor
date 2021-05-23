@@ -109,8 +109,9 @@
         protected override async Task OnInitializedAsync()
         {
             _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
+            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
 
-            _timer = new Timer(1000);
+            _timer = new Timer(2000);
             _timer.Elapsed += async (_, _) =>
             {
                 _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList();
