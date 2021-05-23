@@ -32,20 +32,28 @@
     [Parameter] public int TotalCount { get; set; }
     [Parameter] public int PageSize { get; set; }
     [Parameter] public string PageUrl { get; set; }
-    
+
     private int _preIndex = 1;
     private int _nextIndex = 1;
     private string _preClass;
     private string _nextClass;
+
     /// 跳转页（默认PageIndex + 1)
     private int _jumpIndex;
+
     /// 分页列表，开始索引页
     private int _preFirstIndex = 0;
+
     /// 分页列表，结束索引页
     private int _preNextIndex = 0;
 
+    private bool _isFirst;
+
     protected override Task OnParametersSetAsync()
     {
+        if (_isFirst) return Task.FromResult(0);
+        _isFirst = true;
+
         _preClass = "";
         _nextClass = "";
         _preFirstIndex = 0;
@@ -66,14 +74,14 @@
             _nextIndex = maxIndex;
         }
 
-        // 分页列表
+    // 分页列表
         _preFirstIndex = PageIndex - 5;
         if (_preFirstIndex < 1) _preFirstIndex = 1;
 
         _preNextIndex = PageIndex + 5;
         if (_preNextIndex > maxIndex) _preNextIndex = maxIndex;
 
-        // 跳转页
+    // 跳转页
         _jumpIndex = PageIndex + 1;
         if (_jumpIndex > maxIndex) _jumpIndex = PageIndex;
         return Task.FromResult(0);
@@ -90,4 +98,5 @@
     {
         return PageUrl.Replace("{index}", pageIndex.ToString());
     }
+
 }

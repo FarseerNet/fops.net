@@ -69,9 +69,13 @@
     private BuildVO _info = new();
     private string[] _lstLog = new string[0];
     private Timer _timer;
+    private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+        
         if (Id > 0 && _info.Id == 0)
         {
             _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);

@@ -186,6 +186,7 @@
 
 <div class="layui-footer" style="left: 0;">
     <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+    @* <button class="layui-btn layui-btn-danger" @onclick="Delete">删除</button> *@
 </div>
 <style>
 .layui-form-label {
@@ -203,9 +204,13 @@
     private List<ProjectGroupVO> _lstGroup = new();
     private List<DockerfileTplVO> _lstDockerfileTpl = new();
     private List<DockerHubVO> _lstDockerHub = new();
+    private bool _isFirst;
 
     protected override async Task OnInitializedAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
         _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync();
@@ -269,6 +274,12 @@
     private void GotoList()
     {
         nav.NavigateTo("/project/list");
+    }
+
+    private async Task Delete()
+    {
+        await _iocManager.Resolve<IProjectService>().DeleteAsync(Id);
+        GotoList();
     }
 
 }

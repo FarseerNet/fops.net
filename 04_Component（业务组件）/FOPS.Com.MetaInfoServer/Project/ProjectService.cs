@@ -37,6 +37,31 @@ namespace FOPS.Com.MetaInfoServer.Project
         }
 
         /// <summary>
+        /// 项目列表
+        /// </summary>
+        public async Task<List<ProjectVO>> ToListAsync(int groupId)
+        {
+            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).ToListAsync();
+            var lst   = new List<ProjectVO>();
+            foreach (var po in lstPo)
+            {
+                var vo = po.Map<ProjectVO>();
+                try
+                {
+                    vo.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(po.ClusterVer);
+                }
+                catch
+                {
+                    vo.DicClusterVer = new Dictionary<int, ClusterVer>();
+                }
+
+                lst.Add(vo);
+            }
+
+            return lst;
+        }
+
+        /// <summary>
         /// 项目信息
         /// </summary>
         public async Task<ProjectVO> ToInfoAsync(int id)

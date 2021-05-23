@@ -170,9 +170,13 @@
     private List<ProjectVO> _lst = new();
     private List<YamlTplVO> _lstTpl = new();
     private List<ClusterVO> _lstCluster = new();
+    private bool _isFirst;
 
     protected override async Task OnInitializedAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         // 模板
         _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();

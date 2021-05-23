@@ -113,20 +113,25 @@
 </style>
 
 @code{
-        private List<TaskVO> _lst = new();
-        private Timer _timer;
+    private List<TaskVO> _lst = new();
+    private Timer _timer;
+    private bool _isFirst;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        if (_isFirst) return;
+        _isFirst = true;
+
+        _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+
+        _timer = new Timer(5000);
+        _timer.Elapsed += async (_, _) =>
         {
             _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+    // 刷新页面
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
+    }
 
-            _timer = new Timer(5000);
-            _timer.Elapsed += async (_, _) =>
-            {
-                _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
-                // 刷新页面
-                await InvokeAsync(StateHasChanged);
-            };
-            _timer.Enabled = true;
-        }
 }

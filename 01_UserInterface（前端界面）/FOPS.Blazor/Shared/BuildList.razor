@@ -106,35 +106,41 @@
     .laytable-cell-build-2{ width: 80px; }
     .laytable-cell-build-3{ width: 110px; }
 </style>
+
 @code{
-        private List<BuildVO> _lstBuild = new();
-        private List<ProjectVO> _lst = new();
-        private Timer _timer;
+    private List<BuildVO> _lstBuild = new();
+    private List<ProjectVO> _lst = new();
+    private Timer _timer;
+    private bool _isFirst;
 
-        private async Task CancelBuild(BuildVO info)
+    private async Task CancelBuild(BuildVO info)
+    {
+        await _iocManager.Resolve<IBuildService>().Cancel(info.Id);
+        await GetList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_isFirst) return;
+        _isFirst = true;
+
+        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
+        await GetList();
+
+        _timer = new Timer(2000);
+        _timer.Elapsed += async (_, _) =>
         {
-            await _iocManager.Resolve<IBuildService>().Cancel(info.Id);
             await GetList();
-        }
+    // 刷新页面
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
+    }
 
-        protected override async Task OnInitializedAsync()
-        {
-            _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
-            await GetList();
+    private async Task GetList()
+    {
+    // 重新读取所有列表
+        _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20);
+    }
 
-            _timer = new Timer(2000);
-            _timer.Elapsed += async (_, _) =>
-            {
-                await GetList();
-                // 刷新页面
-                await InvokeAsync(StateHasChanged);
-            };
-            _timer.Enabled = true;
-        }
-
-        private async Task GetList()
-        {
-            // 重新读取所有列表
-            _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20);
-        }
 }

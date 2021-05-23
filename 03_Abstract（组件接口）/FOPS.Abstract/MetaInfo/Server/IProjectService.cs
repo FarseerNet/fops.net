@@ -51,5 +51,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 项目信息
         /// </summary>
         ProjectVO ToInfo(int id);
+
+        /// <summary>
+        /// 项目列表
+        /// </summary>
+        Task<List<ProjectVO>> ToListAsync(int groupId);
     }
 }

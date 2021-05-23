@@ -46,9 +46,13 @@
     private List<ClusterVO> _lstCluster = new();
     private int _selectClusterId;
     private string _yaml;
-    
+    private bool _isFirst;
+
     protected override async Task OnInitializedAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
     // 集群
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
         _lstCluster = _lstCluster.OrderByDescending(o => o.Id).ToList();

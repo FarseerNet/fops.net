@@ -81,14 +81,13 @@
 
     private List<ProjectGroupVO> _lst = new();
     private List<ClusterVO> _lstCluster = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-    }
+    private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         _lst = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;

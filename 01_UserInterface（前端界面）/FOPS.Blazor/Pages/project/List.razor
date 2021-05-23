@@ -232,9 +232,13 @@
     private List<ProjectGroupVO> _lstGroup = new();
     private List<DockerfileTplVO> _lstDockerfileTpl = new();
     private List<DockerHubVO> _lstDockerHub = new();
+    private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
         _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync();

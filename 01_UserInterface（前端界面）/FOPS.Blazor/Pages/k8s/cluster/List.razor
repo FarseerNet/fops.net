@@ -81,9 +81,13 @@
     private int _pageSize = 999;
 
     private List<ClusterVO> _lst = new();
+    private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         _lst = await _iocManager.Resolve<IClusterService>().ToListAsync();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;

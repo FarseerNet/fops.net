@@ -131,7 +131,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="@pageUrl"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="@PageUrl"></PageSplit>
         </div>
     </div>
 </div>
@@ -152,12 +152,16 @@
     [Parameter] public int GroupId { get; set; }
     private int _totalCount;
     private int _pageSize = 20;
-    private string pageUrl => "/fss/task_group/tasklist/" + GroupId + "/{index}";
+    private string PageUrl => "/fss/task_group/tasklist/" + GroupId + "/{index}";
     private List<TaskVO> _lst = new();
     private Timer _timer;
+    private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_isFirst) return;
+        _isFirst = true;
+
         if (PageIndex < 1) PageIndex = 1;
         _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
 

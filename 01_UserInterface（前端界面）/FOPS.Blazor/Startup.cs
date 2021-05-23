@@ -79,7 +79,6 @@ namespace FOPS.Blazor
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-                //endpoints.MapFallbackToPage("/fss/task_group/list_{pageIndex}","/_Host");
             });
         }
     }

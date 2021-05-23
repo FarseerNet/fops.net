@@ -56,12 +56,6 @@
     private List<ClusterVO> _lstCluster = new();
     private Dictionary<int, bool> _selectCluster = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
-    }
-
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
@@ -74,7 +68,7 @@
         try
         {
             _info.ClusterIds = _selectCluster.Where(o => o.Value).Select(o => o.Key).ToList();
-            
+
             if (string.IsNullOrWhiteSpace(_info.Name) || _info.ClusterIds == null || _info.ClusterIds.Count == 0)
             {
                 throw new Exception("项目组、集群必须填写.");
@@ -112,6 +106,9 @@
             {
                 _selectCluster[infoClusterId] = true;
             }
+            
+            _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+            _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
         }
     }
 
@@ -119,4 +116,5 @@
     {
         nav.NavigateTo("/project_group/list");
     }
+
 }
