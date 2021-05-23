@@ -225,14 +225,14 @@
         if (_groupId > 0) _lst.RemoveAll(o => o.GroupId != _groupId);
 
     // 遍历项目组ID
-        var projectGroupIds = _lst.Select(o => o.GroupId).ToList();
+        var projectGroupIds = _lst.Select(o => o.GroupId).Distinct().ToList();
         for (var i = 0; i < projectGroupIds.Count; i++)
         {
             var projectGroupId = projectGroupIds[i];
-            var info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(projectGroupId);
+            var projectGroup = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(projectGroupId);
 
     // 如果项目组不包含当前选中的集群，则移除项目
-            if (!info.ClusterIds.Contains(_clusterId))
+            if (!projectGroup.ClusterIds.Contains(_clusterId))
                 _lst.RemoveAll(o => o.GroupId == projectGroupId);
         }
 
@@ -242,14 +242,14 @@
 
         for (var index = 0; index < _lst.Count; index++)
         {
-            var projectVO = _lst[index];
-            var gitVO = _lstGit.Find(o => o.Id == projectVO.GitId);
-            if (gitVO == null) continue;
-            projectVO.GitId = gitVO.Id;
-            projectVO.GitPullAt = gitVO.PullAt;
+            var project = _lst[index];
+            var git = _lstGit.Find(o => o.Id == project.GitId);
+            if (git == null) continue;
+            project.GitId = git.Id;
+            project.GitPullAt = git.PullAt;
 
-            if (!projectVO.DicClusterVer.ContainsKey(_clusterId))
-                projectVO.DicClusterVer[_clusterId] = new ClusterVer {DockerVer = "0"};
+            if (!project.DicClusterVer.ContainsKey(_clusterId))
+                project.DicClusterVer[_clusterId] = new ClusterVer {DockerVer = "0"};
         }
     }
 
