@@ -16,7 +16,7 @@ namespace FOPS.Abstract.K8S.Entity
         /// <summary>
         /// 本地kubectl配置地址
         /// </summary>
-        public string ConfigName { get; set; }
+        public string Config { get; set; }
         
         /// <summary>
         /// 集群环境类型

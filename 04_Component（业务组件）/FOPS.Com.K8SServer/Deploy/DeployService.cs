@@ -30,7 +30,7 @@ namespace FOPS.Com.K8SServer.Deploy
 
             // 拼接已经选择的所有脚本
             var yaml = string.Join("\r\n---\r\n", lstYaml);
-            return RunApplyCmd("all", yaml, clusterVO.ConfigName);
+            return RunApplyCmd("all", yaml, clusterVO.Config);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace FOPS.Com.K8SServer.Deploy
 
             // 拼接已经选择的所有脚本
             var yaml = string.Join("\r\n---\r\n", lstYaml);
-            return RunApplyCmd(projectVO.Name, yaml, clusterVO.ConfigName);
+            return RunApplyCmd(projectVO.Name, yaml, clusterVO.Config);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace FOPS.Com.K8SServer.Deploy
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
 
-            return RunApplyCmd("single", yaml, clusterVO.ConfigName);
+            return RunApplyCmd("single", yaml, clusterVO.Config);
         }
 
         /// <summary>

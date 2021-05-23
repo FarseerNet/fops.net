@@ -42,9 +42,9 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">kubectl地址</label>
-            <div class="layui-input-block">
-                <input type="text" @bind="_info.ConfigName" autocomplete="off" placeholder="请输入kubectl配置地址" class="layui-input" style="width:700px;">
+            <label class="layui-form-label">kubectl配置</label>
+            <div class="layui-input-inline">
+                <textarea @bind="_info.Config" placeholder="请输入kubectl配置" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
             </div>
         </div>
         <div class="layui-form-item layui-layout-admin">

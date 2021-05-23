@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FOPS.Com.K8SServer.Cluster.Dal;
 using FOPS.Com.K8SServer.YamlTpl.Dal;
 using FS.Data;
 using FS.Data.Map;
@@ -14,10 +15,13 @@ namespace FOPS.Com.K8SServer
         {
         }
         public TableSet<YamlTplPO> YamlTpl { get; set; }
+        
+        public TableSet<ClusterPO> Cluster { get; set; }
 
         protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
         {
             map["YamlTpl"].SetName("k8s_yaml_tpl");
+            map["Cluster"].SetName("k8s_cluster");
         }
     }
 }

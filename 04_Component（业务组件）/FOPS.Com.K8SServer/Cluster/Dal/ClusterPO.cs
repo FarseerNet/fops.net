@@ -3,7 +3,7 @@ using FOPS.Abstract.MetaInfo.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 
-namespace FOPS.Com.K8sServerAA.Cluster.Dal
+namespace FOPS.Com.K8SServer.Cluster.Dal
 {
     [Map(typeof(ClusterVO))]
     public class ClusterPO
@@ -23,7 +23,7 @@ namespace FOPS.Com.K8sServerAA.Cluster.Dal
         /// 本地kubectl配置地址
         /// </summary>
         [Field(Name = "config_name")]
-        public string ConfigName { get; set; }
+        public string Config { get; set; }
         
         /// <summary>
         /// 集群环境类型
