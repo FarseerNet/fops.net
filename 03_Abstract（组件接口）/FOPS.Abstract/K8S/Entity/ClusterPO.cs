@@ -19,6 +19,11 @@ namespace FOPS.Abstract.K8S.Entity
         public string Config { get; set; }
         
         /// <summary>
+        /// 排序（越小越前）
+        /// </summary>
+        public string Sort { get; set; }
+        
+        /// <summary>
         /// 集群环境类型
         /// </summary>
         public EumRuntimeEnv RuntimeEnvType { get; set; }

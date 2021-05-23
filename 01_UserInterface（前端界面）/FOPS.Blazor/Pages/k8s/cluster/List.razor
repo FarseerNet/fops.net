@@ -34,6 +34,11 @@
                                     <span>集群名称</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>排序</span>
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                     </table>
@@ -58,6 +63,9 @@
                                         <a href="/k8s/cluster/update/@info.Id">@info.Name</a>
                                     </div>
                                 </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-3"> @info.Sort</div>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -72,7 +80,7 @@
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 150px; }
     .laytable-cell-14-0-2{ width: 200px; }
-    .laytable-cell-14-0-3{ width: 500px; }
+    .laytable-cell-14-0-3{ width: 80px; }
 </style>
 
 @code{
@@ -89,7 +97,7 @@
         _isFirst = true;
 
         _lst = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderBy(o => o.Sort).ToList();
         _totalCount = _lst.Count;
     }
 

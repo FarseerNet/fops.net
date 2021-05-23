@@ -26,6 +26,12 @@ namespace FOPS.Com.K8SServer.Cluster.Dal
         public string Config { get; set; }
         
         /// <summary>
+        /// 排序（越小越前）
+        /// </summary>
+        [Field(Name = "sort")]
+        public string Sort { get; set; }
+        
+        /// <summary>
         /// 集群环境类型
         /// </summary>
         [Field(Name = "runtime_env_type")]
