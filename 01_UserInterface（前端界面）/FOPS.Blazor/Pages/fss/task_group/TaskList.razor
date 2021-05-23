@@ -4,6 +4,7 @@
 @using FOPS.Abstract.Fss.Entity
 @using FOPS.Abstract.Fss.Enum
 @using FS.Extends
+@using System.Timers
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -148,11 +149,21 @@
     private int _pageSize = 20;
     private string pageUrl => "/fss/task_group/tasklist/" + GroupId + "/{index}";
     private List<TaskVO> _lst = new();
+    private Timer _timer;
 
     protected override async Task OnParametersSetAsync()
     {
         if (PageIndex < 1) PageIndex = 1;
         _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+
+        _timer = new Timer(5000);
+        _timer.Elapsed += async (_, _) =>
+        {
+            _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+            // 刷新页面
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
     }
 
     private void GotoList()
