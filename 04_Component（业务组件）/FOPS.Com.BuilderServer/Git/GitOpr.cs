@@ -39,18 +39,18 @@ namespace FOPS.Com.BuilderServer.Git
 
             // 如果Git存放的目录不存在，则创建
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
-            
+
             // 获取Git存放的路径
             var gitPath = GetGitPath(git);
 
             // 判断git是否有clone过
             if (!System.IO.Directory.Exists(gitPath))
             {
-                runShellResult = Clone(git, gitPath, actReceiveOutput);
+                runShellResult = await Clone(git, gitPath, actReceiveOutput);
             }
             else
             {
-                runShellResult = ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
+                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
             }
 
             return runShellResult;
@@ -84,7 +84,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        private RunShellResult Clone(GitVO info, string path, Action<string> actReceiveOutput)
+        private Task<RunShellResult> Clone(GitVO info, string path, Action<string> actReceiveOutput)
         {
             var url = info.Hub;
             // 需要密码

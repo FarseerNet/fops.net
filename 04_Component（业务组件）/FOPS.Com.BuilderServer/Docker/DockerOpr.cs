@@ -62,7 +62,7 @@ namespace FOPS.Com.BuilderServer.Docker
             var dockerHub = GetDockerHub(docker);
 
             // 打包
-            var result = ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
+            var result = await ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
 
             switch (result.IsError)
             {
@@ -105,14 +105,14 @@ namespace FOPS.Com.BuilderServer.Docker
             // 登陆 docker
             if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
             {
-                ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
             }
 
             // 取得dockerHub
             var dockerHub = GetDockerHub(docker);
 
             // 上传
-            var result = ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
+            var result = await ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
 
             switch (result.IsError)
             {

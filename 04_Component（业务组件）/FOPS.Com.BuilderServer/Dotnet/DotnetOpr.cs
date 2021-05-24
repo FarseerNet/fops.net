@@ -57,8 +57,8 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
         {
-            ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
-            return ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
+            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
+            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
         }
     }
 }

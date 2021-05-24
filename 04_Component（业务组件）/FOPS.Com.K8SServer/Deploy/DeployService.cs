@@ -88,7 +88,7 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <param name="yamlContent"></param>
         /// <param name="clusterConfig"></param>
         /// <exception cref="Exception"></exception>
-        private async Task<RunShellResult> RunApplyCmd(string projectName, string yamlContent, string clusterConfig)
+        private Task<RunShellResult> RunApplyCmd(string projectName, string yamlContent, string clusterConfig)
         {
             // 将yaml文件写入临时文件
             var fileName = $"/tmp/{projectName}.yaml";

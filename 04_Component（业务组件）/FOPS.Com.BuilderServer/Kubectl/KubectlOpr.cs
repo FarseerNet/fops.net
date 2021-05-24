@@ -36,7 +36,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
             var dockerName = $"{dockerHub}:{project.Name}-{build.BuildNumber}";
-            var result     = ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
+            var result     = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
             switch (result.IsError)
             {
                 case false:
@@ -64,7 +64,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
             var dockerName = $"{dockerHub}:{project.Name}-{dockerVer}";
-            return ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
+            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
         }
 
         /// <summary>
