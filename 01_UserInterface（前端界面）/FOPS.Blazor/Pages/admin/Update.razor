@@ -1,0 +1,139 @@
+@page "/admin/update/{id:int}"
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        编辑管理员
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-inline">
+                <label class="layui-form-label" style="text-align: left">@_info.Id</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.UserName" autocomplete="off" placeholder="请输入管理员名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员密码</label>
+            <div class="layui-input-block">
+                <input type="password" @bind="_info.UserPwd" autocomplete="off" placeholder="请输入管理员密码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" @bind="_info.IsEnable" name="open">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登陆时间</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label" style="width:150px">@_info.LastLoginAt.ToString("yyyy-MM-dd HH:mm:ss")</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登陆IP</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label" style="width:150px">@_info.LastLoginIp</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">创建时间</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label" style="width:150px">@_info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">创建人</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label" style="width:150px">@_info.CreateUser</label>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">创建人ID</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label" style="width:150px">@_info.CreateId</label>
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    [Parameter] public int Id { get; set; }
+
+    private AdminVO _info = new() {};
+
+    private async Task UpdateInfo()
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
+            nav.NavigateTo($"/admin/list");
+            return;
+        }
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_info.UserName))
+            {
+                throw new Exception("管理员名称必须填写。");
+            }
+
+            await _iocManager.Resolve<IAdminService>().UpdateAsync(Id, _info);
+            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
+            nav.NavigateTo($"/admin/update/{_info.Id}");
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Id < 1 || _info == null)
+        {
+            await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
+            GotoList();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id > 0 && _info.Id == 0)
+        {
+            _info = await _iocManager.Resolve<IAdminService>().ToInfoAsync(Id);
+            if (_info == null)
+            {
+                await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
+                GotoList();
+            }
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/admin/list");
+    }
+
+}

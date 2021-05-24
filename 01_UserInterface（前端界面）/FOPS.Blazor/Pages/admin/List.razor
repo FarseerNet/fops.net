@@ -1,0 +1,145 @@
+@page "/admin/list"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        管理员列表
+        <div class="layui-right">
+            <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加管理员</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-admin-0">
+                                    <span>ID</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-admin-1">
+                                    <span>管理员名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Title">
+                                <div class="layui-table-cell laytable-cell-admin-2">
+                                    <span>登陆时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Games">
+                                <div class="layui-table-cell laytable-cell-admin-3">
+                                    <span>登陆IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Games">
+                                <div class="layui-table-cell laytable-cell-admin-4">
+                                    <span>状态</span>
+                                </div>
+                            </th>
+                            <th data-field="Games">
+                                <div class="layui-table-cell laytable-cell-admin-5">
+                                    <span>创建时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Games">
+                                <div class="layui-table-cell laytable-cell-admin-6">
+                                    <span>创建人</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-admin-0"> @info.Id</div>
+                                </td>
+                                <td data-field="Type">
+                                    <div class="layui-table-cell laytable-cell-admin-1">
+                                        <a href="/admin/update/@info.Id">@info.UserName</a>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="laytable-cell-admin-2">
+                                        @info.LastLoginAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                    </div>
+                                </td>
+                                <td data-field="Items">
+                                    <div class="layui-table-cell laytable-cell-admin-3">@info.LastLoginIp</div>
+                                </td>
+                                <td data-field="Items">
+                                    <div class="layui-table-cell laytable-cell-admin-4">
+                                        @switch (info.IsEnable)
+                                        {
+                                            case true:
+                                                <button class="layui-btn layui-btn-xs">正常</button>
+                                                break;
+                                            case false:
+                                                <button class="layui-btn layui-btn-xs layui-btn-danger">禁用</button>
+                                                break;
+                                        }
+                                    </div>
+                                </td>
+                                <td data-field="Items">
+                                    <div class="layui-table-cell laytable-cell-admin-5">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                                <td data-field="Items">
+                                    <div class="layui-table-cell laytable-cell-admin-6">@info.CreateUser（@info.Id）</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="1" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/admin/list/{index}"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+    .laytable-cell-admin-0{ width: 80px; }
+    .laytable-cell-admin-1{ width: 300px; }
+    .laytable-cell-admin-2{ width: 150px; }
+    .laytable-cell-admin-3{ width: 150px; }
+    .laytable-cell-admin-4{ width: 80px; }
+    .laytable-cell-admin-5{ width: 150px; }
+    .laytable-cell-admin-6{ width: 150px; }
+</style>
+
+@code{
+
+    private int _totalCount;
+    private int _pageSize = 999;
+
+    private List<AdminVO> _lst = new();
+    private bool _isFirst;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isFirst) return;
+        _isFirst = true;
+        
+        _lst = await _iocManager.Resolve<IAdminService>().ToListAsync();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _totalCount = _lst.Count;
+    }
+
+    private void GotoAdd()
+    {
+        nav.NavigateTo("/admin/add");
+    }
+}

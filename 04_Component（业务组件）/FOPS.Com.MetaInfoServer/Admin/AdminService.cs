@@ -19,7 +19,12 @@ namespace FOPS.Com.MetaInfoServer.Admin
         /// <summary>
         /// Admin信息
         /// </summary>
-        public Task<AdminVO> ToInfoAsync(int id) => MetaInfoContext.Data.Admin.Where(o => o.Id == id).ToEntityAsync().MapAsync<AdminVO, AdminPO>();
+        public async Task<AdminVO> ToInfoAsync(int id)
+        {
+            var info                       = await MetaInfoContext.Data.Admin.Where(o => o.Id == id).ToEntityAsync().MapAsync<AdminVO, AdminPO>();
+            if (info != null) info.UserPwd = null;
+            return info;
+        }
 
         /// <summary>
         /// Admin数量
@@ -31,7 +36,11 @@ namespace FOPS.Com.MetaInfoServer.Admin
         /// </summary>
         public async Task<int> AddAsync(AdminVO vo)
         {
-            vo.UserPwd = Encrypt.MD5(vo.UserPwd);
+            var isExists = await MetaInfoContext.Data.Admin.Where(o => o.UserName == vo.UserName).IsHavingAsync();
+            if (isExists) throw new Exception("管理员名称已存在");
+            if (vo.UserPwd.Length < 6) throw new Exception("管理员密码长度不能小于6");
+            vo.UserPwd  = Encrypt.MD5(vo.UserPwd);
+            vo.CreateAt = DateTime.Now;
             var po = vo.Map<AdminPO>();
             await MetaInfoContext.Data.Admin.InsertAsync(po, true);
             vo.Id = po.Id.GetValueOrDefault();
@@ -41,10 +50,18 @@ namespace FOPS.Com.MetaInfoServer.Admin
         /// <summary>
         /// 修改管理员
         /// </summary>
-        public Task UpdateAsync(int id, AdminVO vo)
+        public async Task UpdateAsync(int id, AdminVO vo)
         {
+            var isExists = await MetaInfoContext.Data.Admin.Where(o => o.UserName == vo.UserName && o.Id != id).IsHavingAsync();
+            if (isExists) throw new Exception("管理员名称已存在");
             vo.UserPwd = vo.UserPwd == "" ? null : Encrypt.MD5(vo.UserPwd);
-            return MetaInfoContext.Data.Admin.Where(o => o.Id == id).UpdateAsync(vo.Map<AdminPO>());
+            if (vo.UserPwd is {Length: < 6}) throw new Exception("管理员密码长度不能小于6");
+            await MetaInfoContext.Data.Admin.Where(o => o.Id == id).UpdateAsync(new AdminPO
+            {
+                UserName = vo.UserName,
+                UserPwd  = vo.UserPwd,
+                IsEnable = vo.IsEnable
+            });
         }
 
         /// <summary>

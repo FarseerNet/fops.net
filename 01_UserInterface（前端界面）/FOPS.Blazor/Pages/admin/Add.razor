@@ -1,0 +1,71 @@
+@page "/admin/add"
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        添加管理员
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="padding: 15px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员名称</label>
+            <div class="layui-input-block">
+                <input type="text" @bind="_info.UserName" autocomplete="off" placeholder="请输入管理员名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员密码</label>
+            <div class="layui-input-block">
+                <input type="password" @bind="_info.UserPwd" autocomplete="off" placeholder="请输入管理员密码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" @bind="_info.IsEnable" name="open">
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <button class="layui-btn" @onclick="AddInfo">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+
+    private readonly AdminVO _info = new() {IsEnable = true};
+
+    private async Task AddInfo()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_info.UserName) || string.IsNullOrWhiteSpace(_info.UserPwd))
+            {
+                throw new Exception("管理员名称、登陆密码必须填写。");
+            }
+            await _iocManager.Resolve<IAdminService>().AddAsync(_info);
+            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            GotoList();
+        }
+        catch (Exception e)
+        {
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+        }
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/admin/list");
+    }
+}
