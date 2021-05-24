@@ -68,13 +68,13 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/k8s/tpl/list");
+            GotoList();
         }
         try
         {
             await _iocManager.Resolve<IYamlTplService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/k8s/tpl/update/{_info.Id}");
+            GotoList();
         }
         catch (Exception e)
         {
@@ -87,7 +87,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/k8s/tpl/list");
+            GotoList();
         }
     }
 
@@ -99,7 +99,7 @@
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
-                nav.NavigateTo($"/k8s/tpl/list");
+                GotoList();
             }
         }
     }

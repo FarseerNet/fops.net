@@ -42,6 +42,8 @@ namespace FOPS.Com.MetaInfoServer.Admin
             vo.UserPwd  = Encrypt.MD5(vo.UserPwd);
             vo.CreateAt = DateTime.Now;
             var po = vo.Map<AdminPO>();
+            po.LastLoginAt = null;
+            po.LastLoginIp = "";
             await MetaInfoContext.Data.Admin.InsertAsync(po, true);
             vo.Id = po.Id.GetValueOrDefault();
             return vo.Id;
@@ -54,7 +56,7 @@ namespace FOPS.Com.MetaInfoServer.Admin
         {
             var isExists = await MetaInfoContext.Data.Admin.Where(o => o.UserName == vo.UserName && o.Id != id).IsHavingAsync();
             if (isExists) throw new Exception("管理员名称已存在");
-            vo.UserPwd = vo.UserPwd == "" ? null : Encrypt.MD5(vo.UserPwd);
+            vo.UserPwd = string.IsNullOrWhiteSpace(vo.UserPwd) ? null : Encrypt.MD5(vo.UserPwd);
             if (vo.UserPwd is {Length: < 6}) throw new Exception("管理员密码长度不能小于6");
             await MetaInfoContext.Data.Admin.Where(o => o.Id == id).UpdateAsync(new AdminPO
             {

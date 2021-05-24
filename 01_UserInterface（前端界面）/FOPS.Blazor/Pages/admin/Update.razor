@@ -22,13 +22,13 @@
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">管理员名称</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="text" @bind="_info.UserName" autocomplete="off" placeholder="请输入管理员名称" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">管理员密码</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="password" @bind="_info.UserPwd" autocomplete="off" placeholder="请输入管理员密码" class="layui-input">
             </div>
         </div>
@@ -89,7 +89,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/admin/list");
+            GotoList();
             return;
         }
         try
@@ -101,7 +101,7 @@
 
             await _iocManager.Resolve<IAdminService>().UpdateAsync(Id, _info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/admin/update/{_info.Id}");
+            GotoList();
         }
         catch (Exception e)
         {

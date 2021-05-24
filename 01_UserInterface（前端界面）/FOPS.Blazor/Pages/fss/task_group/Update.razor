@@ -119,13 +119,13 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/fss/task_group/list");
+            GotoList();
         }
         try
         {
             await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
-            nav.NavigateTo($"/fss/task_group/update/{_info.Id}");
+            GotoList();
         }
         catch (Exception e)
         {
@@ -138,7 +138,7 @@
         if (Id < 1 || _info == null)
         {
             await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
-            nav.NavigateTo($"/fss/task_group/list");
+            GotoList();
         }
     }
 
@@ -150,7 +150,7 @@
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
-                nav.NavigateTo($"/fss/task_group/list");
+                GotoList();
                 return;
             }
             if (string.IsNullOrWhiteSpace(_info.Cron)) _info.Cron = _info.IntervalMs.ToString();
