@@ -5,6 +5,7 @@ FOPS的目的是提供给开发人员用于管理运维各个`中间件`、`K8S`
 
 本平台采用`.NET5 + Blazor` 技术实现
 
+![Image text](https://gitee.com/FarseerNet/FOPS/raw/main/07_Solution%20Items%EF%BC%88%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%EF%BC%89/index.png)
 ## 解决什么
 
     通常在我们的项目（特别是微服务）越来越多，几十上百项目的时候
