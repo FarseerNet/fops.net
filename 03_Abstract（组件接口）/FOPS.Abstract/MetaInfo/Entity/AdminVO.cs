@@ -25,6 +25,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public DateTime LastLoginAt { get; set; }
         /// <summary>
+        /// 上次登陆IP
+        /// </summary>
+        public string LastLoginIp { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateAt { get; set; }

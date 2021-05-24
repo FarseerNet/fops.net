@@ -40,6 +40,11 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// <summary>
         /// 登陆
         /// </summary>
-        Task<AdminVO> LoginAsync(string userName, string pwd);
+        Task<AdminVO> LoginAsync(string userName, string pwd, string ip);
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        Task ChangePwd(string userName, string pwd, string newPwd);
     }
 }

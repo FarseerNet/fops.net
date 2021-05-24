@@ -34,6 +34,11 @@ namespace FOPS.Com.MetaInfoServer.Admin.Dal
         [Field(Name = "last_login_at")]
         public DateTime? LastLoginAt { get; set; }
         /// <summary>
+        /// 上次登陆IP
+        /// </summary>
+        [Field(Name = "last_login_ip")]
+        public string LastLoginIp { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
         [Field(Name = "create_at")]

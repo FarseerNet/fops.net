@@ -55,13 +55,35 @@ namespace FOPS.Com.MetaInfoServer.Admin
         /// <summary>
         /// 登陆
         /// </summary>
-        public async Task<AdminVO> LoginAsync(string userName, string pwd)
+        public async Task<AdminVO> LoginAsync(string userName, string pwd, string ip)
         {
             pwd = Encrypt.MD5(pwd);
-            var info = await MetaInfoContext.Data.Admin.Where(o =>o.UserName == userName && o.UserPwd == pwd).ToEntityAsync();
+            var info = await MetaInfoContext.Data.Admin.Where(o => o.UserName == userName && o.UserPwd == pwd).ToEntityAsync();
             if (info == null) throw new Exception("用户不存在，或者密码错误");
-            if (!info.IsEnable.GetValueOrDefault())throw new Exception("账号被冻结");
+            if (!info.IsEnable.GetValueOrDefault()) throw new Exception("账号被冻结");
+            await MetaInfoContext.Data.Admin.Where(o => o.UserName == userName).UpdateAsync(new AdminPO
+            {
+                LastLoginAt = DateTime.Now,
+                LastLoginIp = ip
+            });
             return info.Map<AdminVO>();
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        public async Task ChangePwd(string userName, string pwd, string newPwd)
+        {
+            pwd = Encrypt.MD5(pwd);
+            if (string.IsNullOrWhiteSpace(newPwd)) throw new Exception("请输入新密码");
+            newPwd = Encrypt.MD5(newPwd);
+
+            var info = await MetaInfoContext.Data.Admin.Where(o => o.UserName == userName && o.UserPwd == pwd).ToEntityAsync();
+            if (info == null) throw new Exception("原密码错误，请重新输入");
+            await MetaInfoContext.Data.Admin.Where(o => o.UserName == userName).UpdateAsync(new AdminPO
+            {
+                UserPwd = newPwd
+            });
         }
     }
 }
