@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -36,6 +37,15 @@ namespace FOPS.Com.BuilderServer.Dotnet
             // 先删除之前编译的目标文件
             if (System.IO.Directory.Exists(savePath)) System.IO.Directory.Delete(savePath, true);
             System.IO.Directory.CreateDirectory(savePath);
+
+            if (!System.IO.Directory.Exists(source))
+            {
+                return new RunShellResult
+                {
+                    IsError = true,
+                    Output  = new List<string> {$"路径：{source}不存在，无法编译"}
+                };
+            }
 
             var result = await Publish(savePath, source, actReceiveOutput);
 
