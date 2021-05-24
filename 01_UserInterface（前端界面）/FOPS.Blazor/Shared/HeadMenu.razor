@@ -22,9 +22,8 @@
     <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
 
         <li class="layui-nav-item" lay-unselect>
-            <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+            <a href="javascript:;" layadmin-event="message" lay-text="消息中心">
                 <i class="layui-icon layui-icon-notice"></i>
-
                 <!-- 如果有新消息，则显示小圆点 -->
                 <span class="layui-badge-dot"></span>
             </a>
@@ -49,12 +48,6 @@
                 <cite>管理员</cite>
             </a>
             <dl class="layui-nav-child">
-                <dd>
-                    <a lay-href="set/user/info.html">基本资料</a>
-                </dd>
-                <dd>
-                    <a lay-href="set/user/password.html">修改密码</a>
-                </dd>
                 <hr>
                 <dd layadmin-event="logout" style="text-align: center;">
                     <a>退出</a>
