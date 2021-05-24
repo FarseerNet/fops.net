@@ -40,10 +40,12 @@ namespace FOPS.Com.BuilderServer.Dotnet
 
             if (!System.IO.Directory.Exists(source))
             {
+                var log = $"路径：{source}不存在，无法编译";
+                BuildLogService.Write(build.Id, log);
                 return new RunShellResult
                 {
                     IsError = true,
-                    Output  = new List<string> {$"路径：{source}不存在，无法编译"}
+                    Output  = new List<string> {log}
                 };
             }
 
