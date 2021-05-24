@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
+using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
 using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.Tasks.Dal;
@@ -25,8 +27,43 @@ namespace FOPS.Com.FssServer.Tasks
         /// </summary>
         public Task<List<TaskVO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount)
         {
-            return TaskAgent.ToListAsync(groupId, pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+            return FssContext.Data.Task.Where(o => o.TaskGroupId == groupId)
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
+                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
         }
+        
+        /// <summary>
+        /// 获取失败的任务数量
+        /// </summary>
+        public Task<List<TaskVO>> ToFailListAsync(int pageSize, int pageIndex, out int totalCount)
+        {
+            return FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail)
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
+                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+        }
+
+        /// <summary>
+        /// 获取失败的任务数量
+        /// </summary>
+        public Task<int> TodayFailCountAsync()
+        {
+            return FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();
+        }
+        
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        public Task<List<TaskVO>> ToUnRunListAsync(int pageSize, int pageIndex, out int totalCount)
+        {
+            return FssContext.Data.Task.Where(o => DateTime.Now > o.StartAt && o.Status == EumTaskType.None)
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
+                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+        }
+        
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        public Task<int> ToUnRunCountAsync() => FssContext.Data.Task.Where(o => DateTime.Now > o.StartAt && o.Status == EumTaskType.None).CountAsync();
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表

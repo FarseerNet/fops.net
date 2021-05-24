@@ -94,36 +94,36 @@
                             <div carousel-item>
                                 <ul class="layui-row layui-col-space10 layui-this">
                                     <li class="layui-col-xs6">
-                                        <a lay-href="app/content/comment.html" class="layadmin-backlog-body">
-                                            <h3>任务数</h3>
+                                        <NavLink href="/fss/task_group/list" class="nav-link layadmin-backlog-body">
+                                            <h3>FSS任务组</h3>
                                             <p>
                                                 <cite>@_taskGroupCount</cite>
                                             </p>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <a lay-href="app/forum/list.html" class="layadmin-backlog-body">
-                                            <h3>未执行</h3>
+                                        <NavLink href="/fss/tasks/unrunlist" class="nav-link layadmin-backlog-body">
+                                            <h3>超时未执行</h3>
                                             <p>
                                                 <cite>@_unExecuteCount</cite>
                                             </p>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <a lay-href="template/goodslist.html" class="layadmin-backlog-body">
+                                        <NavLink href="/fss/client/list" class="nav-link layadmin-backlog-body">
                                             <h3>客户端</h3>
                                             <p>
                                                 <cite>@_clientCount</cite>
                                             </p>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <a href="javascript:;" onclick="layer.tips('不跳转', this, {tips: 3});" class="layadmin-backlog-body">
+                                        <NavLink href="/fss/tasks/faillist" class="nav-link layadmin-backlog-body">
                                             <h3>今日失败</h3>
                                             <p>
                                                 <cite>@_todayFailCount</cite>
                                             </p>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                 </ul>
                                 <ul class="layui-row layui-col-space10">
@@ -295,8 +295,7 @@
     // FSS 任务组数
         _taskGroupCount = await _iocManager.Resolve<ITaskGroupList>().Count();
     // FSS 未执行数
-        var lstTaskGroup = await _iocManager.Resolve<ITaskGroupList>().ToListAsync();
-        _unExecuteCount = lstTaskGroup.FindAll(o => DateTime.Now > o.NextAt).Count;
+        _unExecuteCount = await _iocManager.Resolve<ITaskList>().ToUnRunCountAsync();
     // FSS 客户端数
         _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
     // FSS 今日失败数

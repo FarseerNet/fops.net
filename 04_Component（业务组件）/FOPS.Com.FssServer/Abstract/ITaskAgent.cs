@@ -51,10 +51,5 @@ namespace FOPS.Com.FssServer.Abstract
         /// 今日执行失败数量
         /// </summary>
         Task<int> TodayFailCountAsync();
-
-        /// <summary>
-        /// 获取指定任务组的任务列表
-        /// </summary>
-        Task<List<TaskPO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount);
     }
 }

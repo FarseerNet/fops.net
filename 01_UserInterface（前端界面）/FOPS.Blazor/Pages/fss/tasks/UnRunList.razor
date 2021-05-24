@@ -1,5 +1,5 @@
-@page "/fss/task_group/tasklist/{GroupId:int}/{pageIndex:int}"
-@page "/fss/task_group/tasklist/{GroupId:int}"
+@page "/fss/tasks/unrunlist/{pageIndex:int}"
+@page "/fss/tasks/unrunlist"
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
 @using FOPS.Abstract.Fss.Enum
@@ -11,9 +11,9 @@
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        任务列表
+        未执行任务列表
         <div class="layui-right">
-            <button class="layui-btn layui-btn-right" @onclick=GotoList><i class="am-icon-plus"></i>列表</button>
+            <button class="layui-btn layui-btn-right" @onclick=GotoList><i class="am-icon-plus"></i>任务组列表</button>
         </div>
     </div>
     <div class="layui-card-body">
@@ -131,7 +131,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="@PageUrl"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/tasks/unrunlist/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -149,10 +149,8 @@
 @code{
 
     [Parameter] public int PageIndex { get; set; } = 1;
-    [Parameter] public int GroupId { get; set; }
     private int _totalCount;
     private int _pageSize = 20;
-    private string PageUrl => "/fss/task_group/tasklist/" + GroupId + "/{index}";
     private List<TaskVO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
@@ -163,12 +161,12 @@
         _isFirst = true;
 
         if (PageIndex < 1) PageIndex = 1;
-        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
 
         _timer = new Timer(5000);
         _timer.Elapsed += async (_, _) =>
         {
-            _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+            _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
     // 刷新页面
             await InvokeAsync(StateHasChanged);
         };
