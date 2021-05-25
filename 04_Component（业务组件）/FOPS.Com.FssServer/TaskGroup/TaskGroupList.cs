@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
+using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
 using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.TaskGroup.Dal;
@@ -53,5 +56,14 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// 删除整个缓存
         /// </summary>
         public Task ClearAsync() => RedisCacheManager.CacheManager.RemoveAsync(TaskGroupCache.Key);
+        
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        public async Task<int> ToUnRunCountAsync()
+        {
+            var lst = await ToListAsync();
+            return lst.Count(o => DateTime.Now > o.NextAt);
+        }
     }
 }

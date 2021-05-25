@@ -28,18 +28,18 @@ namespace FOPS.Com.FssServer.Tasks
         public Task<List<TaskVO>> ToListAsync(int groupId, int pageSize, int pageIndex, out int totalCount)
         {
             return FssContext.Data.Task.Where(o => o.TaskGroupId == groupId)
-                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
-                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
+                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }
-        
+
         /// <summary>
         /// 获取失败的任务数量
         /// </summary>
         public Task<List<TaskVO>> ToFailListAsync(int pageSize, int pageIndex, out int totalCount)
         {
             return FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail)
-                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
-                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
+                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }
 
         /// <summary>
@@ -49,27 +49,22 @@ namespace FOPS.Com.FssServer.Tasks
         {
             return FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();
         }
-        
+
         /// <summary>
         /// 获取未执行的任务列表
         /// </summary>
         public Task<List<TaskVO>> ToUnRunListAsync(int pageSize, int pageIndex, out int totalCount)
         {
-            return FssContext.Data.Task.Where(o => DateTime.Now > o.StartAt && o.Status == EumTaskType.None)
-                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp,o.RunSpeed,o.RunAt})
-                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO,TaskPO>();
+            return FssContext.Data.Task.Where(o => o.StartAt < DateTime.Now && o.Status == EumTaskType.None)
+                .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
+                .Asc(o => o.StartAt).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }
-        
-        /// <summary>
-        /// 获取未执行的任务列表
-        /// </summary>
-        public Task<int> ToUnRunCountAsync() => FssContext.Data.Task.Where(o => DateTime.Now > o.StartAt && o.Status == EumTaskType.None).CountAsync();
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表
         /// </summary>
         public Task<List<TaskVO>> ToSuccessListAsync(int groupId, int top) => TaskAgent.ToSuccessListAsync(groupId, top).MapAsync<TaskVO, TaskPO>();
-        
+
         /// <summary>
         /// 清除成功的任务记录（1天前）
         /// </summary>

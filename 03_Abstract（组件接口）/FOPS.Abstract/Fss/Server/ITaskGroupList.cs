@@ -26,5 +26,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取任务组数量
         /// </summary>
         Task<long> Count();
+
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        Task<int> ToUnRunCountAsync();
     }
 }

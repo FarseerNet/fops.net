@@ -41,10 +41,5 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取失败的任务数量
         /// </summary>
         Task<int> TodayFailCountAsync();
-
-        /// <summary>
-        /// 获取未执行的任务列表
-        /// </summary>
-        Task<int> ToUnRunCountAsync();
     }
 }

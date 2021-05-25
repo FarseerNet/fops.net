@@ -35,7 +35,7 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-3">
-                                    <span>实际运行</span>
+                                    <span>超时时间</span>
                                 </div>
                             </th>
                             <th data-field="Type">
@@ -82,9 +82,16 @@
                                 </td>
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-3">
-                                        @if (info.Status is EumTaskType.Working or EumTaskType.Fail or EumTaskType.Success)
-                                        {
-                                            info.RunAt.ToString("yyyy-MM-dd HH:mm:ss");
+                                        @{
+                                            var ts = DateTime.Now-info.StartAt;
+                                            if (ts.TotalSeconds > 0)
+                                            {
+                                                <label>@ts.GetDateDesc()</label>
+                                            }
+                                            else
+                                            {
+                                                <label>@ts.TotalMilliseconds 毫秒</label>
+                                            }
                                         }
                                     </div>
                                 </td>
@@ -161,18 +168,23 @@
         _isFirst = true;
 
         if (PageIndex < 1) PageIndex = 1;
-        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
+        await GetList();
 
         _timer = new Timer(5000);
         _timer.Elapsed += async (_, _) =>
         {
-            _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
-    // 刷新页面
+            await GetList();
             await InvokeAsync(StateHasChanged);
         };
-        _timer.Enabled = true;
+        //_timer.Enabled = true;
     }
 
+    private async Task GetList()
+    {
+        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
+        _totalCount = _lst.Count;
+    }
+    
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");
