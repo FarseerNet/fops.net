@@ -176,13 +176,12 @@
             await GetList();
             await InvokeAsync(StateHasChanged);
         };
-        //_timer.Enabled = true;
+        _timer.Enabled = true;
     }
 
     private async Task GetList()
     {
         _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
-        _totalCount = _lst.Count;
     }
     
     private void GotoList()
