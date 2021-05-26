@@ -295,11 +295,11 @@
         try
         {
             var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer, project, null);
-            await GetList();
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
             else
             {
                 await _iocManager.Resolve<IBuildService>().Success(_clusterId, project);
+                await GetList();
                 await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
             }
         }

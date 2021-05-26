@@ -17,7 +17,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
         public IBuildLogService  BuildLogService  { get; set; }
-        const  string            SavePath = "/root/.kube/";
+        const  string            SavePath = "/var/lib/fops/kube/";
         
         /// <summary>
         /// 更新k8s版本
@@ -72,6 +72,8 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// </summary>
         private void CreateConfigFile(ClusterVO cluster, string configFile)
         {
+            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+
             // 文件不存在，则创建
             if (!System.IO.File.Exists(configFile))
             {
