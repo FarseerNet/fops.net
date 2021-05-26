@@ -56,7 +56,6 @@
         _isFirst = true;
 
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _lstCluster = _lstCluster.OrderBy(o => o.Sort).ToList();
         _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
     }
 

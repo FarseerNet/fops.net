@@ -11,6 +11,7 @@ namespace FOPS.Infrastructure.Common
         {
             // 替换项目名称
             tpl = tpl.Replace("${project_name}", project.Name)
+                .Replace("${domain}",      project.Domain)
                 .Replace("${entry_point}", project.EntryPoint)
                 .Replace("${entry_port}",  project.EntryPort.ToString());
 

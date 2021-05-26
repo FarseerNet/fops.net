@@ -109,6 +109,11 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// </summary>
         public async Task<int> AddAsync(ProjectVO vo)
         {
+            if (string.IsNullOrWhiteSpace(vo.Path)) vo.Path = "/";
+            else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
+
+            vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
+            
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             await MetaInfoContext.Data.Project.InsertAsync(po, true);
@@ -121,6 +126,11 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// </summary>
         public Task UpdateAsync(int id, ProjectVO vo)
         {
+            if (string.IsNullOrWhiteSpace(vo.Path)) vo.Path = "/";
+            else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
+
+            vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
+            
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(po);

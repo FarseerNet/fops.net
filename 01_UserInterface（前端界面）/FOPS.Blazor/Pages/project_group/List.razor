@@ -93,7 +93,6 @@
         _totalCount = _lst.Count;
 
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _lstCluster = _lstCluster.OrderBy(o => o.Sort).ToList();
     }
 
     private void GotoAdd()

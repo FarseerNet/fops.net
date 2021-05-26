@@ -29,7 +29,7 @@ namespace FOPS.Com.K8SServer.Cluster.Dal
         /// 排序（越小越前）
         /// </summary>
         [Field(Name = "sort")]
-        public string Sort { get; set; }
+        public int? Sort { get; set; }
         
         /// <summary>
         /// 集群环境类型

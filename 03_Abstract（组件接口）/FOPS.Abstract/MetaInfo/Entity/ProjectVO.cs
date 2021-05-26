@@ -22,6 +22,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public int? EntryPort { get; set; }
         /// <summary>
+        /// 访问域名
+        /// </summary>
+        public string Domain { get; set; }
+        /// <summary>
         /// 项目组ID
         /// </summary>
         public int GroupId { get; set; }

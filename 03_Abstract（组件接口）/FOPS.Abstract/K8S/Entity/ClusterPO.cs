@@ -21,7 +21,7 @@ namespace FOPS.Abstract.K8S.Entity
         /// <summary>
         /// 排序（越小越前）
         /// </summary>
-        public string Sort { get; set; }
+        public int Sort { get; set; }
         
         /// <summary>
         /// 集群环境类型

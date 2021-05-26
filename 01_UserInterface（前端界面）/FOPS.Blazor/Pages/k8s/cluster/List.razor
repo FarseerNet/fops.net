@@ -97,7 +97,6 @@
         _isFirst = true;
 
         _lst = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _lst = _lst.OrderBy(o => o.Sort).ToList();
         _totalCount = _lst.Count;
     }
 

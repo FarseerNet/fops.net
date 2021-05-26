@@ -12,7 +12,7 @@ namespace FOPS.Com.K8SServer.Cluster
         /// <summary>
         /// 集群列表
         /// </summary>
-        public Task<List<ClusterVO>> ToListAsync() => K8SContext.Data.Cluster.Select(o => new {o.Id, o.Name, o.RuntimeEnvType}).ToListAsync().MapAsync<ClusterVO, ClusterPO>();
+        public Task<List<ClusterVO>> ToListAsync() => K8SContext.Data.Cluster.Select(o => new {o.Id, o.Name, o.RuntimeEnvType}).Asc(o => o.Sort).ToListAsync().MapAsync<ClusterVO, ClusterPO>();
 
         /// <summary>
         /// 集群信息

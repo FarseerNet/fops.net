@@ -202,7 +202,6 @@
 
     // 集群
         _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        _lstCluster = _lstCluster.OrderBy(o => o.Sort).ToList();
         if (_lstCluster != null) _clusterId = _lstCluster[0].Id;
 
         await GetList();

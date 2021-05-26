@@ -87,7 +87,7 @@
         _isFirst = true;
 
         _lst = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderBy(o => o.K8SKindType).ToList();
         _totalCount = _lst.Count;
     }
 

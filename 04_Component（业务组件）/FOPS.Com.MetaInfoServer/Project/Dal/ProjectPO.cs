@@ -28,6 +28,11 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         [Field(Name = "entry_port")]
         public int? EntryPort { get; set; }
         /// <summary>
+        /// 访问域名
+        /// </summary>
+        [Field(Name = "domain")]
+        public string Domain { get; set; }
+        /// <summary>
         /// 项目组ID
         /// </summary>
         [Field(Name = "group_id")]

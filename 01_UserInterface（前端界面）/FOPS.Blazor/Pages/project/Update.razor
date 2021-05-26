@@ -56,6 +56,12 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-form-label">访问域名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" @bind="_info.Domain" autocomplete="off" placeholder="不带http://" class="layui-input" style="width:300px;">
+                    </div>
+                </div>
+                <div class="layui-form-item">
                     <label class="layui-form-label">自定义变量</label>
                     <div class="layui-input-inline">
                         <input type="text" @bind="_info.K8STplVariable" autocomplete="off" placeholder="自定义变量，K1=V1,K2=V2" class="layui-input" style="width:500px;">
@@ -234,10 +240,7 @@
             {
                 throw new Exception("项目组、项目名称、托管地址必须填写。");
             }
-
-            if (string.IsNullOrWhiteSpace(_info.Path)) _info.Path = "/";
-            else if (!_info.Path.StartsWith('/')) _info.Path = "/" + _info.Path;
-
+            
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
             GotoList();
         }
