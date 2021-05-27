@@ -41,7 +41,7 @@ spec:
               value: Asia/Shanghai
           volumeMounts:
             - name: fops
-              mountPath: /root/.kube/ # K8S集群管理的配置路径
+              mountPath: /var/lib/fops/kube/ # K8S集群管理的配置路径
               subPath: kube
             - name: fops
               mountPath: /var/lib/fops/log/ # 构建日志
