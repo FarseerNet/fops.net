@@ -75,34 +75,40 @@
     {
         if (_isFirst) return;
         _isFirst = true;
-        
+
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
-            if (_info == null)
+            try
             {
-                await js.InvokeVoidAsync("layer.alert", "构建队列不存在", new {icon = 2, title = "出错了"});
-                GotoList();
-                return;
-            }
-
-            _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
-            if (_info.Status != EumBuildStatus.Finish)
-            {
-                _timer = new Timer(1000);
-                _timer.Elapsed += async (sender, args) =>
+                _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                if (_info == null)
                 {
-                    var oldLineCount = _lstLog.Length;
-                    _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
-                    _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
-                    // 刷新页面
-                    await InvokeAsync(StateHasChanged);
-                    // 完成状态，则停止时间器
-                    if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
-                    // 有新内容时，滚屏到底部
-                    if (oldLineCount != _lstLog.Length) await ScrollBodyTop();
-                };
-                _timer.Enabled = true;
+                    await js.InvokeVoidAsync("layer.alert", "构建队列不存在", new {icon = 2, title = "出错了"});
+                    GotoList();
+                    return;
+                }
+
+                _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+                if (_info.Status != EumBuildStatus.Finish)
+                {
+                    _timer = new Timer(1000);
+                    _timer.Elapsed += async (sender, args) =>
+                    {
+                        var oldLineCount = _lstLog.Length;
+                        _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                        _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+    // 刷新页面
+                        await InvokeAsync(StateHasChanged);
+    // 完成状态，则停止时间器
+                        if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
+    // 有新内容时，滚屏到底部
+                        if (oldLineCount != _lstLog.Length) await ScrollBodyTop();
+                    };
+                    _timer.Enabled = true;
+                }
+            }
+            catch
+            {
             }
         }
     }
@@ -134,4 +140,5 @@
         }
         return ValueTask.CompletedTask;
     }
+
 }
