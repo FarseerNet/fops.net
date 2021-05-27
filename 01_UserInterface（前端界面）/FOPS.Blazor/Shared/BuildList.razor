@@ -142,6 +142,11 @@
     {
     // 重新读取所有列表
         _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20);
+        // 
+        if (_lstBuild.All(o => o.Status == EumBuildStatus.None))
+        {
+            
+        }
     }
 
 }

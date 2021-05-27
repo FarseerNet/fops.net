@@ -41,7 +41,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// </summary>
         public async Task<List<ProjectVO>> ToListAsync(int groupId)
         {
-            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).ToListAsync();
+            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).Select(o => new {o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub}).ToListAsync();
             var lst   = new List<ProjectVO>();
             foreach (var po in lstPo)
             {
@@ -113,7 +113,7 @@ namespace FOPS.Com.MetaInfoServer.Project
             else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
 
             vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
-            
+
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             await MetaInfoContext.Data.Project.InsertAsync(po, true);
@@ -130,7 +130,7 @@ namespace FOPS.Com.MetaInfoServer.Project
             else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
 
             vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
-            
+
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
             return MetaInfoContext.Data.Project.Where(o => o.Id == id).UpdateAsync(po);

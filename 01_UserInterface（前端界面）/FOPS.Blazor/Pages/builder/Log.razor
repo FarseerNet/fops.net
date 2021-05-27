@@ -100,7 +100,7 @@
                     // 完成状态，则停止时间器
                     if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
                     // 有新内容时，滚屏到底部
-                    if (oldLineCount != _lstLog.Length) await js.InvokeVoidAsync("ScrollBodyTop");
+                    if (oldLineCount != _lstLog.Length) await ScrollBodyTop();
                 };
                 _timer.Enabled = true;
             }
@@ -109,7 +109,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await js.InvokeVoidAsync("ScrollBodyTop");
+        await ScrollBodyTop();
     }
 
     private async Task CancelBuild()
@@ -123,4 +123,15 @@
         nav.NavigateTo("/builder/list");
     }
 
+    private ValueTask ScrollBodyTop()
+    {
+        try
+        {
+            return js.InvokeVoidAsync("ScrollBodyTop");
+        }
+        catch
+        {
+        }
+        return ValueTask.CompletedTask;
+    }
 }
