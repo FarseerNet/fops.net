@@ -18,16 +18,13 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 消除仓库
         /// </summary>
-        public async Task ClearAsync(int gitId)
+        public async Task<RunShellResult> ClearAsync(int gitId)
         {
             var info = await GitService.ToInfoAsync(gitId);
 
             // 获取Git存放的路径
             var gitPath = GetGitPath(info);
-            if (System.IO.Directory.Exists(gitPath))
-            {
-                System.IO.Directory.Delete(gitPath, true);
-            }
+            return await ShellTools.Run("rm", $"-rf {gitPath}", null);
         }
 
         /// <summary>

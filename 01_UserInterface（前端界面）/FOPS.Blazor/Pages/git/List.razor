@@ -144,9 +144,13 @@
     private async Task ClearGit(int id)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        await _iocManager.Resolve<IGitOpr>().ClearAsync(id);
+        var gitResult = await _iocManager.Resolve<IGitOpr>().ClearAsync(id);
         await js.InvokeVoidAsync("layer.close", load);
-        await js.InvokeVoidAsync("layer.alert", "清除完毕", new {icon = 1});
+        if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "清除失败"});
+        else
+        {
+            await js.InvokeVoidAsync("layer.alert", "清除完毕", new {icon = 1});
+        }
     }
 
     private async Task PullGit(GitVO git)

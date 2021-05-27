@@ -13,7 +13,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 消除仓库
         /// </summary>
-        Task ClearAsync(int gitId);
+        Task<RunShellResult> ClearAsync(int gitId);
 
         /// <summary>
         /// 获取Git存放的路径
