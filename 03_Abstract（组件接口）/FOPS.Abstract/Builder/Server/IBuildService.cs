@@ -37,7 +37,7 @@ namespace FOPS.Abstract.Builder.Server
         /// 获取构建队列前30
         /// </summary>
         /// <returns></returns>
-        Task<List<BuildVO>> ToBuildingList(int top);
+        Task<List<BuildVO>> ToBuildingList(int pageSize, int pageIndex);
 
         /// <summary>
         /// 查看构建信息

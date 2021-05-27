@@ -140,12 +140,15 @@
 
     private async Task GetList()
     {
+        var pageIndex = 1;
     // 重新读取所有列表
-        _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20);
-        // 
-        if (_lstBuild.All(o => o.Status == EumBuildStatus.None))
+        _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex);
+    
+    // 说明本次构建的队列大于20条，需要都读出来
+        while (_lstBuild.All(o => o.Status == EumBuildStatus.None))
         {
-            
+            pageIndex++;
+            _lstBuild.AddRange(await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex));
         }
     }
 
