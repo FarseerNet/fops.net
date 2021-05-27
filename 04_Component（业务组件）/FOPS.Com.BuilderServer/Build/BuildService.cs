@@ -186,6 +186,7 @@ namespace FOPS.Com.BuilderServer.Build
                         DockerVer = "0"
                     };
                 project.DicClusterVer[build.ClusterId].DeployFailAt = DateTime.Now;
+                project.DicClusterVer[build.ClusterId].BuildFailId  = build.Id;
                 await ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
             }
 
@@ -205,7 +206,7 @@ namespace FOPS.Com.BuilderServer.Build
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, "成功执行。");
 
-            await Success(build.ClusterId, project);
+            await Success(build.ClusterId, project, build.Id);
 
             await BuilderContext.Data.Build.Where(o => o.Id == build.Id).UpdateAsync(new BuildPO
             {
@@ -218,12 +219,20 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务成功
         /// </summary>
-        public Task Success(int clusterId, ProjectVO project)
+        public Task Success(int clusterId, ProjectVO project, int buildId)
         {
+            // 构建ID没有传的时候，通过版本号获取
+            if (buildId == 0)
+            {
+                var buildNumber = project.DockerVer.ConvertType(0);
+                buildId = BuilderContext.Data.Build.Where(o => o.BuildNumber == buildNumber && o.ProjectId == project.Id).GetValue(o => o.Id.GetValueOrDefault());
+            }
+
             // 修改集群的镜像版本
             if (!project.DicClusterVer.ContainsKey(clusterId)) project.DicClusterVer[clusterId] = new();
             project.DicClusterVer[clusterId].DockerVer       = project.DockerVer;
             project.DicClusterVer[clusterId].DeploySuccessAt = DateTime.Now;
+            project.DicClusterVer[clusterId].BuildSuccessId  = buildId;
             return ProjectService.UpdateAsync(project.Id, project.DicClusterVer);
         }
 

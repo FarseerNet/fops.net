@@ -118,7 +118,7 @@
                                             <div class="layui-table-cell laytable-cell-14-0-4">
                                                 @if (info.DicClusterVer[_clusterId].DeploySuccessAt.Year >= 2021)
                                                 {
-                                                    <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</span>
+                                                    <a href="/builder/log/@info.DicClusterVer[_clusterId].BuildSuccessId">@((DateTime.Now - info.DicClusterVer[_clusterId].DeploySuccessAt).GetDateDesc())</a>
                                                 }
                                             </div>
                                         </td>
@@ -126,7 +126,7 @@
                                             <div class="layui-table-cell laytable-cell-14-0-5">
                                                 @if (info.DicClusterVer[_clusterId].DeployFailAt.Year >= 2021)
                                                 {
-                                                    <span>@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</span>
+                                                    <a href="/builder/log/@info.DicClusterVer[_clusterId].BuildFailId">@((DateTime.Now - info.DicClusterVer[_clusterId].DeployFailAt).GetDateDesc())</a>
                                                 }
                                             </div>
                                         </td>
@@ -187,11 +187,12 @@
     private int _groupId;
 
     bool _isFirst;
+
     protected override async Task OnInitializedAsync()
     {
         if (_isFirst) return;
         _isFirst = true;
-        
+
         _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
     // Git
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
@@ -298,7 +299,7 @@
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
             else
             {
-                await _iocManager.Resolve<IBuildService>().Success(_clusterId, project);
+                await _iocManager.Resolve<IBuildService>().Success(_clusterId, project, 0);
                 await GetList();
                 await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
             }

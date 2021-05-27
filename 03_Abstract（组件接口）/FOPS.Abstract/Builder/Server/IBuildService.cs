@@ -26,7 +26,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 设置任务成功
         /// </summary>
-        Task Success(int clusterId, ProjectVO project);
+        Task Success(int clusterId, ProjectVO project, int buildId);
 
         /// <summary>
         /// 当前构建的队列数量

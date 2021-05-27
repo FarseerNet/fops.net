@@ -16,8 +16,16 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public DateTime DeploySuccessAt { get; set; }
         /// <summary>
+        /// 上次部署成功的构建ID
+        /// </summary>
+        public int BuildSuccessId { get; set; }
+        /// <summary>
         /// 上次部署失败时间
         /// </summary>
         public DateTime DeployFailAt { get; set; }
+        /// <summary>
+        /// 上次部署失败的构建ID
+        /// </summary>
+        public int BuildFailId { get; set; }
     }
 }
