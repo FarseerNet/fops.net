@@ -105,7 +105,7 @@
                                         <NavLink href="/fss/tasks/unrunlist" class="nav-link layadmin-backlog-body">
                                             <h3>超时未执行</h3>
                                             <p>
-                                                <cite>@_unExecuteCount</cite>
+                                                <cite>@_toUnRunCount</cite>
                                             </p>
                                         </NavLink>
                                     </li>
@@ -278,7 +278,7 @@
 @code
 {
     long _taskGroupCount;
-    int _unExecuteCount;
+    int _toUnRunCount;
     long _clientCount;
     int _todayFailCount;
     int _projectCount;
@@ -295,7 +295,7 @@
     // FSS 任务组数
         _taskGroupCount = await _iocManager.Resolve<ITaskGroupList>().Count();
     // FSS 未执行数
-        _unExecuteCount = await _iocManager.Resolve<ITaskGroupList>().ToUnRunCountAsync();
+        _toUnRunCount = await _iocManager.Resolve<ITaskGroupList>().ToUnRunCountAsync();
     // FSS 客户端数
         _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
     // FSS 今日失败数

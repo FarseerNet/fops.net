@@ -19,9 +19,9 @@ namespace FOPS.Com.FssServer.TaskGroup
     /// </summary>
     public class TaskGroupList : ITaskGroupList
     {
-        public  ITaskGroupAgent    TaskGroupAgent    { get; set; }
-        public IIocManager IocManager { get; set; }
-        
+        public ITaskGroupAgent TaskGroupAgent { get; set; }
+        public IIocManager     IocManager     { get; set; }
+
         private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
 
         /// <summary>
@@ -51,19 +51,19 @@ namespace FOPS.Com.FssServer.TaskGroup
         {
             return RedisCacheManager.Db.HashLengthAsync(TaskGroupCache.Key);
         }
-        
+
         /// <summary>
         /// 删除整个缓存
         /// </summary>
         public Task ClearAsync() => RedisCacheManager.CacheManager.RemoveAsync(TaskGroupCache.Key);
-        
+
         /// <summary>
         /// 获取未执行的任务列表
         /// </summary>
         public async Task<int> ToUnRunCountAsync()
         {
             var lst = await ToListAsync();
-            return lst.Count(o => DateTime.Now > o.NextAt);
+            return lst.Count(o => DateTime.Now > o.NextAt && o.IsEnable == true);
         }
     }
 }
