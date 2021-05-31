@@ -123,22 +123,28 @@
         _isFirst = true;
 
         _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
-
-        _timer = new Timer(5000);
-        _timer.Elapsed += async (_, _) =>
-        {
-            try
-            {
-                _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
-                // 刷新页面
-                await InvokeAsync(StateHasChanged);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        };
-        _timer.Enabled = true;
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _timer = new Timer(5000);
+            _timer.Elapsed += async (_, _) =>
+            {
+                try
+                {
+                    _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+    // 刷新页面
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
+            _timer.Enabled = true;
+        }
+        return Task.FromResult(0);
+    }
 }

@@ -127,22 +127,6 @@
 
         _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
         await GetList();
-
-        _timer = new Timer(2000);
-        _timer.Elapsed += async (_, _) =>
-        {
-            try
-            {
-                await GetList();
-    // 刷新页面
-                await InvokeAsync(StateHasChanged);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        };
-        _timer.Enabled = true;
     }
 
     private async Task GetList()
@@ -150,7 +134,7 @@
         var pageIndex = 1;
     // 重新读取所有列表
         _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex);
-    
+
     // 说明本次构建的队列大于20条，需要都读出来
         while (_lstBuild.All(o => o.Status == EumBuildStatus.None))
         {
@@ -158,4 +142,29 @@
             _lstBuild.AddRange(await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex));
         }
     }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _timer = new Timer(2000);
+            _timer.Elapsed += async (_, _) =>
+            {
+                try
+                {
+                    await GetList();
+    // 刷新页面
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
+            _timer.Enabled = true;
+        }
+        
+        return Task.FromResult(0);
+    }
+
 }
