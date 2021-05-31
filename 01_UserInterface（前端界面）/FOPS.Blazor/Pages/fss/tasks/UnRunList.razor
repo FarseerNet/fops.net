@@ -173,8 +173,15 @@
         _timer = new Timer(5000);
         _timer.Elapsed += async (_, _) =>
         {
-            await GetList();
-            await InvokeAsync(StateHasChanged);
+            try
+            {
+                await GetList();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         };
         _timer.Enabled = true;
     }

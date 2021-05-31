@@ -166,9 +166,16 @@
         _timer = new Timer(5000);
         _timer.Elapsed += async (_, _) =>
         {
-            _lst = await _iocManager.Resolve<ITaskList>().ToFailListAsync(_pageSize, PageIndex, out _totalCount);
+            try
+            {
+                _lst = await _iocManager.Resolve<ITaskList>().ToFailListAsync(_pageSize, PageIndex, out _totalCount);
     // 刷新页面
-            await InvokeAsync(StateHasChanged);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         };
         _timer.Enabled = true;
     }

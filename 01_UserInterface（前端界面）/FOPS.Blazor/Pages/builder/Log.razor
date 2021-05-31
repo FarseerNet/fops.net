@@ -94,15 +94,22 @@
                     _timer = new Timer(1000);
                     _timer.Elapsed += async (sender, args) =>
                     {
-                        var oldLineCount = _lstLog.Length;
-                        _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
-                        _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+                        try
+                        {
+                            var oldLineCount = _lstLog.Length;
+                            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                            _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
     // 刷新页面
-                        await InvokeAsync(StateHasChanged);
+                            await InvokeAsync(StateHasChanged);
     // 完成状态，则停止时间器
-                        if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
+                            if (_info.Status == EumBuildStatus.Finish) _timer.Stop();
     // 有新内容时，滚屏到底部
-                        if (oldLineCount != _lstLog.Length) await ScrollBodyTop();
+                            if (oldLineCount != _lstLog.Length) await ScrollBodyTop();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
                     };
                     _timer.Enabled = true;
                 }

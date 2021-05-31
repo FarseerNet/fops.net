@@ -131,9 +131,16 @@
         _timer = new Timer(2000);
         _timer.Elapsed += async (_, _) =>
         {
-            await GetList();
+            try
+            {
+                await GetList();
     // 刷新页面
-            await InvokeAsync(StateHasChanged);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         };
         _timer.Enabled = true;
     }
