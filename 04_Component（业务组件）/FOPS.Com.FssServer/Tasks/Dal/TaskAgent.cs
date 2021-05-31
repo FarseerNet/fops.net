@@ -54,6 +54,6 @@ namespace FOPS.Com.FssServer.Tasks.Dal
         /// <summary>
         /// 今日执行失败数量
         /// </summary>
-        public Task<int> TodayFailCountAsync() => FssContext.Data.Task.Where(o => o.CreateAt >= DateTime.Now.Date).CountAsync();
+        public Task<int> TodayFailCountAsync() => FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();
     }
 }
