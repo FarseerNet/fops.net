@@ -29,7 +29,7 @@ namespace FOPS.Com.FssServer.Tasks
         {
             return FssContext.Data.Task.Where(o => o.TaskGroupId == groupId)
                 .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
-                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
+                .Desc(o => o.CreateAt).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace FOPS.Com.FssServer.Tasks
         {
             return FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail)
                 .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
-                .Desc(o => o.Id).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
+                .Desc(o => o.CreateAt).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }
 
         /// <summary>
