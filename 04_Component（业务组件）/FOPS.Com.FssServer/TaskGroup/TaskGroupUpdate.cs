@@ -27,20 +27,6 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// </summary>
         public async Task SaveAsync(TaskGroupVO vo)
         {
-            if (vo.IntervalMs < 1)
-            {
-                // 是否为数字
-                if (IsType.IsInt(vo.Cron))
-                {
-                    vo.IntervalMs = vo.Cron.ConvertType(0L);
-                    vo.Cron       = "";
-                }
-                else if (!new Cron().Parse(vo.Cron))
-                {
-                    throw new Exception("Cron格式错误");
-                }
-            }
-
             await TaskGroupAgent.UpdateAsync(vo.Id, vo.Map<TaskGroupPO>());
             await UpdateAsync(vo);
         }
