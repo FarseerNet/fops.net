@@ -55,7 +55,8 @@ namespace FOPS.Com.FssServer.Tasks
         /// </summary>
         public Task<List<TaskVO>> ToUnRunListAsync(int pageSize, int pageIndex, out int totalCount)
         {
-            return FssContext.Data.Task.Where(o => o.StartAt < DateTime.Now && o.Status == EumTaskType.None)
+            var now = DateTime.Now.AddMilliseconds(-500);
+            return FssContext.Data.Task.Where(o => o.StartAt < now && o.Status == EumTaskType.None)
                 .Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp, o.RunSpeed, o.RunAt})
                 .Asc(o => o.StartAt).ToListAsync(pageSize, pageIndex, out totalCount).MapAsync<TaskVO, TaskPO>();
         }

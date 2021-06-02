@@ -62,8 +62,9 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// </summary>
         public async Task<int> ToUnRunCountAsync()
         {
+            var now = DateTime.Now.AddMilliseconds(-500);
             var lst = await ToListAsync();
-            return lst.Count(o => DateTime.Now > o.NextAt && o.IsEnable == true);
+            return lst.Count(o => o.NextAt < now && o.IsEnable == true);
         }
     }
 }
