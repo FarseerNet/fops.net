@@ -20,19 +20,18 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// </summary>
         public async Task<int> AddAsync(TaskGroupVO vo)
         {
-            if (vo.IntervalMs < 1)
+            // 是否为数字
+            if (IsType.IsInt(vo.Cron))
             {
-                // 是否为数字
-                if (IsType.IsInt(vo.Cron))
-                {
-                    vo.IntervalMs = vo.Cron.ConvertType(0L);
-                    vo.Cron       = "";
-                }
-                else if (!new Cron().Parse(vo.Cron))
-                {
-                    throw new Exception("Cron格式错误");
-                }
+                vo.IntervalMs = vo.Cron.ConvertType(0L);
+                vo.Cron       = "";
             }
+            else if (new Cron().Parse(vo.Cron))
+            {
+                vo.IntervalMs = 0;
+            }
+            else 
+                throw new Exception("Cron格式错误");
 
             var po = new TaskGroupPO
             {

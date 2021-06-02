@@ -126,19 +126,19 @@
         }
         try
         {
-            if (_info.IntervalMs < 1)
+
+            // 是否为数字
+            if (IsType.IsInt(_info.Cron))
             {
-    // 是否为数字
-                if (IsType.IsInt(_info.Cron))
-                {
-                    _info.IntervalMs = _info.Cron.ConvertType(0L);
-                    _info.Cron = "";
-                }
-                else if (!new Cron().Parse(_info.Cron))
-                {
-                    throw new Exception("Cron格式错误");
-                }
+                _info.IntervalMs = _info.Cron.ConvertType(0L);
+                _info.Cron = "";
             }
+            else if (new Cron().Parse(_info.Cron))
+            {
+                _info.IntervalMs = 0;
+            }
+            else 
+                throw new Exception("Cron格式错误");
 
             await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
