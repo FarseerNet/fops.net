@@ -34,7 +34,12 @@ namespace FOPS.Com.BuilderServer.Docker
 
             return dockerHub;
         }
-        
+
+        /// <summary>
+        /// 生成镜像名称
+        /// </summary>
+        public string GetDockerImage(DockerHubVO docker, ProjectVO project, int buildNumber) => $"{GetDockerHub(docker)}:{project.Name}-{buildNumber}";
+
         /// <summary>
         /// Docker打包
         /// </summary>
@@ -69,7 +74,7 @@ namespace FOPS.Com.BuilderServer.Docker
             }
 
             // 打包
-            var result = await ShellTools.Run("docker", $"build -t {env.DockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, env, env.ProjectReleaseDirRoot);
+            var result = await ShellTools.Run("docker", $"build -t {env.DockerImage} --network=host .", actReceiveOutput, env, env.ProjectReleaseDirRoot);
 
             switch (result.IsError)
             {
@@ -99,9 +104,9 @@ namespace FOPS.Com.BuilderServer.Docker
             {
                 await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput, env);
             }
-            
+
             // 上传
-            var result = await ShellTools.Run("docker", $"push {env.DockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput, env);
+            var result = await ShellTools.Run("docker", $"push {env.DockerImage}", actReceiveOutput, env);
 
             switch (result.IsError)
             {

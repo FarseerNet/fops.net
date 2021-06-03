@@ -25,5 +25,10 @@ namespace FOPS.Abstract.Builder.Server
         /// 取得dockerHub
         /// </summary>
         string GetDockerHub(DockerHubVO docker);
+
+        /// <summary>
+        /// 生成镜像名称
+        /// </summary>
+        string GetDockerImage(DockerHubVO docker, ProjectVO project, int buildNumber);
     }
 }

@@ -295,7 +295,7 @@
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
-            var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer, project, null);
+            var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer.ConvertType(0), project, null);
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
             else
             {

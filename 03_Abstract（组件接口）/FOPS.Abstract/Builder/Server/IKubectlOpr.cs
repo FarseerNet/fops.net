@@ -17,6 +17,6 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 更新k8s版本
         /// </summary>
-        Task<RunShellResult> SetImages(int clusterId, string dockerVer, ProjectVO project, Action<string> actReceiveOutput);
+        Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput);
     }
 }

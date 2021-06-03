@@ -30,13 +30,8 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var configFile = $"{SavePath}{cluster.Name}";
             CreateConfigFile(cluster, configFile);
 
-            // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
-            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-
             // 取得dockerHub
-            var dockerHub  = DockerOpr.GetDockerHub(docker);
-            var dockerName = $"{dockerHub}:{project.Name}-{build.BuildNumber}";
-            var result     = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, env);
+            var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env);
             switch (result.IsError)
             {
                 case false:
@@ -53,7 +48,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 更新k8s版本
         /// </summary>
-        public async Task<RunShellResult> SetImages(int clusterId, string dockerVer, ProjectVO project, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput)
         {
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
             var configFile = $"{SavePath}{cluster.Name}";
@@ -62,8 +57,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 
             // 取得dockerHub
-            var dockerHub  = DockerOpr.GetDockerHub(docker);
-            var dockerName = $"{dockerHub}:{project.Name}-{dockerVer}";
+            var dockerName = DockerOpr.GetDockerImage(docker, project, buildNumber);
             return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, null);
         }
 

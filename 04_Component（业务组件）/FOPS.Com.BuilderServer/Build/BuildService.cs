@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Enum;
@@ -11,6 +12,7 @@ using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
 using FS.DI;
 using FS.Extends;
+using FS.Utils.Component;
 
 namespace FOPS.Com.BuilderServer.Build
 {
@@ -68,12 +70,12 @@ namespace FOPS.Com.BuilderServer.Build
             }
 
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
-            
+
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
             // 定义环境变量
             var env = new BuildEnvironment
             {
-                BuildId               = build.Id,
+                BuildNumber           = build.BuildNumber,
                 ProjectName           = project.Name,
                 ProjectDomain         = project.Domain,
                 ProjectEntryPoint     = project.EntryPoint,
@@ -81,7 +83,8 @@ namespace FOPS.Com.BuilderServer.Build
                 ProjectReleaseDirRoot = DotnetOpr.GetReleasePath(project),
                 ProjectSourceDirRoot  = DotnetOpr.GetSourceDirRoot(project, git),
                 DockerFilePath        = DotnetOpr.GetReleasePath(project) + "/Dockerfile",
-                DockerHub        = DockerOpr.GetDockerHub(docker),
+                DockerHub             = DockerOpr.GetDockerHub(docker),
+                DockerImage           = DockerOpr.GetDockerImage(docker, project, build.BuildNumber),
             };
 
             try
@@ -105,6 +108,8 @@ namespace FOPS.Com.BuilderServer.Build
                 // 恢复成当前git设置
                 env.GitHub     = git.Hub;
                 env.GitDirRoot = GitOpr.GetGitPath(git);
+
+                await ShellTools.Run("env", "", ActWriteLog, env);
 
                 // 2、编译
                 build = await ToInfoAsync(build.Id);

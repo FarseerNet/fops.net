@@ -10,7 +10,7 @@ namespace FOPS.Abstract.Builder.Entity
         /// <summary>
         /// 构建ID
         /// </summary>
-        public int BuildId { get; set; }
+        public int BuildNumber { get; set; }
 
         /// <summary>
         /// 项目名称
@@ -63,6 +63,11 @@ namespace FOPS.Abstract.Builder.Entity
         public string DockerHub { get; set; }
 
         /// <summary>
+        /// Docker镜像
+        /// </summary>
+        public string DockerImage { get; set; }
+
+        /// <summary>
         /// 转成字典
         /// </summary>
         public static implicit operator Dictionary<string, string>(BuildEnvironment env)
@@ -71,7 +76,7 @@ namespace FOPS.Abstract.Builder.Entity
             {
                 {"Git_Hub", env.GitHub},
                 {"Git_DirRoot", env.GitDirRoot},
-                {"Build_Id", env.BuildId.ToString()},
+                {"Build_Number", env.BuildNumber.ToString()},
                 {"Project_Name", env.ProjectName},
                 {"Project_Domain", env.ProjectDomain},
                 {"Project_EntryPoint", env.ProjectEntryPoint},
@@ -80,6 +85,7 @@ namespace FOPS.Abstract.Builder.Entity
                 {"Project_SourceDirRoot", env.ProjectSourceDirRoot},
                 {"Docker_FilePath", env.DockerFilePath},
                 {"Docker_Hub", env.DockerHub},
+                {"Docker_Image", env.DockerImage},
             };
         }
     }
