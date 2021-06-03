@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
+using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
@@ -18,14 +19,15 @@ namespace FOPS.Com.BuilderServer.Build
     /// </summary>
     public class BuildService : IBuildService
     {
-        public IGitOpr          GitOpr          { get; set; }
-        public IDotnetOpr       DotnetOpr       { get; set; }
-        public IProjectService  ProjectService  { get; set; }
-        public IGitService      GitService      { get; set; }
-        public IBuildLogService BuildLogService { get; set; }
-        public IDockerOpr       DockerOpr       { get; set; }
-        public IKubectlOpr      KubectlOpr      { get; set; }
-        public IIocManager      IocManager      { get; set; }
+        public IGitOpr           GitOpr           { get; set; }
+        public IDotnetOpr        DotnetOpr        { get; set; }
+        public IProjectService   ProjectService   { get; set; }
+        public IGitService       GitService       { get; set; }
+        public IBuildLogService  BuildLogService  { get; set; }
+        public IDockerOpr        DockerOpr        { get; set; }
+        public IKubectlOpr       KubectlOpr       { get; set; }
+        public IDockerHubService DockerHubService { get; set; }
+        public IIocManager       IocManager       { get; set; }
 
         /// <summary>
         /// 构建
@@ -65,9 +67,22 @@ namespace FOPS.Com.BuilderServer.Build
                 return;
             }
 
-            var startNew = Stopwatch.StartNew();
-
+            var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
+            
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
+            // 定义环境变量
+            var env = new BuildEnvironment
+            {
+                BuildId               = build.Id,
+                ProjectName           = project.Name,
+                ProjectDomain         = project.Domain,
+                ProjectEntryPoint     = project.EntryPoint,
+                ProjectEntryPort      = project.EntryPort,
+                ProjectReleaseDirRoot = DotnetOpr.GetReleasePath(project),
+                ProjectSourceDirRoot  = DotnetOpr.GetSourceDirRoot(project, git),
+                DockerFilePath        = DotnetOpr.GetReleasePath(project) + "/Dockerfile",
+                DockerHub        = DockerOpr.GetDockerHub(docker),
+            };
 
             try
             {
@@ -78,17 +93,23 @@ namespace FOPS.Com.BuilderServer.Build
                 var lstGit = await GitService.ToListAsync();
                 foreach (var gitVO in lstGit)
                 {
-                    if ((await GitOpr.PullAsync(build, project, gitVO, ActWriteLog)).IsError)
+                    env.GitHub     = gitVO.Hub;
+                    env.GitDirRoot = GitOpr.GetGitPath(gitVO);
+                    if ((await GitOpr.PullAsync(env, build, project, gitVO, ActWriteLog)).IsError)
                     {
                         await Fail(build, project);
                         return;
                     }
                 }
 
+                // 恢复成当前git设置
+                env.GitHub     = git.Hub;
+                env.GitDirRoot = GitOpr.GetGitPath(git);
+
                 // 2、编译
                 build = await ToInfoAsync(build.Id);
                 if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
-                if ((await DotnetOpr.Publish(build, project, git, ActWriteLog)).IsError)
+                if ((await DotnetOpr.Publish(env, build, project, git, ActWriteLog)).IsError)
                 {
                     await Fail(build, project);
                     return;
@@ -97,7 +118,7 @@ namespace FOPS.Com.BuilderServer.Build
                 // 3、打包
                 build = await ToInfoAsync(build.Id);
                 if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
-                if ((await DockerOpr.Build(build, project, ActWriteLog)).IsError)
+                if ((await DockerOpr.Build(env, build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project);
                     return;
@@ -106,7 +127,7 @@ namespace FOPS.Com.BuilderServer.Build
                 // 4、上传镜像
                 build = await ToInfoAsync(build.Id);
                 if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
-                if ((await DockerOpr.Upload(build, project, ActWriteLog)).IsError)
+                if ((await DockerOpr.Upload(env, build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project);
                     return;
@@ -119,7 +140,7 @@ namespace FOPS.Com.BuilderServer.Build
                 // 5、更新集群镜像版本
                 build = await ToInfoAsync(build.Id);
                 if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
-                if ((await KubectlOpr.SetImages(build, project, ActWriteLog)).IsError)
+                if ((await KubectlOpr.SetImages(env, build, project, ActWriteLog)).IsError)
                 {
                     await Fail(build, project);
                     return;

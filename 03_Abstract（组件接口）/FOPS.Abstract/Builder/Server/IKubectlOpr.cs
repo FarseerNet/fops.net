@@ -12,7 +12,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 更新k8s版本
         /// </summary>
-        Task<RunShellResult> SetImages(BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
+        Task<RunShellResult> SetImages(BuildEnvironment buildEnvironment, BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
 
         /// <summary>
         /// 更新k8s版本

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.K8S.Entity;
@@ -23,11 +24,11 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
+        Task<RunShellResult> PullAsync(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
 
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        Task<RunShellResult> PullAsync(GitVO git, Action<string> actReceiveOutput);
+        Task<RunShellResult> PullAsync(BuildEnvironment dicEnv, GitVO git, Action<string> actReceiveOutput);
     }
 }

@@ -1,0 +1,86 @@
+using System.Collections.Generic;
+
+namespace FOPS.Abstract.Builder.Entity
+{
+    /// <summary>
+    /// 构建时的环境变量
+    /// </summary>
+    public class BuildEnvironment
+    {
+        /// <summary>
+        /// 构建ID
+        /// </summary>
+        public int BuildId { get; set; }
+
+        /// <summary>
+        /// 项目名称
+        /// </summary>
+        public string ProjectName { get; set; }
+
+        /// <summary>
+        /// 项目访问域名
+        /// </summary>
+        public string ProjectDomain { get; set; }
+
+        /// <summary>
+        /// 程序入口名
+        /// </summary>
+        public string ProjectEntryPoint { get; set; }
+
+        /// <summary>
+        /// 程序启动端口
+        /// </summary>
+        public int ProjectEntryPort { get; set; }
+
+        /// <summary>
+        /// 项目编译保存的目录
+        /// </summary>
+        public string ProjectReleaseDirRoot { get; set; }
+
+        /// <summary>
+        /// 项目源代码目录
+        /// </summary>
+        public string ProjectSourceDirRoot { get; set; }
+
+        /// <summary>
+        /// Git仓库地址
+        /// </summary>
+        public string GitHub { get; set; }
+
+        /// <summary>
+        /// Git仓库源代码目录
+        /// </summary>
+        public string GitDirRoot { get; set; }
+
+        /// <summary>
+        /// Dockerfile文件路径
+        /// </summary>
+        public string DockerFilePath { get; set; }
+
+        /// <summary>
+        /// Docker仓库地址
+        /// </summary>
+        public string DockerHub { get; set; }
+
+        /// <summary>
+        /// 转成字典
+        /// </summary>
+        public static implicit operator Dictionary<string, string>(BuildEnvironment env)
+        {
+            return new()
+            {
+                {"Git_Hub", env.GitHub},
+                {"Git_DirRoot", env.GitDirRoot},
+                {"Build_Id", env.BuildId.ToString()},
+                {"Project_Name", env.ProjectName},
+                {"Project_Domain", env.ProjectDomain},
+                {"Project_EntryPoint", env.ProjectEntryPoint},
+                {"Project_EntryPort", env.ProjectEntryPort.ToString()},
+                {"Project_ReleaseDirRoot", env.ProjectReleaseDirRoot},
+                {"Project_SourceDirRoot", env.ProjectSourceDirRoot},
+                {"Docker_FilePath", env.DockerFilePath},
+                {"Docker_Hub", env.DockerHub},
+            };
+        }
+    }
+}

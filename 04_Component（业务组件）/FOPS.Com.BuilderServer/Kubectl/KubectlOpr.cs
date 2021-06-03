@@ -18,25 +18,25 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IDockerOpr        DockerOpr        { get; set; }
         public IBuildLogService  BuildLogService  { get; set; }
         const  string            SavePath = "/var/lib/fops/kube/";
-        
+
         /// <summary>
-        /// 更新k8s版本
+        /// 更新k8s版本k
         /// </summary>
-        public async Task<RunShellResult> SetImages(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> SetImages(BuildEnvironment env, BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");
             var cluster    = await ClusterService.ToInfoAsync(build.ClusterId);
             var configFile = $"{SavePath}{cluster.Name}";
             CreateConfigFile(cluster, configFile);
-            
+
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
             var dockerName = $"{dockerHub}:{project.Name}-{build.BuildNumber}";
-            var result     = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
+            var result     = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, env);
             switch (result.IsError)
             {
                 case false:
@@ -64,7 +64,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             // 取得dockerHub
             var dockerHub  = DockerOpr.GetDockerHub(docker);
             var dockerName = $"{dockerHub}:{project.Name}-{dockerVer}";
-            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput);
+            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, null);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             // 文件不存在，则创建
             if (!System.IO.File.Exists(configFile))
             {
-                System.IO.File.WriteAllText(configFile,cluster.Config);
+                System.IO.File.WriteAllText(configFile, cluster.Config);
             }
             else
             {

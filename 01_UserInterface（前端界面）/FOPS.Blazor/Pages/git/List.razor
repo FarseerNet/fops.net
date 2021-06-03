@@ -156,13 +156,13 @@
     private async Task PullGit(GitVO git)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        var gitResult = await _iocManager.Resolve<IGitOpr>().PullAsync(git, null);
+        var gitResult = await _iocManager.Resolve<IGitOpr>().PullAsync(null, git, null);
         await js.InvokeVoidAsync("layer.close", load);
-        
+
         if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "拉取失败"});
         else
         {
-            // 更新git拉取时间
+    // 更新git拉取时间
             await _iocManager.Resolve<IGitService>().UpdateAsync(git.Id, DateTime.Now);
             await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 1, title = "执行结果"});
         }

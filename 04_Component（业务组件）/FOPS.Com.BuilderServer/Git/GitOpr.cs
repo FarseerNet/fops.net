@@ -16,6 +16,16 @@ namespace FOPS.Com.BuilderServer.Git
         const  string           SavePath = "/var/lib/fops/git/";
 
         /// <summary>
+        /// 获取Git存放的路径
+        /// </summary>
+        public string GetGitPath(GitVO info)
+        {
+            var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
+            if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
+            return SavePath + gitName + "/";
+        }
+
+        /// <summary>
         /// 消除仓库
         /// </summary>
         public async Task<RunShellResult> ClearAsync(int gitId)
@@ -24,30 +34,31 @@ namespace FOPS.Com.BuilderServer.Git
 
             // 获取Git存放的路径
             var gitPath = GetGitPath(info);
-            return await ShellTools.Run("rm", $"-rf {gitPath}", null);
+            return await ShellTools.Run("rm", $"-rf {gitPath}", null, null);
         }
 
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> PullAsync(GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> PullAsync(BuildEnvironment env, GitVO git, Action<string> actReceiveOutput)
         {
             RunShellResult runShellResult;
 
             // 如果Git存放的目录不存在，则创建
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
 
+            
             // 获取Git存放的路径
-            var gitPath = GetGitPath(git);
-
+            var gitPath = env == null ? GetGitPath(git) : env.GitDirRoot;
+            
             // 判断git是否有clone过
             if (!System.IO.Directory.Exists(gitPath))
             {
-                runShellResult = await Clone(git, gitPath, actReceiveOutput);
+                runShellResult = await Clone(env, git, gitPath, actReceiveOutput);
             }
             else
             {
-                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput);
+                runShellResult = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env);
             }
 
             return runShellResult;
@@ -56,12 +67,12 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> PullAsync(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> PullAsync(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始拉取git {git.Name} 分支：{git.Branch} 仓库：{git.Hub}。");
 
-            var result = await PullAsync(git, actReceiveOutput);
+            var result = await PullAsync(env, git, actReceiveOutput);
 
             // 更新git拉取时间
             await GitService.UpdateAsync(git.Id, DateTime.Now);
@@ -81,7 +92,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        private Task<RunShellResult> Clone(GitVO info, string path, Action<string> actReceiveOutput)
+        private Task<RunShellResult> Clone(BuildEnvironment env, GitVO info, string path, Action<string> actReceiveOutput)
         {
             var url = info.Hub;
             // 需要密码
@@ -90,17 +101,7 @@ namespace FOPS.Com.BuilderServer.Git
                 url = url.Replace("//", $"//{info.UserName.Replace("@", "%40")}:{info.UserPwd}@");
             }
 
-            return ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput);
-        }
-
-        /// <summary>
-        /// 获取Git存放的路径
-        /// </summary>
-        public string GetGitPath(GitVO info)
-        {
-            var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
-            if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
-            return SavePath + gitName + "/";
+            return ShellTools.Run("git", $"clone -b {info.Branch} {url} {path}", actReceiveOutput, env);
         }
     }
 }

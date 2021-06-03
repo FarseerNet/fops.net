@@ -15,17 +15,30 @@ namespace FOPS.Com.BuilderServer.Docker
 {
     public class DockerOpr : IDockerOpr
     {
-        const  string                SavePath = "/var/lib/fops/dist/";
         public IBuildLogService      BuildLogService      { get; set; }
         public IIocManager           IocManager           { get; set; }
         public IDockerfileTplService DockerfileTplService { get; set; }
         public IDockerHubService     DockerHubService     { get; set; }
-        public IBuildService         BuildService         { get; set; }
 
+        /// <summary>
+        /// 取得dockerHub
+        /// </summary>
+        public string GetDockerHub(DockerHubVO docker)
+        {
+            var dockerHub = "localhost";
+            if (docker != null)
+            {
+                dockerHub = docker.Hub;
+                if (dockerHub.EndsWith("/")) dockerHub.Substring(0, dockerHub.Length - 1);
+            }
+
+            return dockerHub;
+        }
+        
         /// <summary>
         /// Docker打包
         /// </summary>
-        public async Task<RunShellResult> Build(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始镜像打包。");
@@ -42,27 +55,21 @@ namespace FOPS.Com.BuilderServer.Docker
                 };
             }
 
-            // 替换模板
-            var tpl      = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
-            var savePath = SavePath + project.Name + "/Dockerfile";
-
             // 如果已存在Dockerfile，则根据模板创建
-            if (!System.IO.File.Exists(savePath))
+            if (!System.IO.File.Exists(env.DockerFilePath))
             {
                 BuildLogService.Write(build.Id, $"未发现Dockerfile，将按模板创建");
-                System.IO.File.AppendAllText(savePath, tpl);
+                // 替换模板
+                var tpl = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
+                System.IO.File.AppendAllText(env.DockerFilePath, tpl);
             }
             else
             {
-                BuildLogService.Write(build.Id, $"发现Dockerfile，将按存在的Dockerfile进行打包");
+                BuildLogService.Write(build.Id, $"项目中包含Dockerfile，将按存在的Dockerfile进行打包");
             }
 
-            // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
-            var docker    = await DockerHubService.ToInfoAsync(project.DockerHub);
-            var dockerHub = GetDockerHub(docker);
-
             // 打包
-            var result = await ShellTools.Run("docker", $"build -t {dockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, SavePath + project.Name); // -f {savePath}
+            var result = await ShellTools.Run("docker", $"build -t {env.DockerHub}:{project.Name}-{build.BuildNumber} --network=host .", actReceiveOutput, env, env.ProjectReleaseDirRoot);
 
             switch (result.IsError)
             {
@@ -78,24 +85,9 @@ namespace FOPS.Com.BuilderServer.Docker
         }
 
         /// <summary>
-        /// 取得dockerHub
-        /// </summary>
-        public string GetDockerHub(DockerHubVO docker)
-        {
-            var dockerHub = "localhost";
-            if (docker != null)
-            {
-                dockerHub = docker.Hub;
-                if (dockerHub.EndsWith("/")) dockerHub.Substring(0, dockerHub.Length - 1);
-            }
-
-            return dockerHub;
-        }
-
-        /// <summary>
         /// 上传镜像
         /// </summary>
-        public async Task<RunShellResult> Upload(BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Upload(BuildEnvironment env, BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始上传镜像。");
@@ -105,14 +97,11 @@ namespace FOPS.Com.BuilderServer.Docker
             // 登陆 docker
             if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
             {
-                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput);
+                await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput, env);
             }
-
-            // 取得dockerHub
-            var dockerHub = GetDockerHub(docker);
-
+            
             // 上传
-            var result = await ShellTools.Run("docker", $"push {dockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput);
+            var result = await ShellTools.Run("docker", $"push {env.DockerHub}:{project.Name}-{build.BuildNumber}", actReceiveOutput, env);
 
             switch (result.IsError)
             {

@@ -96,7 +96,7 @@ namespace FOPS.Com.K8SServer.Deploy
             System.IO.File.WriteAllText(fileName, yamlContent, Encoding.UTF8);
 
             // 发布
-            return ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}", null);
+            return ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={clusterConfig}", null, null);
         }
     }
 }

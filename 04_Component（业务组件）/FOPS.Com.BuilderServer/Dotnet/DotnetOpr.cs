@@ -23,24 +23,26 @@ namespace FOPS.Com.BuilderServer.Dotnet
         public IIocManager      IocManager      { get; set; }
 
         /// <summary>
+        /// 获取项目源地址
+        /// </summary>
+        public string GetSourceDirRoot(ProjectVO project, GitVO git) => GitOpr.GetGitPath(git) + (project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path);
+
+        /// <summary>
+        /// 获取编译保存的目录地址
+        /// </summary>
+        public string GetReleasePath(ProjectVO project) => SavePath + project.Name;
+
+        /// <summary>
         /// 编译.net core
         /// </summary>
-        public async Task<RunShellResult> Publish(BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Publish(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始编译。");
 
-            var savePath = SavePath + project.Name;
-            var source   = project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path;
-            source = GitOpr.GetGitPath(git) + source;
-
-            // 先删除之前编译的目标文件
-            if (System.IO.Directory.Exists(savePath)) System.IO.Directory.Delete(savePath, true);
-            System.IO.Directory.CreateDirectory(savePath);
-
-            if (!System.IO.Directory.Exists(source))
+            if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
             {
-                var log = $"路径：{source}不存在，无法编译";
+                var log = $"路径：{env.ProjectSourceDirRoot}不存在，无法编译";
                 BuildLogService.Write(build.Id, log);
                 return new RunShellResult
                 {
@@ -49,8 +51,12 @@ namespace FOPS.Com.BuilderServer.Dotnet
                 };
             }
 
-            var result = await Publish(savePath, source, actReceiveOutput);
+            // 先删除之前编译的目标文件
+            if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
+            System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
 
+            // 编译
+            var result = await Publish(env, actReceiveOutput);
             switch (result.IsError)
             {
                 case false:
@@ -67,10 +73,19 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// <summary>
         /// 编译.net core
         /// </summary>
+        public async Task<RunShellResult> Publish(BuildEnvironment env, Action<string> actReceiveOutput)
+        {
+            await ShellTools.Run("dotnet",        $"restore",                                              actReceiveOutput, env, env.ProjectSourceDirRoot);
+            return await ShellTools.Run("dotnet", $"publish -c Release -o {env.ProjectReleaseDirRoot}", actReceiveOutput, env, env.ProjectSourceDirRoot);
+        }
+
+        /// <summary>
+        /// 编译.net core
+        /// </summary>
         public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
         {
-            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, source);
-            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, source);
+            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, null, source);
+            return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, null, source);
         }
     }
 }
