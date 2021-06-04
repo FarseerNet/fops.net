@@ -101,7 +101,7 @@ metadata:
   name: fops
 spec:
   rules:
-    - host: fops.xxxxxxx # 内网则可以直接使用Service
+    - host: fops.xxxxxxx # 访问的域名
       http:
         paths:
           - path: /

@@ -213,3 +213,114 @@ CREATE TABLE `k8s_yaml_tpl` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 ```
+
+## K8S脚本
+```yamlapiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fops
+  labels:
+    app: fops
+    k8s.kuboard.cn/layer: web
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  minReadySeconds: 10     # 这里需要估一个比较合理的值，从容器启动到应用正常提供服务
+  strategy:               # k8s 默认的 strategy 就是 RollingUpdate， 这里写明出来可以调节细节参数
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1         # 更新时允许最大激增的容器数，默认 replicas 的 1/4 向上取整
+      maxUnavailable: 0   # 更新时允许最大 unavailable 容器数，默认 replicas 的 1/4 向下取整
+  selector:
+    matchLabels:
+      app: fops
+  template:
+    metadata:
+      name: fops
+      labels:
+        app: fops
+    spec:
+      containers:
+        - name: fops
+          image: farseernet/fops:latest
+          imagePullPolicy: IfNotPresent
+          imagePullSecrets:
+            - name: regsecret
+          ports:
+            - containerPort: 80
+          envFrom:  #以密文的方式，把配置项写到env
+            - secretRef:
+                name: fops
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+          volumeMounts:
+            - name: fops
+              mountPath: /var/lib/fops/kube/ # K8S集群管理的配置路径
+              subPath: kube
+            - name: fops
+              mountPath: /var/lib/fops/log/ # 构建日志
+              subPath: log
+            - name: fops
+              mountPath: /var/lib/fops/dist/  # 编译后存放的路径
+              subPath: dist
+            - name: fops
+              mountPath: /var/lib/fops/git/   # GIT仓库存放的路径
+              subPath: git
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+            - name: dockerbin
+              mountPath: /usr/bin/docker
+      volumes:
+        - name: fops
+          persistentVolumeClaim:
+            claimName: pvc-fops
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: dockerbin
+          hostPath:
+            path: /usr/bin/docker
+---
+apiVersion: v1
+data:
+  Database__Items__0__PassWord: ''
+  Database__Items__0__Server: ''
+  Database__Items__0__UserID: ''
+  Logging__LogLevel__Default: ''
+  Redis__0__Password: ''
+  Redis__0__Server: ''
+kind: Secret
+metadata:
+  name: fops
+  namespace: default
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fops
+spec:
+  selector:
+    app: fops
+  type: ClusterIP
+  ports:
+    - name: http # 请为所有端口指定名称
+      port: 80 # 暴露在集群内的服务端口
+      protocol: TCP
+      targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fops
+spec:
+  rules:
+    - host: fops.xxxxxxx # 访问的域名
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: fops
+              servicePort: 80
+```
