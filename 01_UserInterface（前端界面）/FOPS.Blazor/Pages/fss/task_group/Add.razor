@@ -78,7 +78,8 @@
             {
                 throw new Exception("标题、时间间隔、传输数据、Job名称 必须填写");
             }
-            await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(_info);
+            _info.Id=await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(_info);
+            await _iocManager.Resolve<ITaskAdd>().GetOrCreateAsync(_info.Id);
             await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
             nav.NavigateTo("/fss/task_group/list");
         }
