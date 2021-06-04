@@ -108,7 +108,10 @@ namespace FOPS.Com.BuilderServer.Build
                 // 恢复成当前git设置
                 env.GitHub     = git.Hub;
                 env.GitDirRoot = GitOpr.GetGitPath(git);
-
+                
+                // 打印环境变量
+                BuildLogService.Write(build.Id, "---------------------------------------------------------");
+                BuildLogService.Write(build.Id, $"打印环境变量。");
                 await ShellTools.Run("env", "", ActWriteLog, env);
 
                 // 2、编译
