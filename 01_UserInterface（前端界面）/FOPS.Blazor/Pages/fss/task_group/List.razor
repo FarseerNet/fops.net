@@ -197,10 +197,8 @@
 
     private async Task RefreshCache()
     {
-        _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync() ?? new();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
-        _totalCount = _lst.Count;
-        _lst = _lst.ToList(_pageSize, PageIndex);
+        await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
+        await GetList();
 
         await js.InvokeVoidAsync("layer.alert", "刷新成功", new {icon = 1});
         nav.NavigateTo("/fss/task_group/list");
@@ -215,5 +213,4 @@
     {
         nav.NavigateTo($"/fss/task_group/update/{id}");
     }
-
 }

@@ -47,13 +47,8 @@
     /// 分页列表，结束索引页
     private int _preNextIndex = 0;
 
-    private bool _isFirst;
-
     protected override Task OnParametersSetAsync()
     {
-        if (_isFirst) return Task.FromResult(0);
-        _isFirst = true;
-
         _preClass = "";
         _nextClass = "";
         _preFirstIndex = 0;
