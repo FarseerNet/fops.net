@@ -96,7 +96,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _lst = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
         _totalCount = _lst.Count;
     }
 

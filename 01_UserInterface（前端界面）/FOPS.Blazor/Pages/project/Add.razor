@@ -209,13 +209,13 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
-        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync();
-        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync();
-        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync();
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
+        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
+        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync()??new();
+        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync()??new();
 
     // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
+        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
 
         _info.GroupId = (_lstGroup.FirstOrDefault()?.Id).GetValueOrDefault();

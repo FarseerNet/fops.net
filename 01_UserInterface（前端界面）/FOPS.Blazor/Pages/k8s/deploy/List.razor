@@ -177,14 +177,14 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
         // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync();
+        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
 
         // 集群
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        if (_lstCluster != null) _clusterId = _lstCluster[0].Id;
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+        if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
         
         await GetList();
     }
@@ -268,7 +268,7 @@
     private async Task GetList()
     {
         // 重新读取所有项目列表
-        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
+        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync()??new();
     
         // 如果项目组不包含当前选中的组，则移除项目
         if (_groupId > 0)
@@ -277,7 +277,7 @@
         }
         
         // 遍历项目组ID
-        var projectGroupIds = _lst.Select(o => o.GroupId).ToList();
+        var projectGroupIds = _lst.Select(o => o.GroupId).ToList()??new();
         for (var i = 0; i < projectGroupIds.Count; i++)
         {
             var projectGroupId = projectGroupIds[i];

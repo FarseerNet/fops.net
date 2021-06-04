@@ -172,7 +172,7 @@
         _isFirst = true;
 
         if (PageIndex < 1) PageIndex = 1;
-        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount)??new();
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -184,7 +184,7 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount);
+                    _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount)??new();
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }

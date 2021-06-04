@@ -39,7 +39,7 @@ namespace FOPS.Blazor
 
                 await _next.Invoke(httpContext);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 var http = httpContext.Request.IsHttps ? "s" : "";
                 var lst = new List<string>

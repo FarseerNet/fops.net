@@ -54,8 +54,8 @@
         _isFirst = true;
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
-        if (_lstCluster != null) _selectClusterId = _lstCluster[0].Id;
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+        if (_lstCluster.Count > 0 ) _selectClusterId = _lstCluster[0].Id;
     }
 
     private async Task DeployAsync()

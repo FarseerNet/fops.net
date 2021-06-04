@@ -67,7 +67,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<INodeClient>().ToNodeListAsync();
+        _lst = await _iocManager.Resolve<INodeClient>().ToNodeListAsync()?? new();
     }
 
 }

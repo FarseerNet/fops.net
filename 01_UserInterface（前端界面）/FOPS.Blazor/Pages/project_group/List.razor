@@ -88,11 +88,11 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IProjectGroupService>().ToListAsync();
+        _lst = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
 
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync();
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
     }
 
     private void GotoAdd()

@@ -195,7 +195,7 @@
     
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount);
+        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount)??new();
     }
     
     private void GotoList()

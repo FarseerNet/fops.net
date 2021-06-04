@@ -96,7 +96,7 @@
         if (_isFirst) return;
         _isFirst = true;
         
-        _lst = await _iocManager.Resolve<IDockerHubService>().ToListAsync();
+        _lst = await _iocManager.Resolve<IDockerHubService>().ToListAsync()??new();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }
