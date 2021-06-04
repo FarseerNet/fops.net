@@ -14,7 +14,7 @@ namespace FOPS.Com.FssServer.TaskGroup.Dal
         /// <summary>
         /// 主键
         /// </summary>
-        [Field(Name = "id",IsPrimaryKey = true)]
+        [Field(Name = "id",IsPrimaryKey = true,IsDbGenerated = true)]
         public int? Id { get; set; }
         
         /// <summary>

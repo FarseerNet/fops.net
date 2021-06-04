@@ -14,7 +14,7 @@ namespace FOPS.Com.FssServer.RunLog.Dal
         /// <summary>
         /// 主键
         /// </summary>
-        [Field(Name = "id",IsPrimaryKey = true),Number(NumberType.Long)]
+        [Field(Name = "id",IsPrimaryKey = true,IsDbGenerated = true),Number(NumberType.Long)]
         public long? Id { get; set; }
 
         /// <summary>
