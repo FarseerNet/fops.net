@@ -230,7 +230,7 @@
         {
             if (_info.Name == null || _info.GitId == 0 || _info.GroupId == 0)
             {
-                throw new Exception("项目组、项目名称、托管地址必须填写。");
+                throw new Exception("Git仓库、项目名称、托管地址必须填写。");
             }
 
             await _iocManager.Resolve<IProjectService>().AddAsync(_info);
