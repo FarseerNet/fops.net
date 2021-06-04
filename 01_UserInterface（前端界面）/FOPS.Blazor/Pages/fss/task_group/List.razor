@@ -3,6 +3,7 @@
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
 @using FS.Extends
+@using System.Timers;
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -148,16 +149,45 @@
 
     private List<TaskGroupVO> _lst = new();
     private bool _isFirst;
+    private Timer _timer;
 
     protected override async Task OnParametersSetAsync()
     {
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync() ?? new();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        await GetList();
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _timer = new Timer(5000);
+            _timer.Elapsed += async (_, _) =>
+            {
+                try
+                {
+                    await GetList();
+    // 刷新页面
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
+            _timer.Enabled = true;
+        }
+        return Task.FromResult(0);
+    }
+
+    private async Task GetList()
+    {
+        _lst        = await _iocManager.Resolve<ITaskGroupList>().ToListAsync() ?? new();
+        _lst        = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
-        _lst = _lst.ToList(_pageSize, PageIndex);
+        _lst        = _lst.ToList(_pageSize, PageIndex);
     }
 
     private string GetTimeSetting(TaskGroupVO group)

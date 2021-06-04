@@ -141,6 +141,15 @@
                 throw new Exception("Cron格式错误");
 
             await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
+            // 需要修改当前任务的JobName
+            if (_info.TaskId > 0)
+            {
+                await _iocManager.Resolve<ITaskUpdate>().UpdateJobName(_info.TaskId, _info.JobName);
+            }
+            else
+            {
+                await _iocManager.Resolve<ITaskAdd>().GetOrCreateAsync(_info.Id);
+            }
             await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
             GotoList();
         }

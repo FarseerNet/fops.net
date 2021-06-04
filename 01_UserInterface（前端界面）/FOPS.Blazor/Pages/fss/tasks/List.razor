@@ -23,6 +23,11 @@
                     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                         <thead>
                         <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-task-0">
+                                    <span>任务ID</span>
+                                </div>
+                            </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-1">
                                     <span>任务名称</span>
@@ -74,6 +79,9 @@
                         {
                             var info = _lst[index];
                             <tr data-index="@index">
+                                <td>
+                                    <div class="laytable-cell-task-0">@info.Id</div>
+                                </td>
                                 <td>
                                     <div class="laytable-cell-task-1">@info.Caption</div>
                                 </td>
@@ -136,6 +144,7 @@
     </div>
 </div>
 <style>
+.laytable-cell-task-0 {width: 100px;}
 .laytable-cell-task-1 {width: 300px;}
 .laytable-cell-task-2 {width: 150px;}
 .laytable-cell-task-3 {width: 150px;}
