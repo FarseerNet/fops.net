@@ -20,15 +20,15 @@ namespace FOPS.Abstract.Builder.Server
         /// 获取Git存放的路径
         /// </summary>
         string GetGitPath(GitVO info);
+        
+        /// <summary>
+        /// 根据判断是否存在Git目录，来决定返回Clone or pull
+        /// </summary>
+        IBuildStep GetGitStep(string gitDirRoot);
 
         /// <summary>
-        /// 拉取最新代码
+        /// 根据判断是否存在Git目录，来决定返回Clone or pull
         /// </summary>
-        Task<RunShellResult> PullAsync(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
-
-        /// <summary>
-        /// 拉取最新代码
-        /// </summary>
-        Task<RunShellResult> PullAsync(BuildEnvironment dicEnv, GitVO git, Action<string> actReceiveOutput);
+        Task<RunShellResult> CloneOrPull(GitVO git);
     }
 }

@@ -156,7 +156,7 @@
     private async Task PullGit(GitVO git)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        var gitResult = await _iocManager.Resolve<IGitOpr>().PullAsync(null, git, null);
+        var gitResult = await _iocManager.Resolve<IGitOpr>().CloneOrPull(git);
         await js.InvokeVoidAsync("layer.close", load);
 
         if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "拉取失败"});

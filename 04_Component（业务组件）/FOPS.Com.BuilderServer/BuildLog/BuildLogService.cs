@@ -21,6 +21,15 @@ namespace FOPS.Com.BuilderServer.BuildLog
 
             IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={buildId}：{log}。");
         }
+        
+        /// <summary>
+        /// 清除历史记录（正常不会存在，当buildId被重置时，有可能会冲突）
+        /// </summary>
+        public void Clear(int buildId)
+        {
+            var path = SavePath + $"{buildId}.txt";
+            if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+        }
 
         /// <summary>
         /// 查看日志

@@ -11,11 +11,6 @@ namespace FOPS.Abstract.Builder.Server
     public interface IDotnetOpr: ITransientDependency
     {
         /// <summary>
-        /// 编译.net core
-        /// </summary>
-        Task<RunShellResult> Publish(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
-
-        /// <summary>
         /// 获取项目的根目录
         /// </summary>
         string GetSourceDirRoot(ProjectVO project, GitVO git);

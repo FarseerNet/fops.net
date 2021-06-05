@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.K8S.Entity;
@@ -16,42 +15,20 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IClusterService   ClusterService   { get; set; }
         public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
-        public IBuildLogService  BuildLogService  { get; set; }
         const  string            SavePath = "/var/lib/fops/kube/";
 
         /// <summary>
-        /// 更新k8s版本k
+        /// 获取存储k8s Config的路径
         /// </summary>
-        public async Task<RunShellResult> SetImages(BuildEnvironment env, BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
-        {
-            BuildLogService.Write(build.Id, "---------------------------------------------------------");
-            BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");
-            var cluster    = await ClusterService.ToInfoAsync(build.ClusterId);
-            var configFile = $"{SavePath}{cluster.Name}";
-            CreateConfigFile(cluster, configFile);
-
-            // 取得dockerHub
-            var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env);
-            switch (result.IsError)
-            {
-                case false:
-                    BuildLogService.Write(build.Id, $"更新镜像版本完成。");
-                    break;
-                case true:
-                    BuildLogService.Write(build.Id, $"更新镜像版本出错了。");
-                    break;
-            }
-
-            return result;
-        }
-
+        public string GetConfigFile(string clusterName)=>$"{SavePath}{clusterName}";
+        
         /// <summary>
         /// 更新k8s版本
         /// </summary>
         public async Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput)
         {
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
-            var configFile = $"{SavePath}{cluster.Name}";
+            var configFile = GetConfigFile(cluster.Name);
             CreateConfigFile(cluster, configFile);
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
@@ -64,7 +41,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        private void CreateConfigFile(ClusterVO cluster, string configFile)
+        public void CreateConfigFile(ClusterVO cluster, string configFile)
         {
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
 

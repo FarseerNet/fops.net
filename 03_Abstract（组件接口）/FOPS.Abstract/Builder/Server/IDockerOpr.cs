@@ -12,16 +12,6 @@ namespace FOPS.Abstract.Builder.Server
     public interface IDockerOpr: ITransientDependency
     {
         /// <summary>
-        /// Docker打包
-        /// </summary>
-        Task<RunShellResult> Build(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
-
-        /// <summary>
-        /// 上传镜像
-        /// </summary>
-        Task<RunShellResult> Upload(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
-
-        /// <summary>
         /// 取得dockerHub
         /// </summary>
         string GetDockerHub(DockerHubVO docker);
