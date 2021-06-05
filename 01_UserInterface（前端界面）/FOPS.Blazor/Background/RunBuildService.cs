@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Server;
+using FOPS.Com.BuilderServer.Build;
 using FS.DI;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace FOPS.Blazor.Background
             {
                 try
                 {
-                    await _ioc.Resolve<IBuildService>().Build();
+                    await _ioc.Resolve<IBuildOpr>().Build();
                 }
                 catch (Exception e)
                 {

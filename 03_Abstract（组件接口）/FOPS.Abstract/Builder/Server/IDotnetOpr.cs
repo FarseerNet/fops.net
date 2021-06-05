@@ -13,7 +13,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 编译.net core
         /// </summary>
-        Task<RunShellResult> Publish(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput);
+        Task<RunShellResult> Publish(BuildEnvironment dicEnv, BuildVO build, ProjectVO project, Action<string> actReceiveOutput);
 
         /// <summary>
         /// 获取项目的根目录

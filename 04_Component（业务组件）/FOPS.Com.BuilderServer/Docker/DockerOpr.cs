@@ -6,6 +6,7 @@ using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.Docker.Entity;
 using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
 using FS.DI;
@@ -16,6 +17,7 @@ namespace FOPS.Com.BuilderServer.Docker
     public class DockerOpr : IDockerOpr
     {
         public IBuildLogService      BuildLogService      { get; set; }
+        public IProjectService       ProjectService       { get; set; }
         public IIocManager           IocManager           { get; set; }
         public IDockerfileTplService DockerfileTplService { get; set; }
         public IDockerHubService     DockerHubService     { get; set; }
@@ -111,6 +113,9 @@ namespace FOPS.Com.BuilderServer.Docker
             switch (result.IsError)
             {
                 case false:
+                    // 修改项目的镜像版本
+                    project.DockerVer = build.BuildNumber.ToString();
+                    await ProjectService.UpdateAsync(project.Id, project.DockerVer);
                     BuildLogService.Write(build.Id, $"镜像上传完成。");
                     break;
                 case true:

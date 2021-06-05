@@ -35,7 +35,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// <summary>
         /// 编译.net core
         /// </summary>
-        public async Task<RunShellResult> Publish(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Publish(BuildEnvironment env, BuildVO build, ProjectVO project, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始编译。");

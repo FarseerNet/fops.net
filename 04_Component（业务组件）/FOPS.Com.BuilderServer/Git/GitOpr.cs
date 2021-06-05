@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
+using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
@@ -12,6 +13,7 @@ namespace FOPS.Com.BuilderServer.Git
     public class GitOpr : IGitOpr
     {
         public IGitService      GitService      { get; set; }
+        public IBuildService    BuildService    { get; set; }
         public IBuildLogService BuildLogService { get; set; }
         const  string           SavePath = "/var/lib/fops/git/";
 
@@ -69,6 +71,12 @@ namespace FOPS.Com.BuilderServer.Git
         /// </summary>
         public async Task<RunShellResult> PullAsync(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
+            build = await BuildService.ToInfoAsync(build.Id);
+            if (build.Status == EumBuildStatus.Finish) return new RunShellResult(true,"手动取消");
+             
+            env.GitHub     = git.Hub;
+            env.GitDirRoot = GetGitPath(git);
+            
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始拉取git {git.Name} 分支：{git.Branch} 仓库：{git.Hub}。");
 

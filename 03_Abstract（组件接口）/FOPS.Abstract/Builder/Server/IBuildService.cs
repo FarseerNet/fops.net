@@ -14,11 +14,6 @@ namespace FOPS.Abstract.Builder.Server
         Task<int> Add(int projectId, int clusterId);
 
         /// <summary>
-        /// 构建
-        /// </summary>
-        Task Build();
-
-        /// <summary>
         /// 主动取消任务
         /// </summary>
         Task Cancel(int id);
