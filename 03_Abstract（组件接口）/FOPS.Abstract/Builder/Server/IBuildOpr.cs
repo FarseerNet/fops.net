@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
+using FS.DI;
 
-namespace FOPS.Com.BuilderServer.Build
+namespace FOPS.Abstract.Builder.Server
 {
-    public interface IBuildOpr
+    public interface IBuildOpr: ITransientDependency
     {
         /// <summary>
         /// 构建
