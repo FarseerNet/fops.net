@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FOPS.Abstract.MetaInfo.Enum;
 
 namespace FOPS.Abstract.MetaInfo.Entity
 {
@@ -73,6 +74,14 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// 镜像版本
         /// </summary>
         public string DockerVer { get; set; }
+        /// <summary>
+        /// 构建方式
+        /// </summary>
+        public EumBuildType BuildType { get; set; }
+        /// <summary>
+        /// Shell脚本
+        /// </summary>
+        public string ShellScript { get; set; }
         /// <summary>
         /// 集群版本
         /// </summary>

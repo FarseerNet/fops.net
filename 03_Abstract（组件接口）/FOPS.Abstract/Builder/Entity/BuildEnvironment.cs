@@ -8,7 +8,7 @@ namespace FOPS.Abstract.Builder.Entity
     public class BuildEnvironment
     {
         /// <summary>
-        /// 构建ID
+        /// 构建版本号
         /// </summary>
         public int BuildNumber { get; set; }
 

@@ -6,188 +6,222 @@
 @using FOPS.Abstract.Docker.Entity
 @using FOPS.Abstract.Docker.Server
 @using FOPS.Abstract.K8S.Server
+@using FOPS.Abstract.MetaInfo.Enum
+@using FS.Extends
+@using Microsoft.AspNetCore.Components
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
 <div class="layui-row layui-col-space15">
-    <div class="layui-col-md6">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                编辑项目
-                <div class="layui-right">
-                    <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+<div class="layui-col-md6">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            编辑项目
+            <div class="layui-right">
+                <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+            </div>
+        </div>
+        <div class="layui-card-body layui-row layui-col-space10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-inline">
+                    <label class="layui-form-label" style="text-align: left">@_info.Id</label>
                 </div>
             </div>
-            <div class="layui-card-body layui-row layui-col-space10">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">ID</label>
+            <div class="layui-form-item">
+                <label class="layui-form-label">项目组</label>
+                <div class="layui-input-inline">
+                    <select @bind="_info.GroupId">
+                        @foreach (var gitVO in _lstGroup)
+                        {
+                            <option value="@gitVO.Id">@gitVO.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">项目名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入项目名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">程序入口点</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.EntryPoint" autocomplete="off" placeholder="Docker启动的程序名" class="layui-input" style="width:300px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">程序启动端口</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.EntryPort" autocomplete="off" placeholder="web启动后监听的端口（Docker）" class="layui-input" style="width:300px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">访问域名</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.Domain" autocomplete="off" placeholder="不带http://" class="layui-input" style="width:300px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">自定义变量</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.K8STplVariable" autocomplete="off" placeholder="自定义变量，K1=V1,K2=V2" class="layui-input" style="width:500px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">编译目录</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.Path" autocomplete="off" placeholder="请输入项目编译的目录" class="layui-input" style="width:500px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-card">
+        <div class="layui-card-header">
+            镜像
+        </div>
+        <div class="layui-card-body layui-row layui-col-space10">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">镜像仓库</label>
                     <div class="layui-input-inline">
-                        <label class="layui-form-label" style="text-align: left">@_info.Id</label>
+                        <select @bind="_info.DockerHub">
+                            @foreach (var dockerHubVO in _lstDockerHub)
+                            {
+                                <option value="@dockerHubVO.Id">@dockerHubVO.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">项目组</label>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Dockerfile</label>
                     <div class="layui-input-inline">
-                        <select @bind="_info.GroupId">
-                            @foreach (var gitVO in _lstGroup)
+                        <select @bind="_info.DockerfileTpl">
+                            @foreach (var dockerfileTplVO in _lstDockerfileTpl)
+                            {
+                                <option value="@dockerfileTplVO.Id">@dockerfileTplVO.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Git仓库</label>
+                    <div class="layui-input-inline">
+                        <select @bind="_info.GitId">
+                            @foreach (var gitVO in _lstGit)
                             {
                                 <option value="@gitVO.Id">@gitVO.Name</option>
                             }
                         </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">项目名称</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-col-md6">
+    <div class="layui-card">
+        <div class="layui-card-header">K8S模板</div>
+        <div class="layui-card-body layui-row layui-col-space10">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Deployment模板</label>
                     <div class="layui-input-inline">
-                        <input type="text" @bind="_info.Name" autocomplete="off" placeholder="请输入项目名称" class="layui-input">
+                        <select name="modules" @bind="_info.K8STplDeployment">
+                            <option value="0">不需要</option>
+                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
+                            {
+                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">程序入口点</label>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Service模板</label>
                     <div class="layui-input-inline">
-                        <input type="text" @bind="_info.EntryPoint" autocomplete="off" placeholder="Docker启动的程序名" class="layui-input" style="width:300px;">
+                        <select name="modules" @bind="_info.K8STplService">
+                            <option value="0">不需要</option>
+                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
+                            {
+                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">程序启动端口</label>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Ingress模板</label>
                     <div class="layui-input-inline">
-                        <input type="text" @bind="_info.EntryPort" autocomplete="off" placeholder="web启动后监听的端口（Docker）" class="layui-input" style="width:300px;">
+                        <select name="modules" @bind="_info.K8STplIngress">
+                            <option value="0">不需要</option>
+                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
+                            {
+                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">访问域名</label>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Config模板</label>
                     <div class="layui-input-inline">
-                        <input type="text" @bind="_info.Domain" autocomplete="off" placeholder="不带http://" class="layui-input" style="width:300px;">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">自定义变量</label>
-                    <div class="layui-input-inline">
-                        <input type="text" @bind="_info.K8STplVariable" autocomplete="off" placeholder="自定义变量，K1=V1,K2=V2" class="layui-input" style="width:500px;">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">编译目录</label>
-                    <div class="layui-input-inline">
-                        <input type="text" @bind="_info.Path" autocomplete="off" placeholder="请输入项目编译的目录" class="layui-input" style="width:500px;">
+                        <select name="modules" @bind="_info.K8STplConfig">
+                            <option value="0">不需要</option>
+                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
+                            {
+                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="layui-col-md6">
-        <div class="layui-card">
-            <div class="layui-card-header">K8S模板</div>
-            <div class="layui-card-body layui-row layui-col-space10">
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Deployment模板</label>
-                        <div class="layui-input-inline">
-                            <select name="modules" @bind="_info.K8STplDeployment">
-                                <option value="0">不需要</option>
-                                @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
-                                {
-                                    <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
+    <div class="layui-card">
+        <div class="layui-card-header">
+            构建
+            @if (_info.BuildType == EumBuildType.Shell)
+            {
+                <div class="layui-right">
+                    <button class="layui-btn layui-btn-sm" @onclick="ShowEnvTips">查看环境变量</button>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Service模板</label>
-                        <div class="layui-input-inline">
-                            <select name="modules" @bind="_info.K8STplService">
-                                <option value="0">不需要</option>
-                                @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
-                                {
-                                    <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Ingress模板</label>
-                        <div class="layui-input-inline">
-                            <select name="modules" @bind="_info.K8STplIngress">
-                                <option value="0">不需要</option>
-                                @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
-                                {
-                                    <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Config模板</label>
-                        <div class="layui-input-inline">
-                            <select name="modules" @bind="_info.K8STplConfig">
-                                <option value="0">不需要</option>
-                                @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
-                                {
-                                    <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                }
-                            </select>
-                        </div>
+            }
+        </div>
+        <div class="layui-card-body layui-row layui-col-space10">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">构建方式</label>
+                    <div class="layui-input-inline">
+                        <select @bind="_info.BuildType">
+                            @foreach (var eumBuildType in Enum.GetValues<EumBuildType>())
+                            {
+                                <option value="@eumBuildType.ToString()">@eumBuildType.GetName()</option>
+                            }
+                        </select>
                     </div>
                 </div>
             </div>
+            @if (_info.BuildType == EumBuildType.Shell)
+            {
+                <div class="layui-form-item">
+                    <div class="layui-input-block" style="margin-left:0">
+                        <textarea @bind="_info.ShellScript" placeholder="Shell脚本" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 800px;"></textarea>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-
-    <div class="layui-col-md6">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                镜像
-            </div>
-            <div class="layui-card-body layui-row layui-col-space10">
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">镜像仓库</label>
-                        <div class="layui-input-inline">
-                            <select @bind="_info.DockerHub">
-                                @foreach (var dockerHubVO in _lstDockerHub)
-                                {
-                                    <option value="@dockerHubVO.Id">@dockerHubVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Dockerfile</label>
-                        <div class="layui-input-inline">
-                            <select @bind="_info.DockerfileTpl">
-                                @foreach (var dockerfileTplVO in _lstDockerfileTpl)
-                                {
-                                    <option value="@dockerfileTplVO.Id">@dockerfileTplVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">Git仓库</label>
-                        <div class="layui-input-inline">
-                            <select @bind="_info.GitId">
-                                @foreach (var gitVO in _lstGit)
-                                {
-                                    <option value="@gitVO.Id">@gitVO.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 </div>
 
 <div class="layui-footer" style="left: 0;">
@@ -217,13 +251,13 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
-        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
-        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync()??new();
-        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync()??new();
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync() ?? new();
+        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync() ?? new();
+        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync() ?? new();
+        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync() ?? new();
 
     // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
+        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync() ?? new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
     }
 
@@ -240,7 +274,7 @@
             {
                 throw new Exception("项目组、项目名称、托管地址必须填写。");
             }
-            
+
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
             GotoList();
         }
@@ -269,8 +303,8 @@
                 await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
                 GotoList();
             }
-            _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
-            _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
+            _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync() ?? new();
+            _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync() ?? new();
         }
     }
 
@@ -283,6 +317,34 @@
     {
         await _iocManager.Resolve<IProjectService>().DeleteAsync(Id);
         GotoList();
+    }
+
+    private async Task ShowEnvTips()
+    {
+        await js.InvokeVoidAsync("layer.open", new {
+            type= 1,
+            skin= "layui-layer-molv",
+            closeBtn= false,
+            area= "500px",
+            anim= 5,
+            shadeClose= true,
+            content= "<div style='padding:20px;'>" +
+                     "<ul>" +
+                     "<li>Git_Hub：Git仓库地址</li>" +
+                     "<li>Git_DirRoot：Git仓库源代码目录</li>" +
+                     "<li>Build_Number：构建版本号</li>" +
+                     "<li>Project_Name：项目名称</li>" +
+                     "<li>Project_Domain：项目访问域名</li>" +
+                     "<li>Project_EntryPoint：程序入口名</li>" +
+                     "<li>Project_EntryPort：程序启动端口</li>" +
+                     "<li>Project_ReleaseDirRoot：编译保存的目录</li>" +
+                     "<li>Project_SourceDirRoot：项目源代码目录</li>" +
+                     "<li>Docker_FilePath：Dockerfile文件路径</li>" +
+                     "<li>Docker_Hub：Docker仓库地址</li>" +
+                     "<li>Docker_Image：Docker镜像</li>" +
+                     "</ul>" +
+                     "</div>"
+        });
     }
 
 }

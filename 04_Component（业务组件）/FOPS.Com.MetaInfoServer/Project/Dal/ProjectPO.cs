@@ -1,4 +1,5 @@
 using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Abstract.MetaInfo.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 
@@ -92,5 +93,15 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// </summary>
         [Field(Name = "cluster_ver")]
         public string ClusterVer { get; set; }
+        /// <summary>
+        /// 构建方式
+        /// </summary>
+        [Field(Name = "build_type")]
+        public EumBuildType? BuildType { get; set; }
+        /// <summary>
+        /// Shell脚本
+        /// </summary>
+        [Field(Name = "shell_script")]
+        public string ShellScript { get; set; }
     }
 }
