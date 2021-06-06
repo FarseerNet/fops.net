@@ -7,6 +7,7 @@ using FOPS.Com.BuilderServer.Docker;
 using FOPS.Com.BuilderServer.Dotnet;
 using FOPS.Com.BuilderServer.Git;
 using FOPS.Com.BuilderServer.Kubectl;
+using FOPS.Com.BuilderServer.Shell;
 using FS.DI;
 
 namespace FOPS.Com.BuilderServer
@@ -40,6 +41,7 @@ namespace FOPS.Com.BuilderServer
             container.Register(Component.For<IBuildStep, GitPullAllStep>().LifestyleTransient());
             container.Register(Component.For<IBuildStep, GitPullStep>().LifestyleTransient());
             container.Register(Component.For<IBuildStep, KubectlUpdateImageStep>().LifestyleTransient());
+            container.Register(Component.For<IBuildStep, ShellStep>().LifestyleTransient());
         }
     }
 }

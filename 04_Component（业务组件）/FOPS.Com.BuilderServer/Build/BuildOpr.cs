@@ -6,6 +6,7 @@ using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Abstract.MetaInfo.Enum;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
 using FOPS.Com.BuilderServer.Docker;
@@ -103,7 +104,13 @@ namespace FOPS.Com.BuilderServer.Build
                 List<IBuildStep> lstStep = new();
                 lstStep.Add(IocManager.Resolve<GitPullAllStep>());         // 拉取全部git
                 lstStep.Add(IocManager.Resolve<DockerLoginStep>());        // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
-                lstStep.Add(IocManager.Resolve<DotnetBuildStep>());        // .net 编译
+                
+                // 根据项目的构建方式，选择对应的构建组件
+                if (project.BuildType == EumBuildType.DotnetPublish)
+                    lstStep.Add(IocManager.Resolve<DotnetBuildStep>()); // .net 编译
+                else if (project.BuildType == EumBuildType.Shell)
+                    lstStep.Add(IocManager.Resolve<DotnetBuildStep>()); // .net 编译
+
                 lstStep.Add(IocManager.Resolve<DockerBuildStep>());        // docker打包
                 lstStep.Add(IocManager.Resolve<DockerUploadStep>());       // docker上传
                 lstStep.Add(IocManager.Resolve<KubectlUpdateImageStep>()); // k8s更新
