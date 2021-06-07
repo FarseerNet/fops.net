@@ -55,7 +55,7 @@ namespace FOPS.Com.BuilderServer.Build
 
             // 清除历史记录（正常不会存在，当buildId被重置时，有可能会冲突）
             BuildLogService.Clear(build.Id);
-            
+
             // 项目
             var project = await ProjectService.ToInfoAsync(build.ProjectId);
             if (project == null)
@@ -102,16 +102,21 @@ namespace FOPS.Com.BuilderServer.Build
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");
                 BuildLogService.Write(build.Id, $"打印环境变量。");
                 await ShellTools.Run("env", "", ActWriteLog, env);
-                
+
                 List<IBuildStep> lstStep = new();
-                lstStep.Add(IocManager.Resolve<GitPullAllStep>());         // 拉取全部git
-                lstStep.Add(IocManager.Resolve<DockerLoginStep>());        // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
-                
+                lstStep.Add(IocManager.Resolve<GitPullAllStep>());  // 拉取全部git
+                lstStep.Add(IocManager.Resolve<DockerLoginStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
+
                 // 根据项目的构建方式，选择对应的构建组件
                 if (project.BuildType == EumBuildType.DotnetPublish)
+                {
                     lstStep.Add(IocManager.Resolve<DotnetBuildStep>()); // .net 编译
+                }
                 else if (project.BuildType == EumBuildType.Shell)
-                    lstStep.Add(IocManager.Resolve<ShellStep>());       // shell 编译
+                {
+                    lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录
+                    lstStep.Add(IocManager.Resolve<ShellStep>());      // shell 编译
+                }
                 else lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录 
 
                 lstStep.Add(IocManager.Resolve<DockerBuildStep>());        // docker打包
