@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using FOPS.Abstract.Builder.Server;
 using FS.DI;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ namespace FOPS.Com.BuilderServer.BuildLog
         {
             var path = SavePath + $"{buildId}.txt";
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
-            System.IO.File.AppendAllText(path, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {log}\r\n");
+            System.IO.File.AppendAllText(path, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {log}\r\n", Encoding.UTF8);
 
             IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={buildId}：{log}。");
         }
