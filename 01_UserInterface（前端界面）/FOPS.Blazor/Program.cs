@@ -26,7 +26,7 @@ namespace FOPS.Blazor
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     //Setup a HTTP/2 endpoint without TLS.
-                    webBuilder.ConfigureKestrel(options => options.ListenAnyIP(81)).UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel(options => options.ListenAnyIP(80)).UseStartup<Startup>();
                 });
         }
     }
