@@ -65,26 +65,6 @@
                                 </div>
                             </th>
                             <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>Deployment模板</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>Service模板</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>Ingress模板</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>Config模板</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>操作</span>
                                 </div>
@@ -153,50 +133,6 @@
                                     </div>
                                 </td>
                                 <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <select @bind="info.K8STplDeployment" style="display:block;">
-                                            <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
-                                            {
-                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <select @bind="info.K8STplService" style="display:block;">
-                                            <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Service))
-                                            {
-                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <select @bind="info.K8STplIngress" style="display:block;">
-                                            <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Ingress))
-                                            {
-                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">
-                                        <select @bind="info.K8STplConfig" style="display:block;">
-                                            <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Config))
-                                            {
-                                                <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </td>
-                                <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
                                         <button class="layui-btn layui-btn-sm" @onclick="() => Save(info.Id)">保存</button>
                                         <button class="layui-btn layui-btn-sm layui-btn-normal" @onclick="() => Copy(info)">复制</button>
@@ -215,9 +151,9 @@
 <style>
     .laytable-cell-14-0-0{ width: 80px; }
     .laytable-cell-14-0-1{ width: 180px; }
-    .laytable-cell-14-0-2{ width: 115px; }
+    .laytable-cell-14-0-2{ width: 180px; }
     .laytable-cell-14-0-3{ width: 140px; }
-    select { width: 90px; }
+    select { width: 150px; }
 </style>
 
 @code{
@@ -227,7 +163,6 @@
 
     private int _groupId;
     private List<ProjectVO> _lst = new();
-    private List<YamlTplVO> _lstTpl = new();
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
     private List<DockerfileTplVO> _lstDockerfileTpl = new();
@@ -243,10 +178,6 @@
         _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
         _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync()??new();
         _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync()??new();
-
-    // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
-        _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
 
         await GetList();
     }
