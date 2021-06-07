@@ -28,23 +28,26 @@ namespace FOPS.Com.BuilderServer.Docker
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始镜像打包。");
-            // Dockerfile
-            var dockerfileTpl = await DockerfileTplService.ToInfoAsync(project.DockerfileTpl);
-            if (dockerfileTpl == null)
-            {
-                var log = $"DockerfileTpl={project.DockerfileTpl}，不存在";
-                BuildLogService.Write(build.Id, log);
-                return new RunShellResult
-                {
-                    IsError = true,
-                    Output  = new List<string> {log}
-                };
-            }
 
-            // 如果已存在Dockerfile，则根据模板创建
+            // Dockerfile不存在，则根据模板创建
             if (!System.IO.File.Exists(env.DockerFilePath))
             {
                 BuildLogService.Write(build.Id, $"未发现Dockerfile，将按模板创建");
+                // Dockerfile
+                var dockerfileTpl = await DockerfileTplService.ToInfoAsync(project.DockerfileTpl);
+                if (dockerfileTpl == null)
+                {
+                    var log = $"DockerfileTpl={project.DockerfileTpl}，不存在";
+                    BuildLogService.Write(build.Id, log);
+                    return new RunShellResult
+                    {
+                        IsError = true,
+                        Output  = new List<string> {log}
+                    };
+                }
+                // 判断目录是否存在（dotnet publish、不编译选项，都实现了创建）
+                //if (!System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
+                
                 // 替换模板
                 var tpl = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
                 System.IO.File.AppendAllText(env.DockerFilePath, tpl);

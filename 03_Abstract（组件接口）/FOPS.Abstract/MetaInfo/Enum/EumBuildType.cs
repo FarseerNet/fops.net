@@ -16,6 +16,11 @@ namespace FOPS.Abstract.MetaInfo.Enum
         /// Shell脚本
         /// </summary>
         [Display(Name = "Shell脚本")]
-        Shell
+        Shell,
+        /// <summary>
+        /// 不用构建
+        /// </summary>
+        [Display(Name = "不用构建")]
+        UnBuild
     }
 }

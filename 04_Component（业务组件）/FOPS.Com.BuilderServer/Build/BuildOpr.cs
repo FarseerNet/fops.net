@@ -13,6 +13,8 @@ using FOPS.Com.BuilderServer.Docker;
 using FOPS.Com.BuilderServer.Dotnet;
 using FOPS.Com.BuilderServer.Git;
 using FOPS.Com.BuilderServer.Kubectl;
+using FOPS.Com.BuilderServer.Shell;
+using FOPS.Com.BuilderServer.UnBuild;
 using FS.DI;
 using FS.Extends;
 using FS.Utils.Component;
@@ -109,7 +111,8 @@ namespace FOPS.Com.BuilderServer.Build
                 if (project.BuildType == EumBuildType.DotnetPublish)
                     lstStep.Add(IocManager.Resolve<DotnetBuildStep>()); // .net 编译
                 else if (project.BuildType == EumBuildType.Shell)
-                    lstStep.Add(IocManager.Resolve<DotnetBuildStep>()); // .net 编译
+                    lstStep.Add(IocManager.Resolve<ShellStep>());       // shell 编译
+                else lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录 
 
                 lstStep.Add(IocManager.Resolve<DockerBuildStep>());        // docker打包
                 lstStep.Add(IocManager.Resolve<DockerUploadStep>());       // docker上传
