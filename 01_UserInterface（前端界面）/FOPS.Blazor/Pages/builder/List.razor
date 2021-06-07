@@ -52,6 +52,11 @@
                                     </th>
                                     <th data-field="Type">
                                         <div class="layui-table-cell laytable-cell-14-0-2">
+                                            <span>构建方式</span>
+                                        </div>
+                                    </th>
+                                    <th data-field="Type">
+                                        <div class="layui-table-cell laytable-cell-14-0-2">
                                             <span>git拉取</span>
                                         </div>
                                     </th>
@@ -97,6 +102,11 @@
                                         <td>
                                             <div class="layui-table-cell laytable-cell-14-0-1">
                                                 <a href="/project/update/@info.Id">@info.Name</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="layui-table-cell laytable-cell-14-0-2">
+                                                @info.BuildType.GetName()
                                             </div>
                                         </td>
                                         <td>

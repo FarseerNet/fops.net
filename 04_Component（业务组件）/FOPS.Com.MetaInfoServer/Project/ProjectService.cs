@@ -111,8 +111,8 @@ namespace FOPS.Com.MetaInfoServer.Project
         {
             if (string.IsNullOrWhiteSpace(vo.Path)) vo.Path = "/";
             else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
-
-            vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
+            if (string.IsNullOrWhiteSpace(vo.ShellScript)) vo.ShellScript = "";
+            vo.Domain = string.IsNullOrWhiteSpace(vo.Domain) ? "" : vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
 
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
@@ -128,8 +128,8 @@ namespace FOPS.Com.MetaInfoServer.Project
         {
             if (string.IsNullOrWhiteSpace(vo.Path)) vo.Path = "/";
             else if (!vo.Path.StartsWith("/")) vo.Path      = "/" + vo.Path;
-
-            vo.Domain = vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
+            if (string.IsNullOrWhiteSpace(vo.ShellScript)) vo.ShellScript = "";
+            vo.Domain = string.IsNullOrWhiteSpace(vo.Domain) ? "" : vo.Domain.ToLower().Replace("http://", "").Replace("https://", "");
 
             var po = vo.Map<ProjectPO>();
             po.ClusterVer = vo.DicClusterVer != null ? JsonConvert.SerializeObject(vo.DicClusterVer) : "{}";
