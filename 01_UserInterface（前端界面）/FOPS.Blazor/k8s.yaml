@@ -23,8 +23,8 @@ spec:
       labels:
         app: fops
     spec:
-      nodeSelector:   #节点筛选器
-        rt: web
+#      nodeSelector:   #节点筛选器
+#        rt: web
       containers:
         - name: fops
           image: farseernet/fops:latest
@@ -52,20 +52,20 @@ spec:
             - name: fops
               mountPath: /var/lib/fops/git/   # GIT仓库存放的路径
               subPath: git
-            - name: dockersock
-              mountPath: /var/run/docker.sock
-            - name: dockerbin
-              mountPath: /usr/bin/docker
+#            - name: dockersock
+#              mountPath: /var/run/docker.sock
+#            - name: dockerbin
+#              mountPath: /usr/bin/docker
       volumes:
         - name: fops
           persistentVolumeClaim:
             claimName: pvc-fops
-        - name: dockersock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: dockerbin
-          hostPath:
-            path: /usr/bin/docker
+#        - name: dockersock
+#          hostPath:
+#            path: /var/run/docker.sock
+#        - name: dockerbin
+#          hostPath:
+#            path: /usr/bin/docker
 ---
 apiVersion: v1
 data:
