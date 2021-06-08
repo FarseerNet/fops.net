@@ -37,8 +37,8 @@ namespace FOPS.Com.BuilderServer.Build
                 FinishAt    = DateTime.Now,
             };
 
-            await BuilderContext.Data.Build.InsertAsync(po);
-            return buildNumber;
+            await BuilderContext.Data.Build.InsertAsync(po,true);
+            return po.Id.GetValueOrDefault();
         }
 
         /// <summary>
