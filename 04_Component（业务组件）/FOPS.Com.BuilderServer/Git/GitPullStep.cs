@@ -26,7 +26,7 @@ namespace FOPS.Com.BuilderServer.Git
             
             // 获取Git存放的路径
             var gitPath = GitOpr.GetGitPath(env,git);
-            var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env);
+            var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase --depth=1", actReceiveOutput, env);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git拉取失败");

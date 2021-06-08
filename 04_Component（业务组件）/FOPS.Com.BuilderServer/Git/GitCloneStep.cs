@@ -35,7 +35,7 @@ namespace FOPS.Com.BuilderServer.Git
             // 获取Git存放的路径
             var gitPath = GitOpr.GetGitPath(env,git);
 
-            var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
+            var result =  await ShellTools.Run("git", $"clone --depth=1 -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git克隆失败");
