@@ -109,8 +109,8 @@ namespace FOPS.Com.BuilderServer.Build
                 }
 
                 List<IBuildStep> lstStep = new();
+                lstStep.Add(IocManager.Resolve<CheckStep>());       // 前置检查
                 lstStep.Add(IocManager.Resolve<GitPullAllStep>());  // 拉取全部git
-                lstStep.Add(IocManager.Resolve<CheckStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
                 lstStep.Add(IocManager.Resolve<DockerLoginStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
 
                 // 根据项目的构建方式，选择对应的构建组件

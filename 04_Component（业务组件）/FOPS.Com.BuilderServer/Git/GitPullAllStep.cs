@@ -38,7 +38,11 @@ namespace FOPS.Com.BuilderServer.Git
                     return new RunShellResult(true, $"拉取出错了。");
                 }
             }
-
+            BuildLogService.Write(build.Id, $"检查源文件。");
+            if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
+            {
+                return new RunShellResult(true, $"源文件：{env.ProjectSourceDirRoot} 不存在，请检查项目设置。");
+            }
             return new RunShellResult(false, $"拉取完成。");
         }
     }
