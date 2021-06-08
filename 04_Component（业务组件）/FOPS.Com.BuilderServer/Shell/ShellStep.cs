@@ -22,7 +22,7 @@ namespace FOPS.Com.BuilderServer.Shell
             BuildLogService.Write(build.Id, $"开始执行Shell脚本。");
             
             // 每次执行时，需要生成shell脚本
-            var path = SavePath + $"{build.Id}.sh";
+            var path = SavePath + $"fops_{build.Id}.sh";
             if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
             System.IO.File.AppendAllText(path, project.ShellScript);
             
