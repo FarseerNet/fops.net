@@ -19,9 +19,6 @@ namespace FOPS.Com.BuilderServer.Build
             
             // 判断目录是否存在（dotnet publish、不编译选项，都实现了创建）
             if (!System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
-
-            // 让git记住密码
-            await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env);
             
             if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
             {

@@ -35,6 +35,9 @@ namespace FOPS.Com.BuilderServer.Git
             // 获取Git存放的路径
             var gitPath = GitOpr.GetGitPath(env,git);
 
+            // 让git记住密码
+            await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env);
+            
             var result =  await ShellTools.Run("git", $"clone --depth=1 -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
             if (result.IsError)
             {
