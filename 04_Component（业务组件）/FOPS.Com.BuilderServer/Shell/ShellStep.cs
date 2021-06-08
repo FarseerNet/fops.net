@@ -27,17 +27,12 @@ namespace FOPS.Com.BuilderServer.Shell
             
             // 执行脚本
             var result = await ShellTools.Run("/bin/sh", $"-xe {path}", actReceiveOutput, env,env.ProjectReleaseDirRoot);
-            switch (result.IsError)
+            
+            return result.IsError switch
             {
-                case false:
-                    BuildLogService.Write(build.Id, $"执行脚本完成。");
-                    break;
-                case true:
-                    BuildLogService.Write(build.Id, $"执行脚本出错了。");
-                    break;
-            }
-
-            return result;
+                false => new RunShellResult(false, "执行脚本完成。"),
+                true  => new RunShellResult(true,  "执行脚本出错了。")
+            };
         }
     }
 }

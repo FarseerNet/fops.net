@@ -36,15 +36,12 @@ namespace FOPS.Com.BuilderServer.Docker
                 var result = await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput, env);
                 if (result.IsError)
                 {
-                    BuildLogService.Write(build.Id, $"镜像仓库登陆失败。");
+                    return new RunShellResult(true, "镜像仓库登陆失败。");
                 }
-                return result;
             }
 
-            BuildLogService.Write(build.Id, $"登陆成功。");
-            
             // 不需要登陆
-            return new RunShellResult(false,"");
+            return new RunShellResult(false,"登陆成功。");
         }
     }
 }

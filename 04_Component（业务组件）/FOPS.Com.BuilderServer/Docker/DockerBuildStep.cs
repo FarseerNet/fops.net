@@ -37,17 +37,8 @@ namespace FOPS.Com.BuilderServer.Docker
                 var dockerfileTpl = await DockerfileTplService.ToInfoAsync(project.DockerfileTpl);
                 if (dockerfileTpl == null)
                 {
-                    var log = $"DockerfileTpl={project.DockerfileTpl}，不存在";
-                    BuildLogService.Write(build.Id, log);
-                    return new RunShellResult
-                    {
-                        IsError = true,
-                        Output  = new List<string> {log}
-                    };
+                    return new RunShellResult(true, $"DockerfileTpl={project.DockerfileTpl}，不存在");
                 }
-                // 判断目录是否存在（dotnet publish、不编译选项，都实现了创建）
-                //if (!System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
-                
                 // 替换模板
                 var tpl = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
                 System.IO.File.AppendAllText(env.DockerFilePath, tpl);
@@ -60,17 +51,11 @@ namespace FOPS.Com.BuilderServer.Docker
             // 打包
             var result = await ShellTools.Run("docker", $"build -t {env.DockerImage} --network=host .", actReceiveOutput, env, env.ProjectReleaseDirRoot);
 
-            switch (result.IsError)
+            return result.IsError switch
             {
-                case false:
-                    BuildLogService.Write(build.Id, $"镜像打包完成。");
-                    break;
-                case true:
-                    BuildLogService.Write(build.Id, $"镜像打包出错了。");
-                    break;
-            }
-
-            return result;
+                false => new RunShellResult(false, $"镜像打包完成。"),
+                true  => new RunShellResult(true,  $"镜像打包出错了。")
+            };
         }
     }
 }

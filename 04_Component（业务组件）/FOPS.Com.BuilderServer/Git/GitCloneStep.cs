@@ -36,12 +36,14 @@ namespace FOPS.Com.BuilderServer.Git
             var gitPath = GitOpr.GetGitPath(env,git);
 
             var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
-            if (!result.IsError)
+            if (result.IsError)
             {
-                // 更新git拉取时间
-                await GitService.UpdateAsync(git.Id, DateTime.Now);
+                return new RunShellResult(true, "Git克隆失败");
             }
-            return result;
+
+            // 更新git拉取时间
+            await GitService.UpdateAsync(git.Id, DateTime.Now);
+            return new RunShellResult(true, "Git克隆成功");
         }
     }
 }

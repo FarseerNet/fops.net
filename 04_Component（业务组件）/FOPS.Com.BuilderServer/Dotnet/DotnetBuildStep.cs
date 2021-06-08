@@ -37,17 +37,11 @@ namespace FOPS.Com.BuilderServer.Dotnet
 
             // 编译
             var result = await Publish(env, actReceiveOutput);
-            switch (result.IsError)
+            return result.IsError switch
             {
-                case false:
-                    BuildLogService.Write(build.Id, $"编译完成。");
-                    break;
-                case true:
-                    BuildLogService.Write(build.Id, $"编译出错了。");
-                    break;
-            }
-
-            return result;
+                false => new RunShellResult(false, $"编译完成。"),
+                true  => new RunShellResult(true,  $"编译出错了。")
+            };
         }
 
         /// <summary>

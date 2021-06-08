@@ -29,8 +29,7 @@ namespace FOPS.Com.BuilderServer.UnBuild
             BuildLogService.Write(build.Id, $"源文件{env.ProjectSourceDirRoot}复制到{env.ProjectReleaseDirRoot}");
             Files.CopyFolder(env.ProjectSourceDirRoot, env.ProjectReleaseDirRoot);
 
-            BuildLogService.Write(build.Id, $"复制完成。");
-            return Task.FromResult(new RunShellResult(false, ""));
+            return Task.FromResult(new RunShellResult(false, "复制完成。"));
         }
     }
 }

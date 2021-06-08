@@ -35,14 +35,11 @@ namespace FOPS.Com.BuilderServer.Git
                 var result     = await buildStep.Build(env, build, project, gitVO, actReceiveOutput);
                 if (result.IsError)
                 {
-                    BuildLogService.Write(build.Id, $"拉取出错了。");
-                    return result;
+                    return new RunShellResult(true, $"拉取出错了。");
                 }
             }
 
-            BuildLogService.Write(build.Id, $"拉取完成。");
-            // 拉取全部成功
-            return new RunShellResult(false, "");
+            return new RunShellResult(false, $"拉取完成。");
         }
     }
 }

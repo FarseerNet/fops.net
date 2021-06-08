@@ -3,6 +3,7 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using FOPS.Abstract.Builder.Server;
+using FOPS.Com.BuilderServer.Build;
 using FOPS.Com.BuilderServer.Docker;
 using FOPS.Com.BuilderServer.Dotnet;
 using FOPS.Com.BuilderServer.Git;
@@ -44,6 +45,7 @@ namespace FOPS.Com.BuilderServer
             container.Register(Component.For<IBuildStep, KubectlUpdateImageStep>().LifestyleTransient());
             container.Register(Component.For<IBuildStep, ShellStep>().LifestyleTransient());
             container.Register(Component.For<IBuildStep, CopyToDistStep>().LifestyleTransient());
+            container.Register(Component.For<IBuildStep, CheckStep>().LifestyleTransient());
         }
     }
 }

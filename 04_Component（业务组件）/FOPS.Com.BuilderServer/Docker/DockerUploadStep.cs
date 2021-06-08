@@ -36,14 +36,10 @@ namespace FOPS.Com.BuilderServer.Docker
                     // 修改项目的镜像版本
                     project.DockerVer = build.BuildNumber.ToString();
                     await ProjectService.UpdateAsync(project.Id, project.DockerVer);
-                    BuildLogService.Write(build.Id, $"镜像上传完成。");
-                    break;
+                    return new RunShellResult(false, "镜像上传完成。");
                 case true:
-                    BuildLogService.Write(build.Id, $"镜像上传出错了。");
-                    break;
+                    return new RunShellResult(true, "镜像上传出错了。");
             }
-
-            return result;
         }
     }
 }

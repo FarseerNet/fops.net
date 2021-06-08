@@ -27,12 +27,14 @@ namespace FOPS.Com.BuilderServer.Git
             // 获取Git存放的路径
             var gitPath = GitOpr.GetGitPath(env,git);
             var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env);
-            if (!result.IsError)
+            if (result.IsError)
             {
-                // 更新git拉取时间
-                await GitService.UpdateAsync(git.Id, DateTime.Now);
+                return new RunShellResult(true, "Git拉取失败");
             }
-            return result;
+            
+            // 更新git拉取时间
+            await GitService.UpdateAsync(git.Id, DateTime.Now);
+            return new RunShellResult(false, "Git拉取成功");
         }
     }
 }
