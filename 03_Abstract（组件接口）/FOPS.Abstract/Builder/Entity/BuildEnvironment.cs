@@ -38,6 +38,16 @@ namespace FOPS.Abstract.Builder.Entity
         public string ProjectReleaseDirRoot { get; set; }
 
         /// <summary>
+        /// Fops根目录
+        /// </summary>
+        public string FopsDirRoot => "/var/lib/fops/";
+
+        /// <summary>
+        /// NpmModules
+        /// </summary>
+        public string NpmModulesDirRoot => "/var/lib/fops/npm";
+
+        /// <summary>
         /// 编译保存的根目录
         /// </summary>
         public string ReleaseDirRoot => "/var/lib/fops/dist/";
@@ -94,6 +104,8 @@ namespace FOPS.Abstract.Builder.Entity
         {
             return new()
             {
+                {"Fops_DirRoot", env.FopsDirRoot},
+                {"NpmModules_DirRoot", env.NpmModulesDirRoot},
                 {"Git_Hub", env.GitHub},
                 {"Git_DirRoot", env.GitDirRoot},
                 {"Build_Number", env.BuildNumber.ToString()},
