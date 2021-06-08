@@ -19,6 +19,7 @@ namespace FOPS.Com.BuilderServer.Shell
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始执行Shell脚本。");
+            BuildLogService.Write(build.Id, $"请注意：脚本执行完后，请自行将打包的文件复制到：{env.ProjectReleaseDirRoot}。");
             
             // 每次执行时，需要生成shell脚本
             var path = env.ShellScriptPath + $"fops_{build.Id}.sh";

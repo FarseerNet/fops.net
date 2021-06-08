@@ -120,7 +120,7 @@ namespace FOPS.Com.BuilderServer.Build
                 }
                 else if (project.BuildType == EumBuildType.Shell)               // shell 编译
                 {
-                    lstStep.Add(IocManager.Resolve<CopyToDistStep>());
+                    //lstStep.Add(IocManager.Resolve<CopyToDistStep>());        // 自动复制到编译目录
                     lstStep.Add(IocManager.Resolve<ShellStep>());
                 }
                 else lstStep.Add(IocManager.Resolve<CopyToDistStep>());     // 不编译，将源文件复制到编译目录 
