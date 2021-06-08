@@ -22,13 +22,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
 
             if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
             {
-                var log = $"路径：{env.ProjectSourceDirRoot}不存在，无法编译";
-                BuildLogService.Write(build.Id, log);
-                return new RunShellResult()
-                {
-                    IsError = true,
-                    Output  = new List<string> {log}
-                };
+                return new RunShellResult(true, $"路径：{env.ProjectSourceDirRoot}不存在，无法编译");
             }
 
             // 先删除之前编译的目标文件
