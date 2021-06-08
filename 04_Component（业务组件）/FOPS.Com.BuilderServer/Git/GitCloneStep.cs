@@ -38,7 +38,7 @@ namespace FOPS.Com.BuilderServer.Git
             // 让git记住密码
             await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env);
             
-            var result =  await ShellTools.Run("git", $"clone --depth=1 -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
+            var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git克隆失败");
