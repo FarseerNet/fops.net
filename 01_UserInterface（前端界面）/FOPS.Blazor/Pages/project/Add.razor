@@ -267,7 +267,7 @@
             }
 
             await _iocManager.Resolve<IProjectService>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/project/list");
         }
         catch (Exception e)

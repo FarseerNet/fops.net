@@ -73,7 +73,7 @@
         {
             var runShellResult = await deployService.DeployAsync(_yaml, clusterVO);
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {

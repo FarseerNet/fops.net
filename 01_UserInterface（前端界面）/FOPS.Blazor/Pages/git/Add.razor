@@ -69,7 +69,7 @@
                 throw new Exception("Git名称、托管地址、分支必须填写。");
             }
             await _iocManager.Resolve<IGitService>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/git/list");
         }
         catch (Exception e)

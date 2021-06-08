@@ -74,7 +74,7 @@
                 throw new Exception("项目组、集群必须填写.");
             }
             await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
         catch (Exception e)

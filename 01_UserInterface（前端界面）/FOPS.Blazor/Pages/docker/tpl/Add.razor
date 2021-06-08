@@ -50,7 +50,7 @@
             }
                 
             await _iocManager.Resolve<IDockerfileTplService>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/docker/tpl/list");
         }
         catch (Exception e)

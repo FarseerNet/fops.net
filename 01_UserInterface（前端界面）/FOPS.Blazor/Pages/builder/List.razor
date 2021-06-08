@@ -317,7 +317,7 @@
             {
                 await _iocManager.Resolve<IBuildService>().Success(_clusterId, project, 0);
                 await GetList();
-                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
             }
         }
         catch (Exception e)

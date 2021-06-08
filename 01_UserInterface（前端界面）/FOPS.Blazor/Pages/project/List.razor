@@ -186,7 +186,7 @@
     {
         var projectVO = _lst.Find(o => o.Id == id);
         await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
+        await js.InvokeVoidAsync("layer.msg", "保存成功", new {icon = 1});
     }
 
     private async Task GroupChange(ChangeEventArgs args)

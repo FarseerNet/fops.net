@@ -150,7 +150,7 @@
             {
                 await _iocManager.Resolve<ITaskAdd>().GetOrCreateAsync(_info.Id);
             }
-            await js.InvokeVoidAsync("layer.alert", "修改成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
         catch (Exception e)

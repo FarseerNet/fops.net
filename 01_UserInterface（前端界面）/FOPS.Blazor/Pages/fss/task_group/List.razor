@@ -200,7 +200,7 @@
         await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
         await GetList();
 
-        await js.InvokeVoidAsync("layer.alert", "刷新成功", new {icon = 1});
+        await js.InvokeVoidAsync("layer.msg", "刷新成功", new {icon = 1});
         nav.NavigateTo("/fss/task_group/list");
     }
 

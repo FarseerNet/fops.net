@@ -193,7 +193,7 @@
     {
         var projectVO = _lst.Find(o => o.Id == id);
         await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.alert", "保存成功", new {icon = 1});
+        await js.InvokeVoidAsync("layer.msg", "保存成功", new {icon = 1});
     }
 
     private async Task GroupChange(ChangeEventArgs args)
@@ -217,7 +217,7 @@
         {
             var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {
@@ -250,7 +250,7 @@
         {
             var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
             if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
         catch (Exception e)
         {

@@ -74,7 +74,7 @@
             }
                 
             await _iocManager.Resolve<IYamlTplService>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.alert", "添加成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/k8s/tpl/list");
         }
         catch (Exception e)
