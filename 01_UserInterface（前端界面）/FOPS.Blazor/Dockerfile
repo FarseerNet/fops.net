@@ -1,5 +1,5 @@
 ﻿# 添加基础镜像
-FROM farseernet/dotnet:sdk_kubectl_docker_npm-5.0
+FROM farseernet/dotnet:sdk5.0_kubectl_docker_npm6.14.13
 WORKDIR /app
 COPY . ./
 
