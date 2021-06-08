@@ -41,7 +41,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// </summary>
         public async Task<List<ProjectVO>> ToListAsync(int groupId)
         {
-            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).Select(o => new {o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId}).ToListAsync();
+            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).Select(o => new {o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId,o.BuildType}).ToListAsync();
             var lst   = new List<ProjectVO>();
             foreach (var po in lstPo)
             {
