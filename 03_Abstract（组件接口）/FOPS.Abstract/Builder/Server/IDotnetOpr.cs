@@ -13,11 +13,11 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 获取项目的根目录
         /// </summary>
-        string GetSourceDirRoot(ProjectVO project, GitVO git);
+        string GetSourceDirRoot(BuildEnvironment buildEnvironment, ProjectVO project, GitVO git);
 
         /// <summary>
         /// 获取编译保存的目录地址
         /// </summary>
-        string GetReleasePath(ProjectVO project);
+        string GetReleasePath(BuildEnvironment env, ProjectVO project);
     }
 }

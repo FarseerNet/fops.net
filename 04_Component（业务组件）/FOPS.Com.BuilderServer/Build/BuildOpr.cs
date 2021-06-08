@@ -87,15 +87,16 @@ namespace FOPS.Com.BuilderServer.Build
                 ProjectDomain         = project.Domain,
                 ProjectEntryPoint     = project.EntryPoint,
                 ProjectEntryPort      = project.EntryPort,
-                ProjectReleaseDirRoot = DotnetOpr.GetReleasePath(project),
-                ProjectSourceDirRoot  = DotnetOpr.GetSourceDirRoot(project, git),
-                DockerFilePath        = DotnetOpr.GetReleasePath(project) + "/Dockerfile",
                 DockerHub             = DockerOpr.GetDockerHub(docker),
                 DockerImage           = DockerOpr.GetDockerImage(docker, project, build.BuildNumber),
-                GitHub                = git.Hub,
-                GitDirRoot            = GitOpr.GetGitPath(git),
+                GitHub                = git.Hub
             };
 
+            env.ProjectReleaseDirRoot = DotnetOpr.GetReleasePath(env, project);
+            env.DockerFilePath        = DotnetOpr.GetReleasePath(env, project) + "/Dockerfile";
+            env.ProjectGitDirRoot     = GitOpr.GetGitPath(env, git);
+            env.ProjectSourceDirRoot  = DotnetOpr.GetSourceDirRoot(env,project, git);
+            
             try
             {
                 if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))

@@ -19,7 +19,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 获取Git存放的路径
         /// </summary>
-        string GetGitPath(GitVO info);
+        string GetGitPath(BuildEnvironment env, GitVO info);
         
         /// <summary>
         /// 根据判断是否存在Git目录，来决定返回Clone or pull

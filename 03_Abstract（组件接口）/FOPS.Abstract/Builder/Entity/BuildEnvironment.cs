@@ -38,6 +38,26 @@ namespace FOPS.Abstract.Builder.Entity
         public string ProjectReleaseDirRoot { get; set; }
 
         /// <summary>
+        /// 编译保存的根目录
+        /// </summary>
+        public string ReleaseDirRoot => "/var/lib/fops/dist/";
+
+        /// <summary>
+        /// GIT根目录
+        /// </summary>
+        public string GitDirRoot => "/var/lib/fops/git/";
+
+        /// <summary>
+        /// kubectlConfig配置
+        /// </summary>
+        public string KubePath => "/var/lib/fops/kube/";
+
+        /// <summary>
+        /// 生成Shell脚本的存放路径
+        /// </summary>
+        public string ShellScriptPath => "/var/lib/fops/shell/";
+
+        /// <summary>
         /// 项目源代码目录
         /// </summary>
         public string ProjectSourceDirRoot { get; set; }
@@ -50,7 +70,7 @@ namespace FOPS.Abstract.Builder.Entity
         /// <summary>
         /// Git仓库源代码目录
         /// </summary>
-        public string GitDirRoot { get; set; }
+        public string ProjectGitDirRoot { get; set; }
 
         /// <summary>
         /// Dockerfile文件路径
@@ -79,6 +99,7 @@ namespace FOPS.Abstract.Builder.Entity
                 {"Build_Number", env.BuildNumber.ToString()},
                 {"Project_Name", env.ProjectName},
                 {"Project_Domain", env.ProjectDomain},
+                {"Project_GitDirRoot", env.ProjectGitDirRoot},
                 {"Project_EntryPoint", env.ProjectEntryPoint},
                 {"Project_EntryPort", env.ProjectEntryPort.ToString()},
                 {"Project_ReleaseDirRoot", env.ProjectReleaseDirRoot},
@@ -86,6 +107,8 @@ namespace FOPS.Abstract.Builder.Entity
                 {"Docker_FilePath", env.DockerFilePath},
                 {"Docker_Hub", env.DockerHub},
                 {"Docker_Image", env.DockerImage},
+                {"ReleaseDirRoot", env.ReleaseDirRoot},
+                {"Kube_Path", env.KubePath},
             };
         }
     }

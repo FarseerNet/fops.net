@@ -17,15 +17,13 @@ namespace FOPS.Com.BuilderServer.Git
         public IGitOpr     GitOpr     { get; set; }
         public IGitService GitService { get; set; }
         
-        const  string  SavePath = "/var/lib/fops/git/";
-
         /// <summary>
         /// Clone代码
         /// </summary>
         public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             // 如果Git存放的目录不存在，则创建
-            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            if (!System.IO.Directory.Exists(env.GitDirRoot)) System.IO.Directory.CreateDirectory(env.GitDirRoot);
             
             var url = git.Hub;
             // 需要密码
@@ -35,7 +33,7 @@ namespace FOPS.Com.BuilderServer.Git
             }
 
             // 获取Git存放的路径
-            var gitPath = GitOpr.GetGitPath(git);
+            var gitPath = GitOpr.GetGitPath(env,git);
 
             var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
             if (!result.IsError)

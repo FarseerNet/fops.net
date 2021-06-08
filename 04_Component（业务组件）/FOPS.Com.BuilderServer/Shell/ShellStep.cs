@@ -14,7 +14,6 @@ namespace FOPS.Com.BuilderServer.Shell
     public class ShellStep: IBuildStep
     {
         public IBuildLogService BuildLogService { get; set; }
-        const  string           SavePath = "/var/lib/fops/shell/";
         
         public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
@@ -22,8 +21,8 @@ namespace FOPS.Com.BuilderServer.Shell
             BuildLogService.Write(build.Id, $"开始执行Shell脚本。");
             
             // 每次执行时，需要生成shell脚本
-            var path = SavePath + $"fops_{build.Id}.sh";
-            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            var path = env.ShellScriptPath + $"fops_{build.Id}.sh";
+            if (!System.IO.Directory.Exists(env.ShellScriptPath)) System.IO.Directory.CreateDirectory(env.ShellScriptPath);
             System.IO.File.AppendAllText(path, project.ShellScript);
             
             // 执行脚本

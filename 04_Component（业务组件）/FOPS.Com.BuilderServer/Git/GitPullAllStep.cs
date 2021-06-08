@@ -29,7 +29,7 @@ namespace FOPS.Com.BuilderServer.Git
                 BuildLogService.Write(build.Id, $"开始拉取git {gitVO.Name} 分支：{gitVO.Branch} 仓库：{gitVO.Hub}。");
                 
                 // 获取当前git的存储路径
-                var gitDirRoot = GitOpr.GetGitPath(gitVO);
+                var gitDirRoot = GitOpr.GetGitPath(env,gitVO);
                 // 根据判断是否存在Git目录，来决定返回Clone or pull
                 var buildStep  =  GitOpr.GetGitStep(gitDirRoot);
                 var result     = await buildStep.Build(env, build, project, gitVO, actReceiveOutput);

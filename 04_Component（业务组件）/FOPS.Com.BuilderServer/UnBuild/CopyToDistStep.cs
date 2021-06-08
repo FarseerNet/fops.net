@@ -11,7 +11,6 @@ namespace FOPS.Com.BuilderServer.UnBuild
     public class CopyToDistStep : IBuildStep
     {
         public IBuildLogService BuildLogService { get; set; }
-        const  string           SavePath = "/var/lib/fops/dist/";
 
         public Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {

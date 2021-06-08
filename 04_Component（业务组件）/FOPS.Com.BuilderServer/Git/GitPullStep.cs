@@ -25,7 +25,7 @@ namespace FOPS.Com.BuilderServer.Git
             if (build.Status == EumBuildStatus.Finish) return new RunShellResult(true, "手动取消");
             
             // 获取Git存放的路径
-            var gitPath = GitOpr.GetGitPath(git);
+            var gitPath = GitOpr.GetGitPath(env,git);
             var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env);
             if (!result.IsError)
             {

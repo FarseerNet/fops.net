@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
 using FS.Core.Entity;
@@ -17,11 +18,11 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        void CreateConfigFile(ClusterVO cluster, string configFile);
+        void CreateConfigFile(BuildEnvironment env, ClusterVO cluster, string configFile);
 
         /// <summary>
         /// 获取存储k8s Config的路径
         /// </summary>
-        string GetConfigFile(string clusterName);
+        string GetConfigFile(BuildEnvironment env, string clusterName);
     }
 }

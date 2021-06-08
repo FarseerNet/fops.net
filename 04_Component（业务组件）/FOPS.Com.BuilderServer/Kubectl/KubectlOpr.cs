@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.Docker.Server;
 using FOPS.Abstract.K8S.Entity;
@@ -15,12 +16,11 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IClusterService   ClusterService   { get; set; }
         public IDockerHubService DockerHubService { get; set; }
         public IDockerOpr        DockerOpr        { get; set; }
-        const  string            SavePath = "/var/lib/fops/kube/";
 
         /// <summary>
         /// 获取存储k8s Config的路径
         /// </summary>
-        public string GetConfigFile(string clusterName)=>$"{SavePath}{clusterName}";
+        public string GetConfigFile(BuildEnvironment env, string clusterName) =>$"{env.KubePath}{clusterName}";
         
         /// <summary>
         /// 更新k8s版本
@@ -28,8 +28,9 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public async Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput)
         {
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
-            var configFile = GetConfigFile(cluster.Name);
-            CreateConfigFile(cluster, configFile);
+            var env        = new BuildEnvironment();
+            var configFile = GetConfigFile(env,cluster.Name);
+            CreateConfigFile(env,cluster, configFile);
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 
@@ -41,9 +42,9 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        public void CreateConfigFile(ClusterVO cluster, string configFile)
+        public void CreateConfigFile(BuildEnvironment env, ClusterVO cluster, string configFile)
         {
-            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            if (!System.IO.Directory.Exists(env.KubePath)) System.IO.Directory.CreateDirectory(env.KubePath);
 
             // 文件不存在，则创建
             if (!System.IO.File.Exists(configFile))

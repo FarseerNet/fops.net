@@ -16,14 +16,8 @@ namespace FOPS.Com.BuilderServer.Docker
     /// </summary>
     public class DockerUploadStep:IBuildStep
     {
-        // public DockerUploadStep(IDockerfileTplService dockerfileTplService)
-        // {
-        //     DockerfileTplService = dockerfileTplService;
-        // }
-
         public IBuildLogService      BuildLogService      { get; set; }
         public IProjectService       ProjectService       { get; set; }
-        public IDockerfileTplService DockerfileTplService { get; set; }
         
         /// <summary>
         /// 构建

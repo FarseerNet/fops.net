@@ -14,16 +14,15 @@ namespace FOPS.Com.BuilderServer.Git
     {
         public IGitService      GitService      { get; set; }
         public IIocManager      IocManager      { get; set; }
-        const  string           SavePath = "/var/lib/fops/git/";
 
         /// <summary>
         /// 获取Git存放的路径
         /// </summary>
-        public string GetGitPath(GitVO info)
+        public string GetGitPath(BuildEnvironment env, GitVO info)
         {
             var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
             if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
-            return SavePath + gitName + "/";
+            return env.GitDirRoot + gitName + "/";
         }
 
         /// <summary>
@@ -31,8 +30,9 @@ namespace FOPS.Com.BuilderServer.Git
         /// </summary>
         public async Task<RunShellResult> CloneOrPull(GitVO git)
         {
-            var gitDirRoot = GetGitPath(git);
-            var result= await GetGitStep(gitDirRoot).Build(null, null, null, git, null);
+            var env        = new BuildEnvironment();
+            var gitDirRoot = GetGitPath(env,git);
+            var result     = await GetGitStep(gitDirRoot).Build(null, null, null, git, null);
             if (!result.IsError)
             {
                 // 更新git拉取时间
@@ -47,7 +47,8 @@ namespace FOPS.Com.BuilderServer.Git
         public IBuildStep GetGitStep(string gitDirRoot)
         {
             // 如果Git存放的目录不存在，则创建
-            if (!System.IO.Directory.Exists(SavePath)) System.IO.Directory.CreateDirectory(SavePath);
+            var env = new BuildEnvironment();
+            if (!System.IO.Directory.Exists(env.GitDirRoot)) System.IO.Directory.CreateDirectory(env.GitDirRoot);
 
             // 目录不存在，返回clone
             if (!System.IO.Directory.Exists(gitDirRoot))
@@ -67,7 +68,8 @@ namespace FOPS.Com.BuilderServer.Git
             var info = await GitService.ToInfoAsync(gitId);
 
             // 获取Git存放的路径
-            var gitPath = GetGitPath(info);
+            var env     = new BuildEnvironment();
+            var gitPath = GetGitPath(env,info);
             return await ShellTools.Run("rm", $"-rf {gitPath}", null, null);
         }
     }

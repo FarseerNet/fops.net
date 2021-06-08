@@ -23,8 +23,8 @@ namespace FOPS.Com.BuilderServer.Kubectl
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");
             var cluster    = await ClusterService.ToInfoAsync(build.ClusterId);
-            var configFile = KubectlOpr.GetConfigFile(cluster.Name);
-            KubectlOpr.CreateConfigFile(cluster, configFile);
+            var configFile = KubectlOpr.GetConfigFile(env,cluster.Name);
+            KubectlOpr.CreateConfigFile(env,cluster, configFile);
 
             // 取得dockerHub
             var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env);
