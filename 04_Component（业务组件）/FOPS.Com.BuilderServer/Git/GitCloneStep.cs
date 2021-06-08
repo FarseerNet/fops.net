@@ -46,7 +46,7 @@ namespace FOPS.Com.BuilderServer.Git
 
             // 更新git拉取时间
             await GitService.UpdateAsync(git.Id, DateTime.Now);
-            return new RunShellResult(true, "Git克隆成功");
+            return new RunShellResult(false, "Git克隆成功");
         }
     }
 }
