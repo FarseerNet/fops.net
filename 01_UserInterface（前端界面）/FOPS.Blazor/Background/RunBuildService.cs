@@ -26,7 +26,8 @@ namespace FOPS.Blazor.Background
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("开始执行队列");
+            await Task.Delay(5000, stoppingToken);
+            _logger.LogInformation("开始执行构建队列");
             while (true)
             {
                 try
