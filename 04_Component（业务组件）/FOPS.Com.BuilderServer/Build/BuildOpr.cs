@@ -98,6 +98,7 @@ namespace FOPS.Com.BuilderServer.Build
 
             try
             {
+                if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot)) throw new Exception($"源文件：{env.ProjectSourceDirRoot} 不存在，请检查项目设置。");
                 // 打印环境变量
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");
                 BuildLogService.Write(build.Id, $"打印环境变量。");
@@ -128,10 +129,10 @@ namespace FOPS.Com.BuilderServer.Build
                 {
                     build = await BuildService.ToInfoAsync(build.Id);
                     if (build.Status == EumBuildStatus.Finish) return; // 手动取消了
-                    if ((await buildStep.Build(env, build, project, git, ActWriteLog)).IsError)
+                    var runShellResult = await buildStep.Build(env, build, project, git, ActWriteLog);
+                    if (runShellResult.IsError)
                     {
-                        await Fail(build, project);
-                        return;
+                        throw new Exception(runShellResult.OutputLine);
                     }
                 }
 
