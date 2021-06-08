@@ -12,7 +12,7 @@ namespace FOPS.Com.BuilderServer.Build
     {
         public IBuildLogService BuildLogService { get; set; }
         
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"前置检查。");
@@ -22,9 +22,9 @@ namespace FOPS.Com.BuilderServer.Build
             
             if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
             {
-                return new RunShellResult(true, $"源文件：{env.ProjectSourceDirRoot} 不存在，请检查项目设置。");
+                return Task.FromResult(new RunShellResult(true, $"源文件：{env.ProjectSourceDirRoot} 不存在，请检查项目设置。"));
             }
-            return new RunShellResult(false, "前置检查通过。");
+            return Task.FromResult(new RunShellResult(false, "前置检查通过。"));
         }
     }
 }
