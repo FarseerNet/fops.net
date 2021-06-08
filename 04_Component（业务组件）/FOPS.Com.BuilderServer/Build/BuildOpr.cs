@@ -108,7 +108,10 @@ namespace FOPS.Com.BuilderServer.Build
                 // 打印环境变量
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");
                 BuildLogService.Write(build.Id, $"打印环境变量。");
-                await ShellTools.Run("env", "", ActWriteLog, env);
+                foreach (var dirEnv in (Dictionary<string, string>)env)
+                {
+                    BuildLogService.Write(build.Id, $"{dirEnv.Key}={dirEnv.Value}");
+                }
 
                 List<IBuildStep> lstStep = new();
                 lstStep.Add(IocManager.Resolve<GitPullAllStep>());  // 拉取全部git
