@@ -22,7 +22,6 @@ namespace FOPS.Com.BuilderServer.Shell
             
             // 每次执行时，需要生成shell脚本
             var path = env.ShellScriptPath + $"fops_{build.Id}.sh";
-            if (!System.IO.Directory.Exists(env.ShellScriptPath)) System.IO.Directory.CreateDirectory(env.ShellScriptPath);
             System.IO.File.AppendAllText(path, project.ShellScript);
             
             // 执行脚本

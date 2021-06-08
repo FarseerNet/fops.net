@@ -44,8 +44,6 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// </summary>
         public void CreateConfigFile(BuildEnvironment env, ClusterVO cluster, string configFile)
         {
-            if (!System.IO.Directory.Exists(env.KubePath)) System.IO.Directory.CreateDirectory(env.KubePath);
-
             // 文件不存在，则创建
             if (!System.IO.File.Exists(configFile))
             {

@@ -17,8 +17,18 @@ namespace FOPS.Com.BuilderServer.Build
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"前置检查。");
             
-            // 判断目录是否存在（dotnet publish、不编译选项，都实现了创建）
-            if (!System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
+            // 自动创建目录
+            if (!System.IO.Directory.Exists(env.FopsDirRoot)) System.IO.Directory.CreateDirectory(env.FopsDirRoot);
+            if (!System.IO.Directory.Exists(env.NpmModulesDirRoot)) System.IO.Directory.CreateDirectory(env.NpmModulesDirRoot);
+            if (!System.IO.Directory.Exists(env.ReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ReleaseDirRoot);
+            if (!System.IO.Directory.Exists(env.KubePath)) System.IO.Directory.CreateDirectory(env.KubePath);
+            if (!System.IO.Directory.Exists(env.ShellScriptPath)) System.IO.Directory.CreateDirectory(env.ShellScriptPath);
+            if (!System.IO.Directory.Exists(env.GitDirRoot)) System.IO.Directory.CreateDirectory(env.GitDirRoot);
+
+            // 先删除之前编译的目标文件
+            if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
+            System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
+            
             
             if (!System.IO.Directory.Exists(env.ProjectSourceDirRoot))
             {

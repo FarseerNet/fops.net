@@ -25,10 +25,6 @@ namespace FOPS.Com.BuilderServer.Dotnet
                 return new RunShellResult(true, $"路径：{env.ProjectSourceDirRoot}不存在，无法编译");
             }
 
-            // 先删除之前编译的目标文件
-            if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
-            System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
-
             // 编译
             var result = await Publish(env, actReceiveOutput);
             return result.IsError switch

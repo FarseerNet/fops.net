@@ -22,9 +22,6 @@ namespace FOPS.Com.BuilderServer.Git
         /// </summary>
         public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
-            // 如果Git存放的目录不存在，则创建
-            if (!System.IO.Directory.Exists(env.GitDirRoot)) System.IO.Directory.CreateDirectory(env.GitDirRoot);
-            
             var url = git.Hub;
             // 需要密码
             if (!string.IsNullOrWhiteSpace(git.UserPwd))
