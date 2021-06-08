@@ -16,13 +16,18 @@ namespace FOPS.Com.BuilderServer.UnBuild
         public Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
-            BuildLogService.Write(build.Id, $"复制源文件到/var/lib/fops/dist/。");
-            
+
             // 先删除之前编译的目标文件
-            if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
+            if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot))
+            {
+                BuildLogService.Write(build.Id, $"清除目录：{env.ProjectReleaseDirRoot}。");
+                System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
+            }
+
             System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
 
             // 复制目录
+            BuildLogService.Write(build.Id, $"源文件{env.ProjectSourceDirRoot}复制到{env.ProjectReleaseDirRoot}");
             Files.CopyFolder(env.ProjectSourceDirRoot, env.ProjectReleaseDirRoot);
 
             BuildLogService.Write(build.Id, $"复制完成。");
