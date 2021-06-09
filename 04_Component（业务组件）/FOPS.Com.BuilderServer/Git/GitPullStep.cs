@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Enum;
@@ -19,14 +20,14 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             build = await BuildService.ToInfoAsync(build.Id);
             if (build.Status == EumBuildStatus.Finish) return new RunShellResult(true, "手动取消");
             
             // 获取Git存放的路径
-            var gitPath = GitOpr.GetGitPath(env,git);
-            var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env);
+            var gitPath = GitOpr.GetGitPath(env, git);
+            var result  = await ShellTools.Run("git", $"-C {gitPath} pull --rebase", actReceiveOutput, env, null, cancellationToken);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git拉取失败");

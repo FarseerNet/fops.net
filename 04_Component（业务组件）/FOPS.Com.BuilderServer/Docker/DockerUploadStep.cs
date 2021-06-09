@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -22,13 +23,13 @@ namespace FOPS.Com.BuilderServer.Docker
         /// <summary>
         /// 构建
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始上传镜像。");
             
             // 上传
-            var result = await ShellTools.Run("docker", $"push {env.DockerImage}", actReceiveOutput, env);
+            var result = await ShellTools.Run("docker", $"push {env.DockerImage}", actReceiveOutput, env, null, cancellationToken);
 
             switch (result.IsError)
             {

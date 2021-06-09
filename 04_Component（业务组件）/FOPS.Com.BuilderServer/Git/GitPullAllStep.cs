@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -20,7 +21,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取全部
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             var lstGit = await GitService.ToListAsync();
             foreach (var gitVO in lstGit)
@@ -31,8 +32,8 @@ namespace FOPS.Com.BuilderServer.Git
                 // 获取当前git的存储路径
                 var gitDirRoot = GitOpr.GetGitPath(env,gitVO);
                 // 根据判断是否存在Git目录，来决定返回Clone or pull
-                var buildStep  =  GitOpr.GetGitStep(gitDirRoot);
-                var result     = await buildStep.Build(env, build, project, gitVO, actReceiveOutput);
+                var buildStep =  GitOpr.GetGitStep(gitDirRoot);
+                var result    = await buildStep.Build(env, build, project, gitVO, actReceiveOutput, cancellationToken);
                 if (result.IsError)
                 {
                     return new RunShellResult(true, $"拉取出错了。");

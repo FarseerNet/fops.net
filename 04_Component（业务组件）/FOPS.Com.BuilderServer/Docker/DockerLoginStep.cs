@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -22,7 +23,7 @@ namespace FOPS.Com.BuilderServer.Docker
         /// <summary>
         /// 构建
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"登陆镜像仓库。");
@@ -33,7 +34,7 @@ namespace FOPS.Com.BuilderServer.Docker
             // 登陆 docker
             if (docker != null && !string.IsNullOrWhiteSpace(docker.UserName))
             {
-                var result = await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput, env);
+                var result = await ShellTools.Run("docker", $"login {docker.Hub} -u {docker.UserName} -p {docker.UserPwd}", actReceiveOutput, env,null, cancellationToken);
                 if (result.IsError)
                 {
                     return new RunShellResult(true, "镜像仓库登陆失败。");

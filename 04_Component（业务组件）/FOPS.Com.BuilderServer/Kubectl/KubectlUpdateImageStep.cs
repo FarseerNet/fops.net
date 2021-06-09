@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -19,7 +20,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IKubectlOpr       KubectlOpr       { get; set; }
         public IBuildLogService  BuildLogService  { get; set; }
 
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");
@@ -28,7 +29,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             KubectlOpr.CreateConfigFile(env,cluster, configFile);
 
             // 取得dockerHub
-            var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env);
+            var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env, null, cancellationToken);
             return result.IsError switch
             {
                 false => new RunShellResult(false, "更新镜像版本完成。"),

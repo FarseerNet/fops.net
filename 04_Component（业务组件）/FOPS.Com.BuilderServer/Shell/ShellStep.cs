@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -15,7 +16,7 @@ namespace FOPS.Com.BuilderServer.Shell
     {
         public IBuildLogService BuildLogService { get; set; }
         
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始执行Shell脚本。");
@@ -26,7 +27,7 @@ namespace FOPS.Com.BuilderServer.Shell
             System.IO.File.AppendAllText(path, project.ShellScript);
             
             // 执行脚本
-            var result = await ShellTools.Run("/bin/sh", $"-xe {path}", actReceiveOutput, env,env.ProjectReleaseDirRoot);
+            var result = await ShellTools.Run("/bin/sh", $"-xe {path}", actReceiveOutput, env, env.ProjectReleaseDirRoot, cancellationToken);
             
             return result.IsError switch
             {

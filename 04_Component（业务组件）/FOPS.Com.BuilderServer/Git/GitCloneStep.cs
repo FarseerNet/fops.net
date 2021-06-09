@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -20,7 +21,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// Clone代码
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             var url = git.Hub;
             // 需要密码
@@ -33,9 +34,9 @@ namespace FOPS.Com.BuilderServer.Git
             var gitPath = GitOpr.GetGitPath(env,git);
 
             // 让git记住密码
-            await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env);
+            await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env, null, cancellationToken);
             
-            var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env);
+            var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env, null, cancellationToken);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git克隆失败");

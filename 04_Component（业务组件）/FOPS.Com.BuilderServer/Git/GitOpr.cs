@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
@@ -31,8 +32,8 @@ namespace FOPS.Com.BuilderServer.Git
         public async Task<RunShellResult> CloneOrPull(GitVO git)
         {
             var env        = new BuildEnvironment();
-            var gitDirRoot = GetGitPath(env,git);
-            var result     = await GetGitStep(gitDirRoot).Build(null, null, null, git, null);
+            var gitDirRoot = GetGitPath(env, git);
+            var result     = await GetGitStep(gitDirRoot).Build(null, null, null, git, null, default);
             if (!result.IsError)
             {
                 // 更新git拉取时间
