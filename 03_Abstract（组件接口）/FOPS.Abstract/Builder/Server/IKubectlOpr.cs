@@ -18,7 +18,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        void CreateConfigFile(BuildEnvironment env, ClusterVO cluster, string configFile);
+        void CreateConfigFile(BuildEnvironment env, ClusterVO cluster);
 
         /// <summary>
         /// 获取存储k8s Config的路径

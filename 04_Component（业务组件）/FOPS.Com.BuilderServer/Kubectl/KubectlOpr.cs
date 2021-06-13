@@ -30,7 +30,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
             var env        = new BuildEnvironment();
             var configFile = GetConfigFile(env,cluster.Name);
-            CreateConfigFile(env,cluster, configFile);
+            CreateConfigFile(env,cluster);
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 
@@ -42,8 +42,9 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        public void CreateConfigFile(BuildEnvironment env, ClusterVO cluster, string configFile)
+        public void CreateConfigFile(BuildEnvironment env, ClusterVO cluster)
         {
+            var configFile = GetConfigFile(env, cluster.Name);
             // 文件不存在，则创建
             if (!System.IO.File.Exists(configFile))
             {

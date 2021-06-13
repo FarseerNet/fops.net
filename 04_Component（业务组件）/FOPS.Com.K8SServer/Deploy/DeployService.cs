@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
 using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
 using FS.Utils.Component;
@@ -14,7 +16,9 @@ namespace FOPS.Com.K8SServer.Deploy
 {
     public class DeployService : IDeployService
     {
-        public IBuildService BuildService { get; set; }
+        public IBuildService   BuildService   { get; set; }
+        public IClusterService ClusterService { get; set; }
+        public IKubectlOpr     KubectlOpr     { get; set; }
 
         /// <summary>
         /// 发布
@@ -36,27 +40,40 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 发布
         /// </summary>
-        public Task<RunShellResult> DeployAsync(ProjectVO projectVO, ClusterVO clusterVO, List<YamlTplVO> lstTpl)
+        public async Task<RunShellResult> DeployAsync(ProjectVO projectVO, ClusterVO clusterVO, List<YamlTplVO> lstTpl)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
             if (projectVO == null) throw new Exception("项目不存在");
-
+            
             // 替换模板内容
             var lstYaml = ReplaceTemplate(projectVO: projectVO, lstTpl: lstTpl);
 
             // 拼接已经选择的所有脚本
             var yaml = string.Join("\r\n---\r\n", lstYaml);
-            return RunApplyCmd(projectVO.Name, yaml, clusterVO.Config);
+            
+            return await DeployAsync(projectVO.Name, yaml, clusterVO);
         }
 
         /// <summary>
         /// 发布
         /// </summary>
-        public Task<RunShellResult> DeployAsync(string yaml, ClusterVO clusterVO)
+        public async Task<RunShellResult> DeployAsync(string projectName,string yaml, ClusterVO clusterVO)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
 
-            return RunApplyCmd("single", yaml, clusterVO.Config);
+            // 说明前面获取的时候，没有取Config字段
+            if (string.IsNullOrWhiteSpace(clusterVO.Config))
+            {
+                var info = await ClusterService.ToInfoAsync(clusterVO.Id);
+                clusterVO.Config = info.Config;
+            }
+            
+            // kube配置文件    
+            var env        = new BuildEnvironment();
+            var configFile = KubectlOpr.GetConfigFile(env, clusterVO.Name);
+            KubectlOpr.CreateConfigFile(env, clusterVO);
+            
+            return await RunApplyCmd("single", yaml, configFile);
         }
 
         /// <summary>
