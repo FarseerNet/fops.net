@@ -23,8 +23,8 @@ spec:
       labels:
         app: fops
     spec:
-#      nodeSelector:   #节点筛选器
-#        rt: web
+      nodeSelector:   #节点筛选器
+        rt: web
       containers:
         - name: fops
           image: farseernet/fops:latest
@@ -69,12 +69,14 @@ spec:
 ---
 apiVersion: v1
 data:
-  Database__Items__0__PassWord: ''
-  Database__Items__0__Server: ''
-  Database__Items__0__UserID: ''
-  Logging__LogLevel__Default: ''
-  Redis__0__Password: ''
-  Redis__0__Server: ''
+  Database__Items__0__PassWord: c3RlZGVuQDEyMw==
+  Database__Items__0__Server: bXlzcWw=
+  Database__Items__1__PassWord: c3RlZGVuQDEyMw==
+  Database__Items__1__Server: bXlzcWw=
+  Logging__LogLevel__Default: SW5mb3JtYXRpb24=
+  Redis__0__Password: MTIzNDU2
+  Redis__0__Server: >-
+    cmVkaXM6NjM3OSxjb25uZWN0dGltZW91dD02MDAwMDAsc3luY3RpbWVvdXQ9MTAwMDAscmVzcG9uc2V0aW1lb3V0PTEwMDAw
 kind: Secret
 metadata:
   name: fops
