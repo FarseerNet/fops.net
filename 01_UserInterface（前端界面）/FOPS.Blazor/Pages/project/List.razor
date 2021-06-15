@@ -221,6 +221,8 @@
         var newInfo=JsonConvert.DeserializeObject<ProjectVO>(JsonConvert.SerializeObject(info));
         newInfo.Name += "复制";
         newInfo.Id = 0;
+        newInfo.DicClusterVer = new();
+        newInfo.GitPullAt=DateTime.MinValue;
         var id=await _iocManager.Resolve<IProjectService>().AddAsync(newInfo);
         nav.NavigateTo($"/project/update/{id}");
     }
