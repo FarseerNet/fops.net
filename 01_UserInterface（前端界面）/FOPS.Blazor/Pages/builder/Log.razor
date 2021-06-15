@@ -3,13 +3,15 @@
 @using FOPS.Abstract.Builder.Entity
 @using FOPS.Abstract.Builder.Enum
 @using System.Timers
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header">
-        @_info.Id 构建日志
+        @_info.Id -【@_projectInfo.Name（@_info.BuildNumber）】的构建日志
         @{
             switch (_info.Status)
             {
@@ -71,6 +73,7 @@
     [Parameter] public int Id { get; set; }
 
     private BuildVO _info = new();
+    private ProjectVO _projectInfo = new();
     private string[] _lstLog = new string[0];
     private Timer _timer;
     private bool _isFirst;
@@ -92,6 +95,7 @@
                     return;
                 }
 
+                _projectInfo = await _iocManager.Resolve<IProjectService>().ToInfoAsync(_info.ProjectId) ?? new();
                 _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
                 if (_info.Status != EumBuildStatus.Finish)
                 {
@@ -123,11 +127,6 @@
             }
         }
     }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     await ScrollBodyTop();
-    // }
 
     private async Task CancelBuild()
     {
