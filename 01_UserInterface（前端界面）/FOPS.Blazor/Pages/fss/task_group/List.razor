@@ -187,7 +187,7 @@
     private async Task GetList()
     {
         _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync() ?? new();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderBy(o=>o.JobName).ThenByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
         _lst = _lst.ToList(_pageSize, PageIndex);
     }
