@@ -82,7 +82,13 @@
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-build-3">
-                        @if (info.Status != EumBuildStatus.Finish)
+                        @if (info.Status == EumBuildStatus.None)
+                        {
+                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
+                                <i class="layui-icon"></i>
+                            </button>
+                        }
+                        else if (info.Status == EumBuildStatus.Building)
                         {
                             <span>@((DateTime.Now - info.CreateAt).GetDateDesc())</span>
                             <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => CancelBuild(info)">
