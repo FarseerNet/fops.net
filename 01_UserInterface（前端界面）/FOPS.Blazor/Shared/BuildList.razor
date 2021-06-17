@@ -91,7 +91,7 @@
                         }
                         else
                         {
-                            <span lay-tips="@((info.FinishAt - info.CreateAt).GetDateDesc())"> @info.FinishAt.ToString("MM-dd HH:mm:ss")</span>
+                            <span lay-tips="耗时：@((info.FinishAt - info.CreateAt).GetDateDesc())">@((DateTime.Now - info.FinishAt).GetDateDesc())</span>
                         }
                     </div>
                 </td>
