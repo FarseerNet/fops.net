@@ -27,7 +27,7 @@ namespace FOPS.Com.BuilderServer.Shell
             System.IO.File.AppendAllText(path, project.ShellScript);
             
             // 执行脚本
-            var result = await ShellTools.Run("/bin/sh", $"-xe {path}", actReceiveOutput, env, env.ProjectReleaseDirRoot, cancellationToken);
+            var result = await ShellTools.Run("/bin/sh", $"-xe {path}", actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
             
             return result.IsError switch
             {

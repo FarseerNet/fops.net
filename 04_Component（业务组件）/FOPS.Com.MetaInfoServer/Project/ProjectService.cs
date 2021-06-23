@@ -86,6 +86,7 @@ namespace FOPS.Com.MetaInfoServer.Project
         public ProjectVO ToInfo(int id)
         {
             var po = MetaInfoContext.Data.Project.Where(o => o.Id == id).ToEntity();
+            if (po == null) return null;
             var vo = po.Map<ProjectVO>();
             try
             {

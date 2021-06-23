@@ -78,7 +78,7 @@ namespace FOPS.Abstract.Builder.Entity
         public string GitHub { get; set; }
 
         /// <summary>
-        /// Git仓库源代码目录
+        /// Git仓库源代码根目录
         /// </summary>
         public string ProjectGitDirRoot { get; set; }
 

@@ -52,7 +52,7 @@
                     <div class="laytable-cell-build-1">
                         @{
                             var projectVO = _lst.Find(o => o.Id == info.ProjectId);
-                            if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId);
+                            if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId) ?? new ProjectVO();
                         }
                         <a href="/builder/log/@info.Id">@projectVO.Name</a>
                     </div>
