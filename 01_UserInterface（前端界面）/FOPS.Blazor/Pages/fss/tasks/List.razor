@@ -68,6 +68,11 @@
                                     <span>创建时间</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-9">
+                                    <span>操作</span>
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                     </table>
@@ -133,6 +138,16 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-task-9">
+                                        @if (info.Status is EumTaskType.None or EumTaskType.Scheduler or EumTaskType.Working)
+                                        {
+                                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => Cancel(info)">
+                                                <i class="layui-icon"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -172,7 +187,7 @@
         _isFirst = true;
 
         if (PageIndex < 1) PageIndex = 1;
-        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount)??new();
+        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount) ?? new();
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -184,7 +199,7 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount)??new();
+                    _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount) ?? new();
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }
@@ -197,10 +212,19 @@
         }
         return Task.FromResult(0);
     }
-    
+
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");
+    }
+
+    private async Task Cancel(TaskVO info)
+    {
+        info = await _iocManager.Resolve<ITaskInfo>().ToInfoByDbAsync(info.Id);
+        info.Status = EumTaskType.Fail;
+        
+        var taskGroup = await _iocManager.Resolve<ITaskGroupInfo>().ToInfoAsync(info.TaskGroupId);
+        await _iocManager.Resolve<ITaskUpdate>().SaveFinishAsync(info, taskGroup);
     }
 
 }

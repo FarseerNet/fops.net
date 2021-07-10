@@ -1,18 +1,25 @@
+using System;
 using System.Threading.Tasks;
+using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Server;
+using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.Tasks.Dal;
 using FS.Cache;
 using FS.Cache.Redis;
 using FS.DI;
+using FS.Extends;
+using FS.Utils.Component;
 
 namespace FOPS.Com.FssServer.Tasks
 {
     public class TaskUpdate : ITaskUpdate
     {
         public  ITaskInfo          TaskInfo          { get; set; }
+        public  ITaskAgent         TaskAgent         { get; set; }
+        public  ITaskGroupUpdate   TaskGroupUpdate   { get; set; }
         public  IIocManager        IocManager        { get; set; }
         private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
-        
+
         /// <summary>
         /// 任务组修改时，需要同步JobName
         /// </summary>
@@ -21,6 +28,32 @@ namespace FOPS.Com.FssServer.Tasks
             await FssContext.Data.Task.Where(o => o.Id == id).UpdateAsync(new TaskPO() {JobName = jobName});
             var task = await TaskInfo.ToInfoByDbAsync(id);
             await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
+        }
+
+        /// <summary>
+        /// 保存Task（taskGroup必须是最新的）这里与FSS的逻辑不一致。因为FSS需要发消息
+        /// </summary>
+        public async Task SaveFinishAsync(TaskVO task, TaskGroupVO taskGroup)
+        {
+            // 说明上一次任务，没有设置下一次的时间（动态设置）
+            // 本次的时间策略晚，则通过时间策略计算出来
+            if (DateTime.Now > taskGroup.NextAt)
+            {
+                var cron = new Cron();
+                // 时间间隔器
+                if (taskGroup.IntervalMs > 0) taskGroup.NextAt = DateTime.Now.AddMilliseconds(taskGroup.IntervalMs);
+                else if (string.IsNullOrWhiteSpace(taskGroup.Cron) is false && cron.Parse(taskGroup.Cron))
+                {
+                    taskGroup.NextAt = cron.GetNext(DateTime.Now);
+                }
+                else // 没有找到设置下一次时间的设置，则默认30S执行一次
+                {
+                    taskGroup.NextAt = DateTime.Now.AddSeconds(30);
+                }
+            }
+
+            await TaskAgent.UpdateAsync(task.Id, task.Map<TaskPO>());
+            await TaskGroupUpdate.UpdateAsync(taskGroup);
         }
     }
 }
