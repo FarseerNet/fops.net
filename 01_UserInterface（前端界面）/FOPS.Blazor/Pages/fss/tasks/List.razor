@@ -225,6 +225,8 @@
         info.Status = EumTaskType.Fail;
         
         var taskGroup = await _iocManager.Resolve<ITaskGroupInfo>().ToInfoAsync(info.TaskGroupId);
+        // 这里不设置的话，下次执行时间，有可能还是将来的，导致如果设置错了时间的话，会一直等待原来设置错的时间
+        taskGroup.NextAt = taskGroup.LastRunAt;
         await _iocManager.Resolve<ITaskUpdate>().SaveFinishAsync(info, taskGroup);
     }
 
