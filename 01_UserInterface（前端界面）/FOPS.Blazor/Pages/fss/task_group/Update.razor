@@ -115,7 +115,7 @@
 
     [Parameter] public int Id { get; set; }
 
-    private TaskGroupVO _info = new() {IsEnable = true};
+    private TaskGroupVO _info = new() {IsEnable = true,Cron = "1000"};
 
     private async Task UpdateInfo()
     {
@@ -126,7 +126,7 @@
         }
         try
         {
-
+            if (string.IsNullOrWhiteSpace(_info.Cron)) _info.Cron = "1000";
             // 是否为数字
             if (IsType.IsInt(_info.Cron))
             {
@@ -137,10 +137,11 @@
             {
                 _info.IntervalMs = 0;
             }
-            else 
+            else
                 throw new Exception("Cron格式错误");
 
             await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
+            
             // 需要修改当前任务的JobName
             if (_info.TaskId > 0)
             {
