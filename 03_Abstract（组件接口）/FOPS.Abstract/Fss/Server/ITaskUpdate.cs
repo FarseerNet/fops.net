@@ -9,7 +9,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 任务组修改时，需要同步JobName
         /// </summary>
-        Task UpdateJobName(int id, string jobName);
+        Task UpdateJobName(int taskId, string jobName);
 
         /// <summary>
         /// 保存Task（taskGroup必须是最新的）

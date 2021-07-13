@@ -126,7 +126,6 @@
         }
         try
         {
-            if (string.IsNullOrWhiteSpace(_info.Cron)) _info.Cron = "1000";
             // 是否为数字
             if (IsType.IsInt(_info.Cron))
             {

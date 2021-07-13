@@ -23,10 +23,11 @@ namespace FOPS.Com.FssServer.Tasks
         /// <summary>
         /// 任务组修改时，需要同步JobName
         /// </summary>
-        public async Task UpdateJobName(int id, string jobName)
+        public async Task UpdateJobName(int taskId, string jobName)
         {
-            await FssContext.Data.Task.Where(o => o.Id == id).UpdateAsync(new TaskPO() {JobName = jobName});
-            var task = await TaskInfo.ToInfoByDbAsync(id);
+            await FssContext.Data.Task.Where(o => o.Id == taskId).UpdateAsync(new TaskPO() {JobName = jobName});
+            var task = await TaskInfo.ToInfoByDbAsync(taskId);
+            if (task == null) return;
             await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
         }
 
