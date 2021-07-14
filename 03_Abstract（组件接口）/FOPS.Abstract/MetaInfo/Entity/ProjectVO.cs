@@ -15,6 +15,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// 应用ID（链路追踪）
+        /// </summary>
+        public string AppId { get; set; }
+        /// <summary>
         /// 程序入口名
         /// </summary>
         public string EntryPoint { get; set; }

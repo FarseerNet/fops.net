@@ -56,5 +56,10 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 项目列表
         /// </summary>
         Task<List<ProjectVO>> ToListAsync(int groupId);
+
+        /// <summary>
+        /// 应用列表
+        /// </summary>
+        Task<List<ProjectVO>> ToAppListAsync();
     }
 }

@@ -47,6 +47,12 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">应用ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" @bind="_info.AppId" autocomplete="off" placeholder="请输入应用ID（链路追踪）" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">程序入口点</label>
                 <div class="layui-input-inline">
                     <input type="text" @bind="_info.EntryPoint" autocomplete="off" placeholder="Docker启动的程序名" class="layui-input" style="width:300px;">
@@ -321,34 +327,35 @@
 
     private async Task ShowEnvTips()
     {
-        await js.InvokeVoidAsync("layer.open", new {
-            type= 1,
-            skin= "layui-layer-molv",
-            closeBtn= false,
-            area= "500px",
-            anim= 5,
-            shadeClose= true,
-            content= "<div style='padding:20px;'>" +
-                     "<ul>" +
-                     "<li>Fops_DirRoot：Fops根目录</li>" +
-                     "<li>NpmModules_DirRoot：NpmModules目录</li>" +
-                     "<li>Git_Hub：Git仓库地址</li>" +
-                     "<li>Git_DirRoot：Git仓库源代码目录</li>" +
-                     "<li>Build_Number：构建版本号</li>" +
-                     "<li>Project_Name：项目名称</li>" +
-                     "<li>Project_Domain：项目访问域名</li>" +
-                     "<li>Project_EntryPoint：程序入口名</li>" +
-                     "<li>Project_EntryPort：程序启动端口</li>" +
-                     "<li>Project_ReleaseDirRoot：编译保存的目录</li>" +
-                     "<li>Project_SourceDirRoot：项目源代码目录</li>" +
-                     "<li>Project_GitDirRoot：Git仓库源代码根目录</li>" +
-                     "<li>Docker_FilePath：Dockerfile文件路径</li>" +
-                     "<li>Docker_Hub：Docker仓库地址</li>" +
-                     "<li>Docker_Image：Docker镜像</li>" +
-                     "<li>ReleaseDirRoot：编译保存的根目录</li>" +
-                     "<li>Kube_Path：kubectlConfig配置</li>" +
-                     "</ul>" +
-                     "</div>"
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "500px",
+            anim = 5,
+            shadeClose = true,
+            content = "<div style='padding:20px;'>" +
+                      "<ul>" +
+                      "<li>Fops_DirRoot：Fops根目录</li>" +
+                      "<li>NpmModules_DirRoot：NpmModules目录</li>" +
+                      "<li>Git_Hub：Git仓库地址</li>" +
+                      "<li>Git_DirRoot：Git仓库源代码目录</li>" +
+                      "<li>Build_Number：构建版本号</li>" +
+                      "<li>Project_Name：项目名称</li>" +
+                      "<li>Project_Domain：项目访问域名</li>" +
+                      "<li>Project_EntryPoint：程序入口名</li>" +
+                      "<li>Project_EntryPort：程序启动端口</li>" +
+                      "<li>Project_ReleaseDirRoot：编译保存的目录</li>" +
+                      "<li>Project_SourceDirRoot：项目源代码目录</li>" +
+                      "<li>Project_GitDirRoot：Git仓库源代码根目录</li>" +
+                      "<li>Docker_FilePath：Dockerfile文件路径</li>" +
+                      "<li>Docker_Hub：Docker仓库地址</li>" +
+                      "<li>Docker_Image：Docker镜像</li>" +
+                      "<li>ReleaseDirRoot：编译保存的根目录</li>" +
+                      "<li>Kube_Path：kubectlConfig配置</li>" +
+                      "</ul>" +
+                      "</div>"
         });
     }
 

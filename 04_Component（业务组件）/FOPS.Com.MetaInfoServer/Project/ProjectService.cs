@@ -37,11 +37,19 @@ namespace FOPS.Com.MetaInfoServer.Project
         }
 
         /// <summary>
+        /// 应用列表
+        /// </summary>
+        public Task<List<ProjectVO>> ToAppListAsync()
+        {
+            return MetaInfoContext.Data.Project.Where(o => o.AppId != "").ToListAsync().MapAsync<ProjectVO, ProjectPO>();
+        }
+
+        /// <summary>
         /// 项目列表
         /// </summary>
         public async Task<List<ProjectVO>> ToListAsync(int groupId)
         {
-            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).Select(o => new {o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId,o.BuildType}).ToListAsync();
+            var lstPo = await MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).Select(o => new {o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId, o.BuildType}).ToListAsync();
             var lst   = new List<ProjectVO>();
             foreach (var po in lstPo)
             {

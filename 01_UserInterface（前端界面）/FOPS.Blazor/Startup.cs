@@ -22,6 +22,7 @@ using FS.MQ.RedisStream;
 namespace FOPS.Blazor
 {
     [DependsOn(
+        typeof(ElasticSearchModule),
         typeof(FarseerCoreModule),
         typeof(MapperModule),
         typeof(RedisModule),

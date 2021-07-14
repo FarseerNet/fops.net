@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Com.BuilderServer", "0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Com.DockerServer", "04_Component（业务组件）\FOPS.Com.DockerServer\FOPS.Com.DockerServer.csproj", "{78588E73-7529-484A-BEB3-ECC556D9052D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer.Net.LinkTrack", "..\Farseer.Net\Framework\Farseer.Net.LinkTrack\Farseer.Net.LinkTrack.csproj", "{DDD38E43-90DA-432B-B56E-26D87721A6CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,7 @@ Global
 		{0CBE8833-C5C4-4163-8804-A045D7AEA285} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 		{34360BD7-AB46-4824-A0F0-8C6DE513D34C} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 		{78588E73-7529-484A-BEB3-ECC556D9052D} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
+		{DDD38E43-90DA-432B-B56E-26D87721A6CF} = {1684AFF4-C227-4EAD-A272-CE78CFB8AB8A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4831230E-2AA0-426D-A7A6-13BC59345ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -159,5 +162,9 @@ Global
 		{78588E73-7529-484A-BEB3-ECC556D9052D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78588E73-7529-484A-BEB3-ECC556D9052D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78588E73-7529-484A-BEB3-ECC556D9052D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD38E43-90DA-432B-B56E-26D87721A6CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD38E43-90DA-432B-B56E-26D87721A6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD38E43-90DA-432B-B56E-26D87721A6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD38E43-90DA-432B-B56E-26D87721A6CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

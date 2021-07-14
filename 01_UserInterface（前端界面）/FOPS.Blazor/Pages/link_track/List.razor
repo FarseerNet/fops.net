@@ -1,0 +1,222 @@
+@page "/link_track/list"
+@page "/link_track/list/{pageIndex:int}"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Abstract.K8S.Enum
+@using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.K8S.Entity
+@using FOPS.Abstract.Docker.Entity
+@using FOPS.Abstract.Docker.Server
+@using FOPS.Abstract.K8S.Server
+@using FS.Extends
+@using FS.LinkTrack
+@using Newtonsoft.Json
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        应用
+        <select style="display:inline;width: 200px;" @onchange="GroupChange">
+            <option value="">全部</option>
+            @foreach (var projectVO in _lstAppId)
+            {
+                <option value="@projectVO.AppId">@projectVO.AppId</option>
+            }
+        </select>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-0">
+                                    <span>AppId</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>ContextId</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>请求时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>耗时</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>域名</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-5">
+                                    <span>类型</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-6">
+                                    <span>路径</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-7">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-8">
+                                    <span>操作</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-0"> @info.AppId</div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
+                                        @info.ContextId
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        @info.StartTs.ToTimestamps().ToString("yyyy-MM-dd HH:mm:ss")
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        @if (info.EndTs > 0)
+                                        {
+                                            @(info.EndTs - info.StartTs)
+                                        }
+                                        else
+                                        {
+                                            @("0 ms")
+                                        }
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        @info.Domain
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-5">
+                                        @info.ContentType
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-left laytable-cell-14-0-6">
+                                        （@info.Method） @info.Path
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-7">
+                                        @info.RequestIp
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-8">
+                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看报文</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/list/{index}"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+    .laytable-cell-14-0-0{ width: 130px; }
+    .laytable-cell-14-0-1{ width: 160px; }
+    .laytable-cell-14-0-2{ width: 150px; }
+    .laytable-cell-14-0-3{ width: 80px; }
+    .laytable-cell-14-0-4{ width: 180px; }
+    .laytable-cell-14-0-5{ width: 120px; }
+    .laytable-cell-14-0-6{ width: 300px; }
+    .laytable-cell-14-0-7{ width: 180px; }
+    .laytable-cell-14-0-8{ width: 150px; }
+    select { width: 150px; }
+</style>
+
+@code{
+
+    private long _totalCount;
+    private int _pageSize = 20;
+    [Parameter] public int PageIndex { get; set; }
+    private List<LinkTrackContextPO> _lst = new();
+    private List<ProjectVO> _lstAppId = new();
+    private string _curAppId = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
+        GetList();
+    }
+
+    private void GroupChange(ChangeEventArgs args)
+    {
+        _curAppId = args.Value.ToString();
+        GetList();
+    }
+
+    private void GetList()
+    {
+        var indexSet = LinkTrackEsContext.Data.LinkTrackContext.Sort(s => s.Descending(d => d.StartTs));
+        if (!string.IsNullOrWhiteSpace(_curAppId))
+        {
+            indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
+        }
+
+        _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
+    }
+
+    private async Task ShowBody(LinkTrackContextPO info)
+    {
+        var lstContent = new List<string>();
+        if (!string.IsNullOrWhiteSpace(info.RequestBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
+        }
+        if (!string.IsNullOrWhiteSpace(info.ResponseBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
+        }
+
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "1000px",
+            anim = 5,
+            shadeClose = true,
+            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
+            content = string.Join("<hr />", lstContent)
+        });
+    }
+
+}

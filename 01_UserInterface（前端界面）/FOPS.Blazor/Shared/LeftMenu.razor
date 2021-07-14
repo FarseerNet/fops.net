@@ -18,9 +18,6 @@
                             大盘
                         </NavLink>
                     </dd>
-                    @* <dd data-name="event"> *@
-                    @*     <NavLink href="home/homepage1.html">事件</NavLink> *@
-                    @* </dd> *@
                 </dl>
             </li>
             <li data-name="fss" class="layui-nav-item">
@@ -56,6 +53,19 @@
                     </dd>
                 </dl>
             </li>
+            <li data-name="fss" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="FSS" lay-direction="2">
+                    <i class="layui-icon layui-icon-component"></i>
+                    <cite>监控</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="grid">
+                        <NavLink class="nav-link" href="/link_track/list" Match="NavLinkMatch.All">
+                            链路追踪
+                        </NavLink>
+                    </dd>
+                </dl>
+            </li>
             <li data-name="deploy" class="layui-nav-item">
                 <a href="javascript:;" lay-tips="构建" lay-direction="2">
                     <i class="layui-icon layui-icon-app"></i>
@@ -64,20 +74,6 @@
                 <dl class="layui-nav-child">
                     <dd data-name="content">
                         <NavLink href="/builder/list">立即</NavLink>
-                    </dd>
-                </dl>
-            </li>
-            <li data-name="docker" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="镜像" lay-direction="2">
-                    <i class="layui-icon layui-icon-template"></i>
-                    <cite>容器</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd>
-                        <NavLink href="/docker/tpl/list">模板管理</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/docker/hub/list">仓库管理</NavLink>
                     </dd>
                 </dl>
             </li>
@@ -101,22 +97,20 @@
                     </dd>
                 </dl>
             </li>
-            @* <li data-name="redis" class="layui-nav-item"> *@
-            @*     <a href="javascript:;" lay-tips="Redis" lay-direction="2"> *@
-            @*         <i class="layui-icon layui-icon-senior"></i> *@
-            @*         <cite>Redis</cite> *@
-            @*     </a> *@
-            @*     <dl class="layui-nav-child"> *@
-            @*         <dd class="layui-nav-itemed"> *@
-            @*             <a href="javascript:;">Stream队列</a> *@
-            @*             <dl class="layui-nav-child"> *@
-            @*                 <dd> *@
-            @*                     <NavLink href="set/system/website.html">队列列表</NavLink> *@
-            @*                 </dd> *@
-            @*             </dl> *@
-            @*         </dd> *@
-            @*     </dl> *@
-            @* </li> *@
+            <li data-name="docker" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="镜像" lay-direction="2">
+                    <i class="layui-icon layui-icon-template"></i>
+                    <cite>容器</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <NavLink href="/docker/tpl/list">模板管理</NavLink>
+                    </dd>
+                    <dd>
+                        <NavLink href="/docker/hub/list">仓库管理</NavLink>
+                    </dd>
+                </dl>
+            </li>
             <li data-name="set" class="layui-nav-item">
                 <a href="javascript:;" lay-tips="设置" lay-direction="2">
                     <i class="layui-icon layui-icon-set"></i>

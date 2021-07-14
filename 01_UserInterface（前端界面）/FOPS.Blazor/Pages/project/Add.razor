@@ -41,6 +41,12 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-form-label">应用ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" @bind="_info.AppId" autocomplete="off" placeholder="请输入应用ID（链路追踪）" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
                     <label class="layui-form-label">程序入口点</label>
                     <div class="layui-input-inline">
                         <input type="text" @bind="_info.EntryPoint" autocomplete="off" placeholder="Docker启动的程序名" class="layui-input" style="width:300px;">

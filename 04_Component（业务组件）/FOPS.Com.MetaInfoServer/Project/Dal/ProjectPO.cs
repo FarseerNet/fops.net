@@ -19,6 +19,11 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         [Field(Name = "name")]
         public string Name { get; set; }
         /// <summary>
+        /// 应用ID（链路追踪）
+        /// </summary>
+        [Field(Name = "appId")]
+        public string AppId { get; set; }
+        /// <summary>
         /// 程序入口名称
         /// </summary>
         [Field(Name = "entry_point")]
