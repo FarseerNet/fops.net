@@ -1,0 +1,178 @@
+@page "/link_track/info/{contextId}"
+@using FS.LinkTrack
+@using FS.Core.LinkTrack
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div style="margin: 0 10px;height: 20px;">
+                    <div style="float:left;">0 ms</div>
+                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.25)) ms</div>
+                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.5)) ms</div>
+                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.75)) ms</div>
+                    <div class="layui-right">@((int) totalUse) ms</div>
+                </div>
+                @foreach (var linkTrackVO in lstVo)
+                {
+                    <div class="layui-progress layui-progress-big" style="margin:10px;">
+                        <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;text-align:left;background-color: rgba(@linkTrackVO.Rgba)"></div>
+                        <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">【@linkTrackVO.AppId】 @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")</span>
+                    </div>
+                }
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-0">
+                                    <span>时间轴</span>
+                                </div>
+                            </th>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>调用链</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @foreach (var linkTrackVO in lstVo)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-0">@linkTrackVO.StartTs ms</div>
+                                </td>
+                                <td>
+                                    <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">【@linkTrackVO.AppId】 @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .laytable-cell-14-0-0{ width: 130px; }
+    .laytable-cell-14-0-1{ width: 800px; }
+</style>
+
+@code{
+
+    [Parameter] public string ContextId { get; set; }
+    private List<LinkTrackContextPO> _lst = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetList();
+    }
+
+    private readonly List<LinkTrackVO> lstVo = new();
+    private double totalUse;
+
+    private async Task GetList()
+    {
+        _lst = await LinkTrackEsContext.Data.LinkTrackContext.Sort(s => s.Ascending(d => d.StartTs))
+            .Where(o => o.Term(t => t.ContextId, ContextId)).ToListAsync();
+
+        var startTs = _lst[0].StartTs;
+        totalUse = _lst[0].UseTs * 1.5;
+        foreach (var linkTrackContextPO in _lst.FindAll(o => string.IsNullOrWhiteSpace(o.ParentAppId)))
+        {
+    // 内部需要递归到所有子系统调用
+            AddLinkTrack(linkTrackContextPO, startTs);
+            lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{linkTrackContextPO.UseTs} ms"});
+        }
+    }
+
+    private int rgbaIndex = -1;
+
+    private void AddLinkTrack(LinkTrackContextPO linkTrackContextPO, long startTs)
+    {
+        rgbaIndex++;
+        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.StartTs - startTs, UseTs = linkTrackContextPO.UseTs, Caption = $"入口=> {linkTrackContextPO.Path}", Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"});
+        foreach (var linkTrackDetail in linkTrackContextPO.List)
+        {
+            var linkTrackVO = new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackDetail.StartTs - startTs, UseTs = linkTrackDetail.UseTs};
+            linkTrackVO.Desc = $"{linkTrackDetail.CallClass} {linkTrackDetail.CallMethod} {linkTrackDetail.FileName}";
+            
+            switch (linkTrackDetail.CallType)
+            {
+                case EumCallType.HttpClient:
+                case EumCallType.GrpcClient:
+                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {linkTrackDetail.ApiLinkTrack.Server}/{linkTrackDetail.ApiLinkTrack.Action}";
+                    lstVo.Add(linkTrackVO);
+                    var trackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
+                    if (trackContextPO != null)
+                    {
+                        AddLinkTrack(trackContextPO, startTs);
+    //lstVo.Add(new LinkTrackVO {AppId = linkTrackContextPO.AppId, StartTs = linkTrackDetail.EndTs - startTs, UseTs = linkTrackDetail.UseTs, Caption = $"{linkTrackContextPO.AppId} 调用 {trackContextPO.AppId}，完成"});
+                    }
+                    break;
+                case EumCallType.Database:
+                    linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql}";
+                    linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                    lstVo.Add(linkTrackVO);
+                    break;
+                case EumCallType.Redis:
+                    linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod}";
+                    lstVo.Add(linkTrackVO);
+                    break;
+                case EumCallType.Mq:
+                    linkTrackVO.Caption = $"发送MQ消息 => {linkTrackDetail.CallMethod}";
+                    lstVo.Add(linkTrackVO);
+                    break;
+                case EumCallType.Elasticsearch:
+                    linkTrackVO.Caption = $"执行ES => {linkTrackDetail.CallMethod}";
+                    lstVo.Add(linkTrackVO);
+                    break;
+            }
+        }
+    }
+
+    private async Task ShowBody(LinkTrackContextPO info)
+    {
+        var lstContent = new List<string>();
+        if (!string.IsNullOrWhiteSpace(info.RequestBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
+        }
+        if (!string.IsNullOrWhiteSpace(info.ResponseBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
+        }
+
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "1000px",
+            anim = 5,
+            shadeClose = true,
+            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
+            content = string.Join("<hr />", lstContent)
+        });
+    }
+
+    private void GotoList()
+    {
+        nav.NavigateTo("/link_track/list");
+    }
+
+}
