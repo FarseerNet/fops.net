@@ -141,6 +141,10 @@
                     linkTrackVO.Caption = $"执行ES => {linkTrackDetail.CallMethod}";
                     lstVo.Add(linkTrackVO);
                     break;
+                case EumCallType.Custom:
+                    linkTrackVO.Caption = $"手动埋点 => {linkTrackDetail.CustomLinkTrack.Message}";
+                    lstVo.Add(linkTrackVO);
+                    break;
             }
         }
     }
