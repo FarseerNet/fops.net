@@ -15,6 +15,7 @@ using FS.Core;
 using FS.Data;
 using FS.DI;
 using FS.ElasticSearch;
+using FS.LinkTrack;
 using FS.Mapper;
 using FS.Modules;
 using FS.MQ.RedisStream;
@@ -52,10 +53,11 @@ namespace FOPS.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IIocManager>(FS.DI.IocManager.Instance.Resolve<IIocManager>());
+            services.AddFarseerIoc();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHostedService<RunBuildService>(); 
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

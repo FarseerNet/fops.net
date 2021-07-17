@@ -24,7 +24,7 @@
                 @foreach (var linkTrackVO in lstVo)
                 {
                     <div class="layui-progress layui-progress-big" style="margin:10px;">
-                        <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;text-align:left;background-color: rgba(@linkTrackVO.Rgba)"></div>
+                        <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
                         <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">【@linkTrackVO.AppId】 @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")</span>
                     </div>
                 }
@@ -90,6 +90,8 @@
         _lst = await LinkTrackEsContext.Data.LinkTrackContext.Sort(s => s.Ascending(d => d.StartTs))
             .Where(o => o.Term(t => t.ContextId, ContextId)).ToListAsync();
 
+        if (_lst.Count == 0) GotoList();
+
         var startTs = _lst[0].StartTs;
         totalUse = _lst[0].UseTs * 1.5;
         foreach (var linkTrackContextPO in _lst.FindAll(o => string.IsNullOrWhiteSpace(o.ParentAppId)))
@@ -108,14 +110,22 @@
         lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.StartTs - startTs, UseTs = linkTrackContextPO.UseTs, Caption = $"入口=> {linkTrackContextPO.Path}", Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"});
         foreach (var linkTrackDetail in linkTrackContextPO.List)
         {
-            var linkTrackVO = new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackDetail.StartTs - startTs, UseTs = linkTrackDetail.UseTs};
-            linkTrackVO.Desc = $"{linkTrackDetail.CallClass} {linkTrackDetail.CallMethod} {linkTrackDetail.FileName}";
-            
+            var linkTrackVO = new LinkTrackVO
+            {
+                Rgba = LinkTrackVO.RgbaList[rgbaIndex],
+                AppId = linkTrackContextPO.AppId,
+                StartTs = linkTrackDetail.StartTs - startTs,
+                UseTs = linkTrackDetail.UseTs,
+                Desc = $"{linkTrackDetail.CallClass} {linkTrackDetail.CallMethod} {linkTrackDetail.FileName}"
+            };
+
             switch (linkTrackDetail.CallType)
             {
                 case EumCallType.HttpClient:
                 case EumCallType.GrpcClient:
-                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {linkTrackDetail.ApiLinkTrack.Server}/{linkTrackDetail.ApiLinkTrack.Action}";
+                    linkTrackDetail.Data.TryGetValue("Server", out var server);
+                    linkTrackDetail.Data.TryGetValue("Action", out var action);
+                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {server}/{action}";
                     lstVo.Add(linkTrackVO);
                     var trackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
                     if (trackContextPO != null)
@@ -125,12 +135,21 @@
                     }
                     break;
                 case EumCallType.Database:
-                    linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql}";
-                    linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                    if (linkTrackDetail.DbLinkTrackDetail != null)
+                    {
+                        linkTrackVO.Desc = string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql) ? $"{linkTrackDetail.DbLinkTrackDetail.Sql}" : $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString}";
+                        linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                    }
+                    else
+                    {
+                        linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.CallMethod}";
+                    }
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Redis:
-                    linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod}";
+                    linkTrackDetail.Data.TryGetValue("RedisKey", out var redisKey);
+                    linkTrackDetail.Data.TryGetValue("RedisHashFields", out var redisHashFields);
+                    linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod} {redisKey} {redisHashFields}";
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Mq:
@@ -142,11 +161,13 @@
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Custom:
-                    linkTrackVO.Caption = $"手动埋点 => {linkTrackDetail.CustomLinkTrack.Message}";
+                    linkTrackDetail.Data.TryGetValue("Message", out var message);
+                    linkTrackVO.Caption = $"手动埋点 => {message}";
                     lstVo.Add(linkTrackVO);
                     break;
             }
         }
+        rgbaIndex--;
     }
 
     private async Task ShowBody(LinkTrackContextPO info)
