@@ -19,11 +19,11 @@
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
         </div>
     </div>
-    @if (_lst.Count > 1)
+    @if (_lst.Count > 0)
     {
         <div class="layui-card-header" id="anchor-play-header">
             <span>
-                <strong class="layui-badge layui-bg-blue">@_lst[0].RequestIp</strong> 
+                <strong class="layui-badge layui-bg-blue">@_lst[0].RequestIp</strong>
                 @for (int i = 0; i < _lst.Count; i++)
                 {
                     var info = _lst[i];
@@ -49,7 +49,7 @@
                         <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
                         <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
                             <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong>
-                            @linkTrackVO.Caption
+                            @linkTrackVO.Caption 
                             @if (linkTrackVO.UseTs >= 100)
                             {
                                 <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -59,9 +59,9 @@
                                 <strong class="layui-badge layui-bg-blue">耗时：@(linkTrackVO.UseTs) ms</strong>
                             }
                             else if (linkTrackVO.UseTs > 0)
-                                {
-                                    @("耗时：" + linkTrackVO.UseTs + " ms")
-                                }
+                            {
+                                @("耗时：" + linkTrackVO.UseTs + " ms")
+                            }
                         </span>
                     </div>
                 }
@@ -94,7 +94,19 @@
                                 </td>
                                 <td>
                                     <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">
-                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")
+                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption 
+                                        @if (linkTrackVO.UseTs >= 100)
+                                        {
+                                            <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
+                                        }
+                                        else if (linkTrackVO.UseTs >= 50)
+                                        {
+                                            <strong class="layui-badge layui-bg-blue">耗时：@(linkTrackVO.UseTs) ms</strong>
+                                        }
+                                        else if (linkTrackVO.UseTs > 0)
+                                        {
+                                            @("耗时：" + linkTrackVO.UseTs + " ms")
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -146,7 +158,7 @@
     private void AddLinkTrack(LinkTrackContextPO linkTrackContextPO, long startTs)
     {
         rgbaIndex++;
-        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.StartTs - startTs, UseTs = linkTrackContextPO.UseTs, Caption = $"入口=> {linkTrackContextPO.Path}", Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"});
+        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.StartTs - startTs, UseTs = linkTrackContextPO.UseTs, Caption = $"{linkTrackContextPO.RequestIp} 【{linkTrackContextPO.Method}】=> http://{linkTrackContextPO.Domain}{linkTrackContextPO.Path} ", Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"});
         foreach (var linkTrackDetail in linkTrackContextPO.List)
         {
             var linkTrackVO = new LinkTrackVO
@@ -167,7 +179,7 @@
                     linkTrackDetail.Data.TryGetValue("Header", out var header);
                     linkTrackDetail.Data.TryGetValue("ResponseBody", out var responseBody);
                     linkTrackVO.Desc = $"头部：{header}，入参：{requestBody}，响应：{responseBody}";
-                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()} => [{method}] {url}";
+                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()} => [{method}] {url} ";
                     lstVo.Add(linkTrackVO);
                     var httpTrackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
                     if (httpTrackContextPO != null)
@@ -178,7 +190,7 @@
                 case EumCallType.GrpcClient:
                     linkTrackDetail.Data.TryGetValue("Server", out var server);
                     linkTrackDetail.Data.TryGetValue("Action", out var action);
-                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {server}/{action}";
+                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {server}/{action} ";
                     lstVo.Add(linkTrackVO);
                     var grpcTrackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
                     if (grpcTrackContextPO != null)
@@ -192,37 +204,37 @@
                         if (!string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql))
                         {
                             linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql}";
-                            linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                            linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod} ";
                         }
                         else
                         {
                             linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString}";
-                            linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod}";
+                            linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod} ";
                         }
                     }
                     else
                     {
-                        linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod}";
+                        linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod} ";
                     }
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Redis:
                     linkTrackDetail.Data.TryGetValue("RedisKey", out var redisKey);
                     linkTrackDetail.Data.TryGetValue("RedisHashFields", out var redisHashFields);
-                    linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod} {redisKey} {redisHashFields}";
+                    linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod} {redisKey} {redisHashFields} ";
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Mq:
-                    linkTrackVO.Caption = $"发送MQ消息 => {linkTrackDetail.CallMethod}";
+                    linkTrackVO.Caption = $"发送MQ消息 => {linkTrackDetail.CallMethod} ";
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Elasticsearch:
-                    linkTrackVO.Caption = $"执行ES => {linkTrackDetail.CallMethod}";
+                    linkTrackVO.Caption = $"执行ES => {linkTrackDetail.CallMethod} ";
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Custom:
                     linkTrackDetail.Data.TryGetValue("Message", out var message);
-                    linkTrackVO.Caption = $"手动埋点 => {message}";
+                    linkTrackVO.Caption = $"手动埋点 => {message} ";
                     lstVo.Add(linkTrackVO);
                     break;
             }

@@ -1,6 +1,7 @@
 @using FS.DI;
 @using FS.ElasticSearch.Configuration
 @using Microsoft.Extensions.Configuration
+@using FS.Data.Configuration
 @inject IIocManager _iocManager;
 
 <div class="layui-side layui-side-menu">
@@ -25,42 +26,49 @@
                     </dd>
                 </dl>
             </li>
-            <li data-name="fss" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="FSS" lay-direction="2">
-                    <i class="layui-icon layui-icon-component"></i>
-                    <cite>FSS</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd data-name="grid">
-                        <NavLink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
-                            任务组
-                        </NavLink>
-                    </dd>
-                    <dd data-name="grid">
-                        <NavLink class="nav-link" href="/fss/tasks/faillist" Match="NavLinkMatch.All">
-                            失败任务
-                        </NavLink>
-                    </dd>
-                    <dd data-name="grid">
-                        <NavLink class="nav-link" href="/fss/tasks/unrunlist" Match="NavLinkMatch.All">
-                            未执行任务
-                        </NavLink>
-                    </dd>
-                    <dd data-name="button">
-                        <NavLink class="nav-link" href="/fss/node/list" Match="NavLinkMatch.All">
-                            服务端节点
-                        </NavLink>
-                    </dd>
-                    <dd data-name="form">
-                        <NavLink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
-                            客户端列表
-                        </NavLink>
-                    </dd>
-                </dl>
-            </li>
             @{
-                var configurationSection     = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch");
-                var elasticSearchItemConfigs = configurationSection.GetChildren().Select(o => o.Get<ElasticSearchItemConfig>());
+                var configurationSection = _iocManager.Resolve<IConfigurationRoot>().GetSection("Database");
+                var dbConfig             = configurationSection.Get<DbConfig>();
+                if (dbConfig.Items.Any(o => o.Name == "fss_db"))
+                {
+                    <li data-name="fss" class="layui-nav-item">
+                        <a href="javascript:;" lay-tips="FSS" lay-direction="2">
+                            <i class="layui-icon layui-icon-component"></i>
+                            <cite>FSS</cite>
+                        </a>
+                        <dl class="layui-nav-child">
+                            <dd data-name="grid">
+                                <NavLink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
+                                    任务组
+                                </NavLink>
+                            </dd>
+                            <dd data-name="grid">
+                                <NavLink class="nav-link" href="/fss/tasks/faillist" Match="NavLinkMatch.All">
+                                    失败任务
+                                </NavLink>
+                            </dd>
+                            <dd data-name="grid">
+                                <NavLink class="nav-link" href="/fss/tasks/unrunlist" Match="NavLinkMatch.All">
+                                    未执行任务
+                                </NavLink>
+                            </dd>
+                            <dd data-name="button">
+                                <NavLink class="nav-link" href="/fss/node/list" Match="NavLinkMatch.All">
+                                    服务端节点
+                                </NavLink>
+                            </dd>
+                            <dd data-name="form">
+                                <NavLink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
+                                    客户端列表
+                                </NavLink>
+                            </dd>
+                        </dl>
+                    </li>
+                }
+            }
+            @{
+                var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch");
+                var elasticSearchItemConfigs = esConfig.GetChildren().Select(o => o.Get<ElasticSearchItemConfig>());
                 if (elasticSearchItemConfigs.Any(o => o.Name == "LinkTrack"))
                 {
                     <li data-name="fss" class="layui-nav-item">
