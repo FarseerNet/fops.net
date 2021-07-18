@@ -1,16 +1,38 @@
 @page "/link_track/info/{contextId}"
 @using FS.LinkTrack
 @using FS.Core.LinkTrack
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
+        @if (_lst.Count > 0)
+        {
+            <span>应用ID：@(_lst[0].AppId)，</span>
+            <span>内容类型：@(_lst[0].ContentType)，</span>
+            <span>请求时间：@(_lst[0].StartTs.ToTimestamps().ToString("yyyy-MM-dd HH:mm:ss"))</span>
+            <span>整体耗时：<strong class="layui-badge layui-bg-red">@(_lst[0].UseTs) ms</strong></span>
+        }
         <div class="layui-right">
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
         </div>
     </div>
+    @if (_lst.Count > 1)
+    {
+        <div class="layui-card-header" id="anchor-play-header">
+            <span>
+                <strong class="layui-badge layui-bg-blue">@_lst[0].RequestIp</strong> 
+                @for (int i = 0; i < _lst.Count; i++)
+                {
+                    var info = _lst[i];
+                    <strong class="layui-badge layui-bg-green">@(_lst[i].Method) => </strong>
+                    <a href="javascript:;" @onclick="o => ShowBody(info)"> @($" http://{_lst[i].Domain}{_lst[i].Path} ")</a>
+                }
+            </span>
+        </div>
+    }
     <div class="layui-card-body">
         <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
             <div class="layui-table-box">
@@ -25,7 +47,22 @@
                 {
                     <div class="layui-progress layui-progress-big" style="margin:10px;">
                         <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
-                        <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">【@linkTrackVO.AppId】 @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")</span>
+                        <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
+                            <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong>
+                            @linkTrackVO.Caption
+                            @if (linkTrackVO.UseTs >= 100)
+                            {
+                                <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
+                            }
+                            else if (linkTrackVO.UseTs >= 50)
+                            {
+                                <strong class="layui-badge layui-bg-blue">耗时：@(linkTrackVO.UseTs) ms</strong>
+                            }
+                            else if (linkTrackVO.UseTs > 0)
+                                {
+                                    @("耗时：" + linkTrackVO.UseTs + " ms")
+                                }
+                        </span>
                     </div>
                 }
                 <div class="layui-table-header">
@@ -56,7 +93,9 @@
                                     <div class="layui-table-cell laytable-cell-14-0-0">@linkTrackVO.StartTs ms</div>
                                 </td>
                                 <td>
-                                    <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">【@linkTrackVO.AppId】 @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")</div>
+                                    <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">
+                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption @(linkTrackVO.UseTs > 0 ? ("耗时：" + linkTrackVO.UseTs + " ms") : "")
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -122,27 +161,48 @@
             switch (linkTrackDetail.CallType)
             {
                 case EumCallType.HttpClient:
+                    linkTrackDetail.Data.TryGetValue("Url", out var url);
+                    linkTrackDetail.Data.TryGetValue("Method", out var method);
+                    linkTrackDetail.Data.TryGetValue("RequestBody", out var requestBody);
+                    linkTrackDetail.Data.TryGetValue("Header", out var header);
+                    linkTrackDetail.Data.TryGetValue("ResponseBody", out var responseBody);
+                    linkTrackVO.Desc = $"头部：{header}，入参：{requestBody}，响应：{responseBody}";
+                    linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()} => [{method}] {url}";
+                    lstVo.Add(linkTrackVO);
+                    var httpTrackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
+                    if (httpTrackContextPO != null)
+                    {
+                        AddLinkTrack(httpTrackContextPO, startTs);
+                    }
+                    break;
                 case EumCallType.GrpcClient:
                     linkTrackDetail.Data.TryGetValue("Server", out var server);
                     linkTrackDetail.Data.TryGetValue("Action", out var action);
                     linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()}服务 => {server}/{action}";
                     lstVo.Add(linkTrackVO);
-                    var trackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
-                    if (trackContextPO != null)
+                    var grpcTrackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
+                    if (grpcTrackContextPO != null)
                     {
-                        AddLinkTrack(trackContextPO, startTs);
-    //lstVo.Add(new LinkTrackVO {AppId = linkTrackContextPO.AppId, StartTs = linkTrackDetail.EndTs - startTs, UseTs = linkTrackDetail.UseTs, Caption = $"{linkTrackContextPO.AppId} 调用 {trackContextPO.AppId}，完成"});
+                        AddLinkTrack(grpcTrackContextPO, startTs);
                     }
                     break;
                 case EumCallType.Database:
                     if (linkTrackDetail.DbLinkTrackDetail != null)
                     {
-                        linkTrackVO.Desc = string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql) ? $"{linkTrackDetail.DbLinkTrackDetail.Sql}" : $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString}";
-                        linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                        if (!string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql))
+                        {
+                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql}";
+                            linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod}";
+                        }
+                        else
+                        {
+                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString}";
+                            linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod}";
+                        }
                     }
                     else
                     {
-                        linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.CallMethod}";
+                        linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod}";
                     }
                     lstVo.Add(linkTrackVO);
                     break;
@@ -198,6 +258,32 @@
     private void GotoList()
     {
         nav.NavigateTo("/link_track/list");
+    }
+
+    private async Task ShowBody()
+    {
+        var info = _lst[0];
+        var lstContent = new List<string>();
+        if (!string.IsNullOrWhiteSpace(info.RequestBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
+        }
+        if (!string.IsNullOrWhiteSpace(info.ResponseBody))
+        {
+            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
+        }
+
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "1000px",
+            anim = 5,
+            shadeClose = true,
+            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
+            content = string.Join("<hr />", lstContent)
+        });
     }
 
 }

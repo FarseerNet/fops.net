@@ -1,3 +1,8 @@
+@using FS.DI;
+@using FS.ElasticSearch.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IIocManager _iocManager;
+
 <div class="layui-side layui-side-menu">
     <div class="layui-side-scroll">
         <div class="layui-logo">
@@ -53,19 +58,26 @@
                     </dd>
                 </dl>
             </li>
-            <li data-name="fss" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="FSS" lay-direction="2">
-                    <i class="layui-icon layui-icon-component"></i>
-                    <cite>监控</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd data-name="grid">
-                        <NavLink class="nav-link" href="/link_track/list" Match="NavLinkMatch.All">
-                            链路追踪
-                        </NavLink>
-                    </dd>
-                </dl>
-            </li>
+            @{
+                var configurationSection     = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch");
+                var elasticSearchItemConfigs = configurationSection.GetChildren().Select(o => o.Get<ElasticSearchItemConfig>());
+                if (elasticSearchItemConfigs.Any(o => o.Name == "LinkTrack"))
+                {
+                    <li data-name="fss" class="layui-nav-item">
+                        <a href="javascript:;" lay-tips="FSS" lay-direction="2">
+                            <i class="layui-icon layui-icon-component"></i>
+                            <cite>监控</cite>
+                        </a>
+                        <dl class="layui-nav-child">
+                            <dd data-name="grid">
+                                <NavLink class="nav-link" href="/link_track/list" Match="NavLinkMatch.All">
+                                    链路追踪
+                                </NavLink>
+                            </dd>
+                        </dl>
+                    </li>
+                }
+            }
             <li data-name="deploy" class="layui-nav-item">
                 <a href="javascript:;" lay-tips="构建" lay-direction="2">
                     <i class="layui-icon layui-icon-app"></i>

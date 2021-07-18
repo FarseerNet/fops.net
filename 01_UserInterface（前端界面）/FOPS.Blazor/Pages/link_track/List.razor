@@ -25,6 +25,18 @@
                 <option value="@projectVO.AppId">@projectVO.AppId</option>
             }
         </select>
+        <div class="layui-input-inline w150">
+            <input type="text" class="layui-input" placeholder="请求地址" style="height: 30px;width:400px;" @bind="searchUrl">
+        </div>
+        <div class="layui-input-inline w100">
+            <input type="text" class="layui-input" placeholder="客户端IP" style="height: 30px;width:120px;" @bind="searchIp">
+        </div>
+        <div class="layui-input-inline w100">
+            <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="orders-market-search-submit" @onclick="GetList"><i class="am-icon-search"></i> 搜索</button>
+        </div>
     </div>
     <div class="layui-card-body">
         <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
@@ -51,11 +63,6 @@
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
                                     <span>耗时</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>域名</span>
                                 </div>
                             </th>
                             <th data-field="Type">
@@ -94,7 +101,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-1">
-                                       <a href="/link_track/info/@(info.ContextId)">@info.ContextId</a>
+                                        <a href="/link_track/info/@(info.ContextId)">@info.ContextId</a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -104,19 +111,17 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
-                                        @if (info.EndTs > 0)
+                                        @if (info.UseTs >= 100){
+                                            <strong class="layui-badge layui-bg-red">@(info.UseTs) ms</strong>
+                                        }
+                                        else if (info.UseTs >= 50)
                                         {
-                                            @(info.EndTs - info.StartTs)
+                                            <strong class="layui-badge layui-bg-blue">@(info.UseTs) ms</strong>
                                         }
                                         else
                                         {
-                                            @("0 ms")
+                                            <span>@(info.UseTs) ms</span>
                                         }
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">
-                                        @info.Domain
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -126,7 +131,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-left laytable-cell-14-0-6">
-                                        （@info.Method） @info.Path
+                                        <strong class="layui-badge layui-bg-green">@info.Method</strong> http://@info.Domain@info.Path
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -153,10 +158,10 @@
     .laytable-cell-14-0-0{ width: 130px; }
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
-    .laytable-cell-14-0-3{ width: 80px; }
+    .laytable-cell-14-0-3{ width: 100px; }
     .laytable-cell-14-0-4{ width: 180px; }
     .laytable-cell-14-0-5{ width: 120px; }
-    .laytable-cell-14-0-6{ width: 350px; }
+    .laytable-cell-14-0-6{ width: 550px; }
     .laytable-cell-14-0-7{ width: 180px; }
     .laytable-cell-14-0-8{ width: 150px; }
     select { width: 150px; }
@@ -171,6 +176,10 @@
     private List<ProjectVO> _lstAppId = new();
     private string _curAppId = "";
 
+    private string searchUrl;
+    private string searchIp;
+    private long searchUseTs;
+
     protected override async Task OnParametersSetAsync()
     {
         _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
@@ -183,14 +192,27 @@
         GetList();
     }
 
-    private void GetList()
+    public void GetList()
     {
+        searchUrl = searchUrl?.Trim();
+        searchIp = searchIp?.Trim();
         var indexSet = LinkTrackEsContext.Data.LinkTrackContext.Sort(s => s.Descending(d => d.StartTs));
         if (!string.IsNullOrWhiteSpace(_curAppId))
         {
             indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
         }
-
+        if (!string.IsNullOrWhiteSpace(searchUrl))
+        {
+            indexSet.Where(o => o.Term(t => t.Path, searchUrl));
+        }
+        if (!string.IsNullOrWhiteSpace(searchIp))
+        {
+            indexSet.Where(o => o.Term(t => t.RequestIp, searchIp));
+        }
+        if (searchUseTs > 0)
+        {
+            indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
+        }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 
