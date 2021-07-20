@@ -170,12 +170,16 @@
 
         var startTs = _lst[0].StartTs;
         totalUse = _lst[0].UseTs * 1.5;
-        foreach (var linkTrackContextPO in _lst.FindAll(o => string.IsNullOrWhiteSpace(o.ParentAppId)))
-        {
-    // 内部需要递归到所有子系统调用
-            AddLinkTrack(linkTrackContextPO, startTs);
-            lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{linkTrackContextPO.UseTs} ms"});
-        }
+        
+        
+        AddLinkTrack(_lst[0], startTs);
+        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = _lst[0].AppId, StartTs = _lst[0].EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{_lst[0].UseTs} ms"});
+        
+        // foreach (var linkTrackContextPO in _lst.FindAll(o => string.IsNullOrWhiteSpace(o.ParentAppId)))
+        // {
+        //     AddLinkTrack(linkTrackContextPO, startTs);
+        //     lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{linkTrackContextPO.UseTs} ms"});
+        // }
     }
 
     private int rgbaIndex = -1;
@@ -340,6 +344,8 @@
             header.Remove("Cache-Control");
             header.Remove("Pragma");
             header.Remove("Content-Length");
+            header.Remove("Content-Type");
+            
             if (info.ContentType.Contains("json") && string.IsNullOrWhiteSpace(info.RequestBody)) info.RequestBody = "{}";
 
             var linkTrackContext = FsLinkTrack.Current.Get();
