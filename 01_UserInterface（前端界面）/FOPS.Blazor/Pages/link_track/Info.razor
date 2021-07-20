@@ -2,6 +2,9 @@
 @using FS.LinkTrack
 @using FS.Core.LinkTrack
 @using FS.Extends
+@using Newtonsoft.Json
+@using FS.Core.Http
+@using System.Text
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -12,8 +15,19 @@
         {
             <span>应用ID：@(_lst[0].AppId)，</span>
             <span>内容类型：@(_lst[0].ContentType)，</span>
-            <span>请求时间：@(_lst[0].StartTs.ToTimestamps().ToString("yyyy-MM-dd HH:mm:ss"))</span>
-            <span>整体耗时：<strong class="layui-badge layui-bg-red">@(_lst[0].UseTs) ms</strong></span>
+            <span>请求时间：@(_lst[0].StartTs.ToTimestamps().ToString("yyyy-MM-dd HH:mm:ss"))，</span>
+            @if (_lst[0].UseTs >= 100)
+            {
+                <span>整体耗时：<strong class="layui-badge layui-bg-red">@(_lst[0].UseTs) ms</strong></span>
+            }
+            else if (_lst[0].UseTs >= 50)
+            {
+                <span>整体耗时：<strong class="layui-badge layui-bg-blue">@(_lst[0].UseTs) ms</strong></span>
+            }
+            else if (_lst[0].UseTs > 0)
+            {
+                <span>整体耗时：@(_lst[0].UseTs) ms</span>
+            }
         }
         <div class="layui-right">
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
@@ -31,25 +45,36 @@
                     <a href="javascript:;" @onclick="o => ShowBody(info)"> @($" http://{_lst[i].Domain}{_lst[i].Path} ")</a>
                 }
             </span>
+            <button class="layui-btn layui-btn-sm" @onclick="Request"><i class="am-icon-plus"></i>模拟请求</button>
         </div>
     }
     <div class="layui-card-body">
         <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
             <div class="layui-table-box">
                 <div style="margin: 0 10px;height: 20px;">
-                    <div style="float:left;">0 ms</div>
-                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.25)) ms</div>
-                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.5)) ms</div>
-                    <div style="float:left;margin-left: 23%">@((int) (totalUse * 0.75)) ms</div>
-                    <div class="layui-right">@((int) totalUse) ms</div>
+                    <ul>
+                        @{ var preStartTs = 0L; }
+                        @foreach (var startTs in lstVo.Select(o => o.StartTs).Distinct().OrderBy(o => o))
+                        {
+                            if (lstVo[0].UseTs >= 20 && preStartTs > 0 && startTs - preStartTs < 3)
+                            {
+                                preStartTs = startTs;
+                                continue;
+                            }
+                            <li style="display:inline-block;float:left;position:absolute;margin-left:@(startTs / totalUse * 100)%">@startTs ms</li>
+                            {
+                                preStartTs = startTs;
+                            }
+                        }
+                    </ul>
                 </div>
                 @foreach (var linkTrackVO in lstVo)
                 {
                     <div class="layui-progress layui-progress-big" style="margin:10px;">
-                        <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
-                        <span lay-tips="@linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
+                        <div lay-tips="时间轴：@linkTrackVO.StartTs ms => @linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
+                        <span lay-tips="时间轴：@linkTrackVO.StartTs ms => @linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
                             <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong>
-                            @linkTrackVO.Caption 
+                            @linkTrackVO.Caption
                             @if (linkTrackVO.UseTs >= 100)
                             {
                                 <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -94,7 +119,7 @@
                                 </td>
                                 <td>
                                     <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">
-                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption 
+                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption
                                         @if (linkTrackVO.UseTs >= 100)
                                         {
                                             <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -158,7 +183,15 @@
     private void AddLinkTrack(LinkTrackContextPO linkTrackContextPO, long startTs)
     {
         rgbaIndex++;
-        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[rgbaIndex], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.StartTs - startTs, UseTs = linkTrackContextPO.UseTs, Caption = $"{linkTrackContextPO.RequestIp} 【{linkTrackContextPO.Method}】=> http://{linkTrackContextPO.Domain}{linkTrackContextPO.Path} ", Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"});
+        lstVo.Add(new LinkTrackVO
+        {
+            Rgba = LinkTrackVO.RgbaList[rgbaIndex],
+            AppId = linkTrackContextPO.AppId,
+            StartTs = linkTrackContextPO.StartTs - startTs,
+            UseTs = linkTrackContextPO.UseTs,
+            Caption = $"{linkTrackContextPO.RequestIp} 【{linkTrackContextPO.Method}】=> http://{linkTrackContextPO.Domain}{linkTrackContextPO.Path} ",
+            Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"
+        });
         foreach (var linkTrackDetail in linkTrackContextPO.List)
         {
             var linkTrackVO = new LinkTrackVO
@@ -242,16 +275,32 @@
         rgbaIndex--;
     }
 
-    private async Task ShowBody(LinkTrackContextPO info)
+    // 显示报文详情
+    private async Task ShowBody(LinkTrackContext info)
     {
         var lstContent = new List<string>();
+        var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
+        if (info.UseTs >= 100)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
+        }
+        else if (info.UseTs >= 50)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
+        }
+
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> http://{info.Domain}{info.Path} {useTsHtml}</pre>");
+        if (info.Headers.Count > 0)
+        {
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Header：</strong>{JsonConvert.SerializeObject(info.Headers)}</pre>");
+        }
         if (!string.IsNullOrWhiteSpace(info.RequestBody))
         {
-            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>入参：</strong>{info.RequestBody}</pre>");
         }
         if (!string.IsNullOrWhiteSpace(info.ResponseBody))
         {
-            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{info.ResponseBody}</pre>");
         }
 
         await js.InvokeVoidAsync("layer.open", new
@@ -259,11 +308,11 @@
             type = 1,
             skin = "layui-layer-molv",
             closeBtn = false,
-            area = "1000px",
-            anim = 5,
+            area = "1500px",
+            anim = 10,
             shadeClose = true,
-            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
-            content = string.Join("<hr />", lstContent)
+            title = $"{info.AppId} {info.ContextId}",
+            content = string.Join("", lstContent)
         });
     }
 
@@ -272,30 +321,61 @@
         nav.NavigateTo("/link_track/list");
     }
 
-    private async Task ShowBody()
+    private async Task Request()
     {
-        var info = _lst[0];
-        var lstContent = new List<string>();
-        if (!string.IsNullOrWhiteSpace(info.RequestBody))
+        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        try
         {
-            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
-        }
-        if (!string.IsNullOrWhiteSpace(info.ResponseBody))
-        {
-            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
-        }
+            var info = _lst[0];
+            var result = "";
+            var header = info.Headers;
+            header.Remove("Connection");
+            header.Remove("Accept");
+            header.Remove("Accept-Language");
+            header.Remove("Accept-Encoding");
+            header.Remove("Authorization");
+            header.Remove("Host");
+            header.Remove("Referer");
+            header.Remove("User-Agent");
+            header.Remove("Cache-Control");
+            header.Remove("Pragma");
+            header.Remove("Content-Length");
+            if (info.ContentType.Contains("json") && string.IsNullOrWhiteSpace(info.RequestBody)) info.RequestBody = "{}";
 
-        await js.InvokeVoidAsync("layer.open", new
+            var linkTrackContext = FsLinkTrack.Current.Get();
+            var linkTrackContextPO = new LinkTrackContextPO
+            {
+                ContextId = linkTrackContext.ContextId,
+                AppId = linkTrackContext.AppId,
+                ParentAppId = linkTrackContext.ParentAppId,
+                StartTs = DateTime.Now.ToTimestamps(),
+                Domain = info.Domain,
+                Path = info.Path,
+                Method = info.Method,
+                Headers = header,
+                ContentType = info.ContentType,
+                RequestBody = info.RequestBody,
+                RequestIp = "localhost",
+            };
+
+            var url = $"http://{info.Domain}{info.Path.ToLower().Replace("admin", "api")}";
+            switch (info.Method)
+            {
+                case "POST":
+                    linkTrackContextPO.ResponseBody = await Net.PostAsync(url, info.RequestBody, header, Encoding.UTF8, info.ContentType);
+                    break;
+                case "GET":
+                    linkTrackContextPO.ResponseBody = await Net.GetAsync(url, info.RequestBody, header, Encoding.UTF8);
+                    break;
+            }
+            linkTrackContextPO.EndTs = DateTime.Now.ToTimestamps();
+            await ShowBody(linkTrackContextPO);
+        }
+        catch (Exception e)
         {
-            type = 1,
-            skin = "layui-layer-molv",
-            closeBtn = false,
-            area = "1000px",
-            anim = 5,
-            shadeClose = true,
-            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
-            content = string.Join("<hr />", lstContent)
-        });
+            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = e.Message});
+        }
+        await js.InvokeVoidAsync("layer.close", load);
     }
 
 }

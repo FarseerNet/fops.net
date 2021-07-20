@@ -8,6 +8,7 @@
 @using FOPS.Abstract.Docker.Entity
 @using FOPS.Abstract.Docker.Server
 @using FOPS.Abstract.K8S.Server
+@using FS.Core.LinkTrack
 @using FS.Extends
 @using FS.LinkTrack
 @using Newtonsoft.Json
@@ -216,16 +217,33 @@
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 
-    private async Task ShowBody(LinkTrackContextPO info)
+
+    // 显示报文详情
+    private async Task ShowBody(LinkTrackContext info)
     {
         var lstContent = new List<string>();
+        var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
+        if (info.UseTs >= 100)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
+        }
+        else if (info.UseTs >= 50)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
+        }
+
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> http://{info.Domain}{info.Path} {useTsHtml}</pre>");
+        if (info.Headers.Count > 0)
+        {
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Header：</strong>{JsonConvert.SerializeObject(info.Headers)}</pre>");
+        }
         if (!string.IsNullOrWhiteSpace(info.RequestBody))
         {
-            lstContent.Add("<div style='padding:20px;'>入参：<br />" + info.RequestBody + "</div>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>入参：</strong>{info.RequestBody}</pre>");
         }
         if (!string.IsNullOrWhiteSpace(info.ResponseBody))
         {
-            lstContent.Add("<div style='padding:20px;'>出参：<br />" + info.ResponseBody + "</div>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{info.ResponseBody}</pre>");
         }
 
         await js.InvokeVoidAsync("layer.open", new
@@ -233,12 +251,11 @@
             type = 1,
             skin = "layui-layer-molv",
             closeBtn = false,
-            area = "1000px",
-            anim = 5,
+            area = "1500px",
+            anim = 10,
             shadeClose = true,
-            title = $"{info.AppId} {info.ContextId} {info.Domain} {info.Path}",
-            content = string.Join("<hr />", lstContent)
+            title = $"{info.AppId} {info.ContextId}",
+            content = string.Join("", lstContent)
         });
     }
-
 }
