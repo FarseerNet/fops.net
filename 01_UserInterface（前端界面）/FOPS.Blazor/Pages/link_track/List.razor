@@ -132,7 +132,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-left laytable-cell-14-0-6">
-                                        <strong class="layui-badge layui-bg-green">@info.Method</strong> http://@info.Domain@info.Path
+                                        <a href="/link_track/info/@(info.ContextId)"><strong class="layui-badge layui-bg-green">@info.Method</strong> @info.Path</a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -162,7 +162,7 @@
     .laytable-cell-14-0-3{ width: 100px; }
     .laytable-cell-14-0-4{ width: 180px; }
     .laytable-cell-14-0-5{ width: 180px; }
-    .laytable-cell-14-0-6{ width: 550px; }
+    .laytable-cell-14-0-6{ width: 500px; }
     .laytable-cell-14-0-7{ width: 180px; }
     .laytable-cell-14-0-8{ width: 150px; }
     select { width: 150px; }
@@ -232,7 +232,7 @@
             useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
         }
 
-        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> http://{info.Domain}{info.Path} {useTsHtml}</pre>");
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> {info.Path} {useTsHtml}</pre>");
         if (info.Headers.Count > 0)
         {
             lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Header：</strong>{JsonConvert.SerializeObject(info.Headers)}</pre>");

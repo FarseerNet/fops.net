@@ -42,7 +42,7 @@
                 {
                     var info = _lst[i];
                     <strong class="layui-badge layui-bg-green">@(_lst[i].Method) => </strong>
-                    <a href="javascript:;" @onclick="o => ShowBody(info)"> @($" http://{_lst[i].Domain}{_lst[i].Path} ")</a>
+                    <a href="javascript:;" @onclick="o => ShowBody(info)"> @(_lst[i].Path)</a>
                 }
             </span>
             <button class="layui-btn layui-btn-sm" @onclick="Request"><i class="am-icon-plus"></i>模拟请求</button>
@@ -193,7 +193,7 @@
             AppId = linkTrackContextPO.AppId,
             StartTs = linkTrackContextPO.StartTs - startTs,
             UseTs = linkTrackContextPO.UseTs,
-            Caption = $"{linkTrackContextPO.RequestIp} 【{linkTrackContextPO.Method}】=> http://{linkTrackContextPO.Domain}{linkTrackContextPO.Path} ",
+            Caption = $"{linkTrackContextPO.RequestIp} 【{linkTrackContextPO.Method}】=> {linkTrackContextPO.Path} ",
             Desc = $"{linkTrackContextPO.Domain} {linkTrackContextPO.ContentType} 客户端IP：{linkTrackContextPO.RequestIp}"
         });
         foreach (var linkTrackDetail in linkTrackContextPO.List)
@@ -293,7 +293,7 @@
             useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
         }
 
-        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> http://{info.Domain}{info.Path} {useTsHtml}</pre>");
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> {info.Path} {useTsHtml}</pre>");
         if (info.Headers.Count > 0)
         {
             lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Header：</strong>{JsonConvert.SerializeObject(info.Headers)}</pre>");
@@ -363,15 +363,14 @@
                 RequestBody = info.RequestBody,
                 RequestIp = "localhost",
             };
-
-            var url = $"http://{info.Domain}{info.Path.ToLower().Replace("admin", "api")}";
+            
             switch (info.Method)
             {
                 case "POST":
-                    linkTrackContextPO.ResponseBody = await Net.PostAsync(url, info.RequestBody, header, Encoding.UTF8, info.ContentType);
+                    linkTrackContextPO.ResponseBody = await Net.PostAsync(info.Path, info.RequestBody, header, Encoding.UTF8, info.ContentType);
                     break;
                 case "GET":
-                    linkTrackContextPO.ResponseBody = await Net.GetAsync(url, info.RequestBody, header, Encoding.UTF8);
+                    linkTrackContextPO.ResponseBody = await Net.GetAsync(info.Path, info.RequestBody, header, Encoding.UTF8);
                     break;
             }
             linkTrackContextPO.EndTs = DateTime.Now.ToTimestamps();
