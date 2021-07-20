@@ -21,12 +21,13 @@ namespace FOPS.Blazor
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
+            var port = Env.IsPro ? 80 : 88; 
             return Host.CreateDefaultBuilder(args)
                 //.ConfigureLogging(log => log.ClearProviders())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     //Setup a HTTP/2 endpoint without TLS.
-                    webBuilder.ConfigureKestrel(options => options.ListenAnyIP(88)).UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel(options => options.ListenAnyIP(port)).UseStartup<Startup>();
                 });
         }
     }
