@@ -110,9 +110,9 @@ namespace FOPS.Com.BuilderServer.Build
                 }
 
                 List<IBuildStep> lstStep = new();
-                lstStep.Add(IocManager.Resolve<CheckStep>());       // 前置检查
-                lstStep.Add(IocManager.Resolve<GitPullAllStep>());  // 拉取全部git
-                lstStep.Add(IocManager.Resolve<DockerLoginStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
+                lstStep.Add(IocManager.Resolve<CheckStep>());                           // 前置检查
+                lstStep.Add(IocManager.Resolve<GitPullAllStep>());                      // 拉取全部git
+                if (docker != null) lstStep.Add(IocManager.Resolve<DockerLoginStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
 
                 // 根据项目的构建方式，选择对应的构建组件
                 if (project.BuildType == EumBuildType.DotnetPublish) // .net 编译
@@ -125,9 +125,10 @@ namespace FOPS.Com.BuilderServer.Build
                 }
                 else lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录 
 
-                lstStep.Add(IocManager.Resolve<DockerBuildStep>());        // docker打包
-                lstStep.Add(IocManager.Resolve<DockerUploadStep>());       // docker上传
-                lstStep.Add(IocManager.Resolve<KubectlUpdateImageStep>()); // k8s更新
+                lstStep.Add(IocManager.Resolve<DockerBuildStep>()); // docker打包
+
+                if (docker != null) lstStep.Add(IocManager.Resolve<DockerUploadStep>()); // docker上传
+                lstStep.Add(IocManager.Resolve<KubectlUpdateImageStep>());               // k8s更新
 
                 // 按步骤顺序构建
                 foreach (var buildStep in lstStep)

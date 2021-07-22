@@ -17,9 +17,9 @@
                 构建
                 <select style="display:inline;width: 200px;" @onchange="GroupChange">
                     <option value="0">全部</option>
-                    @foreach (var clusterVO in _lstGroup)
+                    @foreach (var projectGroupVO in _lstGroup)
                     {
-                        <option value="@clusterVO.Id">@clusterVO.Name</option>
+                        <option value="@projectGroupVO.Id">@projectGroupVO.Name</option>
                     }
                 </select>
 
@@ -92,10 +92,9 @@
                         <div class="layui-table-body layui-table-main">
                             <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
                                 <tbody>
-                                @for (var index = 0; index < _lst.Count; index++)
+                                @foreach (var info in _lst)
                                 {
-                                    var info = _lst[index];
-                                    <tr data-index="@index">
+                                    <tr>
                                         <td>
                                             <div class="layui-table-cell laytable-cell-14-0-0"> @info.Id</div>
                                         </td>
@@ -203,46 +202,49 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
+        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync() ?? new();
     // Git
-        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
+        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync() ?? new();
 
     // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
+        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync() ?? new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync() ?? new();
         if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
 
         await GetList();
     }
 
-    private async Task ClusterChange(ChangeEventArgs args)
+    private Task ClusterChange(ChangeEventArgs args)
     {
         _clusterId = args.Value.ConvertType(0);
-        await GetList();
+        _lst = new();
+        return GetList();
     }
 
-    private async Task GroupChange(ChangeEventArgs args)
+    private Task GroupChange(ChangeEventArgs args)
     {
         _groupId = args.Value.ConvertType(0);
-        await GetList();
+        _lst = new();
+        return GetList();
     }
 
     private async Task GetList()
     {
     // 重新读取所有项目列表
-        _lst = _groupId > 0 ? await _iocManager.Resolve<IProjectService>().ToListAsync(_groupId)??new() :
-            await _iocManager.Resolve<IProjectService>().ToListAsync()??new();
+        _lst = _groupId > 0 ? await _iocManager.Resolve<IProjectService>().ToListAsync(_groupId) :
+            await _iocManager.Resolve<IProjectService>().ToListAsync();
+        _lst ??= new();
 
     // 遍历项目组ID
         var projectGroupIds = _lst.Select(o => o.GroupId).Distinct().ToList();
-        for (var i = 0; i < projectGroupIds.Count; i++)
+        foreach (var projectGroupId in projectGroupIds)
         {
-            var projectGroupId = projectGroupIds[i];
-            var projectGroup = _lstGroup.Find(o => o.Id == projectGroupId);
-            if (projectGroup==null) continue;
+            var id = projectGroupId;
+            var projectGroup = _lstGroup.Find(o => o.Id == id);
+            if (projectGroup == null) continue;
 
     // 如果项目组不包含当前选中的集群，则移除项目
             if (!projectGroup.ClusterIds.Contains(_clusterId))
@@ -252,13 +254,11 @@
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
 
-
-        for (var index = 0; index < _lst.Count; index++)
+        foreach (var project in _lst)
         {
-            var project = _lst[index];
             var git = _lstGit.Find(o => o.Id == project.GitId);
             if (git == null) continue;
-            project.GitId = git.Id;
+            project.GitId     = git.Id;
             project.GitPullAt = git.PullAt;
 
             if (!project.DicClusterVer.ContainsKey(_clusterId))

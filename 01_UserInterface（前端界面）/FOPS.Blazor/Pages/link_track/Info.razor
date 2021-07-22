@@ -50,7 +50,7 @@
     }
     <div class="layui-card-body">
         <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
-            <div class="layui-table-box">
+            <div class="layui-table-box" style="white-space:nowrap">
                 <div style="margin: 0 10px;height: 20px;">
                     <ul>
                         @{ var preStartTs = 0L; }
@@ -71,21 +71,22 @@
                 @foreach (var linkTrackVO in lstVo)
                 {
                     <div class="layui-progress layui-progress-big" style="margin:10px;">
-                        <div lay-tips="时间轴：@linkTrackVO.StartTs ms => @linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
-                        <span lay-tips="时间轴：@linkTrackVO.StartTs ms => @linkTrackVO.Desc" class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
-                            <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong>
-                            @linkTrackVO.Caption
+                        <div lay-tips="@linkTrackVO.Desc" class="layui-progress-bar" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;width:@(linkTrackVO.UseTs / totalUse * 100)%;background-color: rgba(@linkTrackVO.Rgba)"></div>
+                        <span class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
+                            <strong class="layui-badge layui-bg-green" lay-tips="时间轴：@linkTrackVO.StartTs ms">@linkTrackVO.AppId</strong>
+                            <span lay-tips="@linkTrackVO.Desc">@linkTrackVO.Caption</span>
+                            <span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span>
                             @if (linkTrackVO.UseTs >= 100)
                             {
-                                <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
+                                <strong class="layui-badge layui-bg-red"> 耗时：@(linkTrackVO.UseTs) ms</strong>
                             }
                             else if (linkTrackVO.UseTs >= 50)
                             {
-                                <strong class="layui-badge layui-bg-blue">耗时：@(linkTrackVO.UseTs) ms</strong>
+                                <strong class="layui-badge layui-bg-blue"> 耗时：@(linkTrackVO.UseTs) ms</strong>
                             }
                             else if (linkTrackVO.UseTs > 0)
                             {
-                                @("耗时：" + linkTrackVO.UseTs + " ms")
+                                @(" 耗时：" + linkTrackVO.UseTs + " ms")
                             }
                         </span>
                     </div>
@@ -101,6 +102,11 @@
                             </th>
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>埋点</span>
+                                </div>
+                            </th>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
                                     <span>调用链</span>
                                 </div>
                             </th>
@@ -119,7 +125,7 @@
                                 </td>
                                 <td>
                                     <div class="laytable-cell-14-0-1" lay-tips="@linkTrackVO.Desc">
-                                        <strong class="layui-badge layui-bg-green">@linkTrackVO.AppId</strong> @linkTrackVO.Caption
+                                        <strong class="layui-badge layui-bg-green" lay-tips="时间轴：@linkTrackVO.StartTs ms">@linkTrackVO.AppId</strong> @linkTrackVO.Caption
                                         @if (linkTrackVO.UseTs >= 100)
                                         {
                                             <strong class="layui-badge layui-bg-red">耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -134,6 +140,11 @@
                                         }
                                     </div>
                                 </td>
+                                <td>
+                                    <div class="laytable-cell-14-0-2">
+                                        @linkTrackVO.Desc
+                                    </div>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -145,7 +156,8 @@
 </div>
 <style>
     .laytable-cell-14-0-0{ width: 130px; }
-    .laytable-cell-14-0-1{ width: 800px; }
+    .laytable-cell-14-0-1{ width: 900px; }
+    .laytable-cell-14-0-2{ width: 500px; }
 </style>
 
 @code{
@@ -170,16 +182,10 @@
 
         var startTs = _lst[0].StartTs;
         totalUse = _lst[0].UseTs * 1.5;
-        
-        
+
+
         AddLinkTrack(_lst[0], startTs);
         lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = _lst[0].AppId, StartTs = _lst[0].EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{_lst[0].UseTs} ms"});
-        
-        // foreach (var linkTrackContextPO in _lst.FindAll(o => string.IsNullOrWhiteSpace(o.ParentAppId)))
-        // {
-        //     AddLinkTrack(linkTrackContextPO, startTs);
-        //     lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = linkTrackContextPO.AppId, StartTs = linkTrackContextPO.EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{linkTrackContextPO.UseTs} ms"});
-        // }
     }
 
     private int rgbaIndex = -1;
@@ -198,13 +204,16 @@
         });
         foreach (var linkTrackDetail in linkTrackContextPO.List)
         {
+            var firstStackTrace = linkTrackDetail.CallStackTraceList.FirstOrDefault();
             var linkTrackVO = new LinkTrackVO
             {
                 Rgba = LinkTrackVO.RgbaList[rgbaIndex],
                 AppId = linkTrackContextPO.AppId,
                 StartTs = linkTrackDetail.StartTs - startTs,
                 UseTs = linkTrackDetail.UseTs,
-                Desc = $"{linkTrackDetail.CallClass} {linkTrackDetail.CallMethod} {linkTrackDetail.FileName}"
+                Desc = "",
+                CsharpCallMethod = firstStackTrace != null ? $"{firstStackTrace.ReturnType} {firstStackTrace.CallMethod}({string.Join(",", firstStackTrace.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {firstStackTrace.FileLineNumber}" : "",
+                CsharpCallMethods = string.Join("<br />", linkTrackDetail.CallStackTraceList.Select(o => $"{o.ReturnType} {o.CallMethod}({string.Join(",", o.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {o.FileLineNumber}"))
             };
 
             switch (linkTrackDetail.CallType)
@@ -215,7 +224,7 @@
                     linkTrackDetail.Data.TryGetValue("RequestBody", out var requestBody);
                     linkTrackDetail.Data.TryGetValue("Header", out var header);
                     linkTrackDetail.Data.TryGetValue("ResponseBody", out var responseBody);
-                    linkTrackVO.Desc = $"头部：{header}，入参：{requestBody}，响应：{responseBody}";
+                    linkTrackVO.Desc = $"头部：{header}，入参：{requestBody}，响应：{responseBody} ";
                     linkTrackVO.Caption = $"调用{linkTrackDetail.CallType.ToString()} => [{method}] {url} ";
                     lstVo.Add(linkTrackVO);
                     var httpTrackContextPO = _lst.Find(o => o.ParentAppId == linkTrackContextPO.AppId);
@@ -240,12 +249,12 @@
                     {
                         if (!string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql))
                         {
-                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql}";
+                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql} ";
                             linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod} ";
                         }
                         else
                         {
-                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString}";
+                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString} ";
                             linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod} ";
                         }
                     }
@@ -345,7 +354,7 @@
             header.Remove("Pragma");
             header.Remove("Content-Length");
             header.Remove("Content-Type");
-            
+
             if (info.ContentType.Contains("json") && string.IsNullOrWhiteSpace(info.RequestBody)) info.RequestBody = "{}";
 
             var linkTrackContext = FsLinkTrack.Current.Get();
@@ -363,7 +372,7 @@
                 RequestBody = info.RequestBody,
                 RequestIp = "localhost",
             };
-            
+
             switch (info.Method)
             {
                 case "POST":
