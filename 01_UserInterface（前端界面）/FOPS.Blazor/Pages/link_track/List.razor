@@ -112,7 +112,8 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-3">
-                                        @if (info.UseTs >= 100){
+                                        @if (info.UseTs >= 100)
+                                        {
                                             <strong class="layui-badge layui-bg-red">@(info.UseTs) ms</strong>
                                         }
                                         else if (info.UseTs >= 50)
@@ -132,7 +133,9 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-left laytable-cell-14-0-6">
-                                        <a href="/link_track/info/@(info.ContextId)"><strong class="layui-badge layui-bg-green">@info.Method</strong> @info.Path</a>
+                                        <a href="/link_track/info/@(info.ContextId)">
+                                            <strong class="layui-badge layui-bg-green">@info.Method</strong> @info.Path
+                                        </a>
                                     </div>
                                 </td>
                                 <td data-field="Title">
@@ -204,7 +207,7 @@
         }
         if (!string.IsNullOrWhiteSpace(searchUrl))
         {
-            indexSet.Where(o => o.Term(t => t.Path, searchUrl));
+            indexSet.Where(o => o.QueryString(t => t.Fields(f => f.Field(f=>f.Path)).Query($"*{searchUrl}*")));
         }
         if (!string.IsNullOrWhiteSpace(searchIp))
         {
@@ -258,4 +261,5 @@
             content = string.Join("", lstContent)
         });
     }
+
 }

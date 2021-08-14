@@ -5,6 +5,7 @@
 @using Newtonsoft.Json
 @using FS.Core.Http
 @using System.Text
+@using System.Web
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -75,7 +76,7 @@
                         <span class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
                             <strong class="layui-badge layui-bg-green" lay-tips="时间轴：@linkTrackVO.StartTs ms">@linkTrackVO.AppId</strong>
                             <span lay-tips="@linkTrackVO.Desc">@linkTrackVO.Caption</span>
-                            <span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span>
+                            <a href="javascript:;" @onclick="o=>ViewCsharpCallMethods(linkTrackVO)"><span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span></a>
                             @if (linkTrackVO.UseTs >= 100)
                             {
                                 <strong class="layui-badge layui-bg-red"> 耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -213,7 +214,7 @@
                 UseTs = linkTrackDetail.UseTs,
                 Desc = "",
                 CsharpCallMethod = firstStackTrace != null ? $"{firstStackTrace.ReturnType} {firstStackTrace.CallMethod}({string.Join(",", firstStackTrace.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {firstStackTrace.FileLineNumber}" : "",
-                CsharpCallMethods = string.Join("<br />", linkTrackDetail.CallStackTraceList.Select(o => $"{o.ReturnType} {o.CallMethod}({string.Join(",", o.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {o.FileLineNumber}"))
+                CsharpCallMethods = linkTrackDetail.CallStackTraceList.Select(o => $"{o.ReturnType} {o.CallMethod}({string.Join(",", o.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {o.FileLineNumber}").ToList()
             };
 
             switch (linkTrackDetail.CallType)
@@ -309,11 +310,11 @@
         }
         if (!string.IsNullOrWhiteSpace(info.RequestBody))
         {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>入参：</strong>{info.RequestBody}</pre>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>入参：</strong>{HttpUtility.HtmlEncode(info.RequestBody)}</pre>");
         }
         if (!string.IsNullOrWhiteSpace(info.ResponseBody))
         {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{info.ResponseBody}</pre>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{HttpUtility.HtmlEncode(info.ResponseBody)}</pre>");
         }
 
         await js.InvokeVoidAsync("layer.open", new
@@ -390,6 +391,27 @@
             await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = e.Message});
         }
         await js.InvokeVoidAsync("layer.close", load);
+    }
+
+    private async Task ViewCsharpCallMethods(LinkTrackVO linkTrackVO)
+    {
+        var lstContent = new List<string>();
+        foreach (var csharpCallMethod in linkTrackVO.CsharpCallMethods)
+        {
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{HttpUtility.HtmlEncode(csharpCallMethod)}</pre>");
+        }
+        
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "1500px",
+            anim = 10,
+            shadeClose = true,
+            title = $"{linkTrackVO.AppId} {linkTrackVO.Caption} {linkTrackVO.UseTs} ms",
+            content = string.Join("", lstContent)
+        });
     }
 
 }
