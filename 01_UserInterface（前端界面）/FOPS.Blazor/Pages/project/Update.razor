@@ -120,6 +120,7 @@
                     <label class="layui-form-label">Git仓库</label>
                     <div class="layui-input-inline">
                         <select @bind="_info.GitId">
+                            <option value="0">不选择</option>
                             @foreach (var gitVO in _lstGit)
                             {
                                 <option value="@gitVO.Id">@gitVO.Name</option>
@@ -244,7 +245,7 @@
 
     [Parameter] public int Id { get; set; }
 
-    private ProjectVO _info = new() {};
+    private ProjectVO _info = new() { };
     private List<YamlTplVO> _lstTpl = new();
     private List<GitVO> _lstGit = new();
     private List<ProjectGroupVO> _lstGroup = new();
@@ -271,14 +272,14 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", "项目不存在", new { icon = 2, title = "出错了" });
             GotoList();
         }
         try
         {
-            if (_info.Name == null || _info.GitId == 0 || _info.GroupId == 0)
+            if (_info.Name == null || _info.GroupId == 0)
             {
-                throw new Exception("项目组、项目名称、托管地址必须填写。");
+                throw new Exception("项目组、项目名称必须填写。");
             }
 
             await _iocManager.Resolve<IProjectService>().UpdateAsync(Id, _info);
@@ -286,7 +287,7 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new { icon = 2, title = "出错了" });
         }
     }
 
@@ -294,7 +295,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", "项目不存在", new { icon = 2, title = "出错了" });
             GotoList();
         }
     }
@@ -306,7 +307,7 @@
             _info = await _iocManager.Resolve<IProjectService>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 2, title = "出错了"});
+                await js.InvokeVoidAsync("layer.alert", "项目不存在", new { icon = 2, title = "出错了" });
                 GotoList();
             }
             _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync() ?? new();

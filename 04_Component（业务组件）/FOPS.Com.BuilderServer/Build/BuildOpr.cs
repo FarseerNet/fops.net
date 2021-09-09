@@ -67,13 +67,7 @@ namespace FOPS.Com.BuilderServer.Build
             }
 
             // Git项目
-            var git = await GitService.ToInfoAsync(project.GitId);
-            if (git == null)
-            {
-                await Fail(build, project);
-                BuildLogService.Write(build.Id, $"gitID={project.GitId}，不存在");
-                return;
-            }
+            var git = project.GitId > 0 ? await GitService.ToInfoAsync(project.GitId) : null;
 
             // 镜像仓库
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
@@ -90,11 +84,11 @@ namespace FOPS.Com.BuilderServer.Build
                 ProjectEntryPort  = project.EntryPort,
                 DockerHub         = DockerOpr.GetDockerHub(docker),
                 DockerImage       = DockerOpr.GetDockerImage(docker, project, build.BuildNumber),
-                GitHub            = git.Hub
+                GitHub            = git?.Hub
             };
 
             env.ProjectReleaseDirRoot = DotnetOpr.GetReleasePath(env, project);
-            env.DockerFilePath        = DotnetOpr.GetReleasePath(env, project) + "/Dockerfile";
+            env.DockerFilePath        = env.ProjectReleaseDirRoot + "/Dockerfile";
             env.ProjectGitDirRoot     = GitOpr.GetGitPath(env, git);
             env.ProjectSourceDirRoot  = DotnetOpr.GetSourceDirRoot(env, project, git);
 
@@ -104,7 +98,7 @@ namespace FOPS.Com.BuilderServer.Build
                 // 打印环境变量
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");
                 BuildLogService.Write(build.Id, $"打印环境变量。");
-                foreach (var dirEnv in (Dictionary<string, string>) env)
+                foreach (var dirEnv in (Dictionary<string, string>)env)
                 {
                     BuildLogService.Write(build.Id, $"{dirEnv.Key}={dirEnv.Value}");
                 }

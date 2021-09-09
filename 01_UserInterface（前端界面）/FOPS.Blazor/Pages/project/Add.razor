@@ -114,6 +114,7 @@
                         <label class="layui-form-label">Git仓库</label>
                         <div class="layui-input-inline">
                             <select @bind="_info.GitId">
+                                <option value="0">不选择</option>
                                 @foreach (var gitVO in _lstGit)
                                 {
                                     <option value="@gitVO.Id">@gitVO.Name</option>
@@ -267,9 +268,9 @@
     {
         try
         {
-            if (_info.Name == null || _info.GitId == 0 || _info.GroupId == 0)
+            if (_info.Name == null || _info.GroupId == 0)
             {
-                throw new Exception("Git仓库、项目名称、托管地址必须填写。");
+                throw new Exception("项目组、项目名称必须填写。");
             }
 
             await _iocManager.Resolve<IProjectService>().AddAsync(_info);
