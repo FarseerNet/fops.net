@@ -10,6 +10,7 @@ using FOPS.Com.FssServer.TaskGroup.Dal;
 using FS.Cache.Redis;
 using FS.DI;
 using FS.Extends;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace FOPS.Com.FssServer.TaskGroup
@@ -62,9 +63,17 @@ namespace FOPS.Com.FssServer.TaskGroup
         /// </summary>
         public async Task<int> ToUnRunCountAsync()
         {
-            var now = DateTime.Now.AddMilliseconds(-500);
-            var lst = await ToListAndSaveAsync();
-            return lst.Count(o => o.NextAt < now && o.IsEnable == true);
+            try
+            {
+                var now = DateTime.Now.AddMilliseconds(-500);
+                var lst = await ToListAndSaveAsync();
+                return lst.Count(o => o.NextAt < now && o.IsEnable);
+            }
+            catch (Exception e)
+            {
+                IocManager.Logger<TaskGroupList>().LogError(e, e.Message);
+                return 0;
+            }
         }
     }
 }

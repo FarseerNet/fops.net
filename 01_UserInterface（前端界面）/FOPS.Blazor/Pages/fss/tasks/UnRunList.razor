@@ -75,7 +75,7 @@
                             var info = _lst[index];
                             <tr data-index="@index">
                                 <td>
-                                    <div class="laytable-cell-task-1">@info.Caption</div>
+                                    <div class="laytable-cell-task-1"><a href="/fss/tasks/list/@info.Id">【@info.JobName】@info.Caption</a></div>
                                 </td>
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
