@@ -47,11 +47,6 @@ namespace FOPS.Com.FssServer.Tasks.Dal
         public Task<TaskPO> ToUnExecutedTaskAsync(int groupId) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId && (o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler)).ToEntityAsync();
 
         /// <summary>
-        /// 取前100条的运行速度
-        /// </summary>
-        public Task<List<int>> ToSpeedListAsync(int groupId) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success).Desc(o => o.CreateAt).ToSelectListAsync(100, o => o.RunSpeed.GetValueOrDefault());
-
-        /// <summary>
         /// 今日执行失败数量
         /// </summary>
         public Task<int> TodayFailCountAsync() => FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();

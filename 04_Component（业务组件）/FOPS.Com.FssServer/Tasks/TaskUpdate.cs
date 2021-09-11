@@ -18,6 +18,7 @@ namespace FOPS.Com.FssServer.Tasks
         public  ITaskAgent         TaskAgent         { get; set; }
         public  ITaskGroupUpdate   TaskGroupUpdate   { get; set; }
         public  IIocManager        IocManager        { get; set; }
+        public  ITaskAdd           TaskAdd           { get; set; }
         private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
 
         /// <summary>
@@ -25,7 +26,7 @@ namespace FOPS.Com.FssServer.Tasks
         /// </summary>
         public async Task UpdateJobName(int taskId, string jobName)
         {
-            await FssContext.Data.Task.Where(o => o.Id == taskId).UpdateAsync(new TaskPO() {JobName = jobName});
+            await FssContext.Data.Task.Where(o => o.Id == taskId).UpdateAsync(new TaskPO() { JobName = jobName });
             var task = await TaskInfo.ToInfoByDbAsync(taskId);
             if (task == null) return;
             await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
@@ -36,6 +37,8 @@ namespace FOPS.Com.FssServer.Tasks
         /// </summary>
         public async Task SaveFinishAsync(TaskVO task, TaskGroupVO taskGroup)
         {
+            await TaskAgent.UpdateAsync(task.Id, task.Map<TaskPO>());
+
             // 说明上一次任务，没有设置下一次的时间（动态设置）
             // 本次的时间策略晚，则通过时间策略计算出来
             if (DateTime.Now > taskGroup.NextAt)
@@ -43,7 +46,7 @@ namespace FOPS.Com.FssServer.Tasks
                 var cron = new Cron();
                 // 时间间隔器
                 if (taskGroup.IntervalMs > 0) taskGroup.NextAt = DateTime.Now.AddMilliseconds(taskGroup.IntervalMs);
-                else if (string.IsNullOrWhiteSpace(taskGroup.Cron) is false && cron.Parse(taskGroup.Cron))
+                else if (!string.IsNullOrWhiteSpace(taskGroup.Cron) && cron.Parse(taskGroup.Cron))
                 {
                     taskGroup.NextAt = cron.GetNext(DateTime.Now);
                 }
@@ -53,8 +56,13 @@ namespace FOPS.Com.FssServer.Tasks
                 }
             }
 
-            await TaskAgent.UpdateAsync(task.Id, task.Map<TaskPO>());
             await TaskGroupUpdate.UpdateAsync(taskGroup);
+
+            if (taskGroup.IsEnable)
+            {
+                // 完成后，立即生成一个新的任务
+                await TaskAdd.GetOrCreateAsync(taskGroup);
+            }
         }
     }
 }

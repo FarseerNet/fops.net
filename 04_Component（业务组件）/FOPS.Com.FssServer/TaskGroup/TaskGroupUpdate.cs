@@ -15,7 +15,6 @@ namespace FOPS.Com.FssServer.TaskGroup
     {
         public ITaskGroupCache TaskGroupCache { get; set; }
         public ITaskGroupAgent TaskGroupAgent { get; set; }
-        public IIocManager     IocManager     { get; set; }
 
         /// <summary>
         /// 更新TaskGroup

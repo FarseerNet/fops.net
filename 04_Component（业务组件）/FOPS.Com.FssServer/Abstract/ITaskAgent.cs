@@ -33,11 +33,6 @@ namespace FOPS.Com.FssServer.Abstract
         Task<TaskPO> ToUnExecutedTaskAsync(int groupId);
 
         /// <summary>
-        /// 取前100条的运行速度
-        /// </summary>
-        Task<List<int>> ToSpeedListAsync(int groundId);
-
-        /// <summary>
         /// 获取指定任务组执行成功的任务列表
         /// </summary>
         Task<List<TaskPO>> ToSuccessListAsync(int groupId, int top);

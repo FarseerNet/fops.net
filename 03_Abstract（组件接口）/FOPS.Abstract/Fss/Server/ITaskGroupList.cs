@@ -13,11 +13,6 @@ namespace FOPS.Abstract.Fss.Server
         Task<List<TaskGroupVO>> ToListAsync();
 
         /// <summary>
-        /// 删除整个缓存
-        /// </summary>
-        Task ClearAsync();
-
-        /// <summary>
         /// 获取全部任务列表
         /// </summary>
         Task<List<TaskGroupVO>> ToListAndSaveAsync();

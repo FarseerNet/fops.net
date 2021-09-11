@@ -52,12 +52,7 @@ namespace FOPS.Com.FssServer.TaskGroup
         {
             return RedisCacheManager.Db.HashLengthAsync(TaskGroupCache.Key);
         }
-
-        /// <summary>
-        /// 删除整个缓存
-        /// </summary>
-        public Task ClearAsync() => RedisCacheManager.CacheManager.RemoveAsync(TaskGroupCache.Key);
-
+        
         /// <summary>
         /// 获取未执行的任务列表
         /// </summary>

@@ -297,7 +297,7 @@
     // FSS 未执行数
         _toUnRunCount = await _iocManager.Resolve<ITaskGroupList>().ToUnRunCountAsync();
     // FSS 客户端数
-        _clientCount = await _iocManager.Resolve<INodeClient>().ToClientCountAsync();
+        _clientCount = await _iocManager.Resolve<IClientRegister>().ToClientCountAsync();
     // FSS 今日失败数
         _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
     // 项目数量

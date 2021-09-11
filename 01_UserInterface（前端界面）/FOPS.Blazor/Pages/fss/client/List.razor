@@ -19,31 +19,26 @@
                         <tr>
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
-                                    <span>客户端IP</span>
+                                    <span>客户端Id</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-1">
-                                    <span>通道端口</span>
+                                    <span>客户端IP</span>
                                 </div>
                             </th>
-                            <th data-field="Title">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>注册时间</span>
+                                    <span>客户端名称</span>
                                 </div>
                             </th>
                             <th data-field="Games">
                                 <div class="layui-table-cell laytable-cell-14-0-3">
-                                    <span>心跳时间</span>
-                                </div>
-                            </th>
-                            <th data-field="Games">
-                                <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>使用时间</span>
                                 </div>
                             </th>
                             <th data-field="Games">
-                                <div class="layui-table-cell laytable-cell-14-0-5">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
                                     <span>注册的Job</span>
                                 </div>
                             </th>
@@ -59,22 +54,19 @@
                             var client = _lst[index];
                             <tr data-index="@index">
                                 <td data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-0">@client.ClientIp</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-0">@client.Id</div>
                                 </td>
                                 <td data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">@client.ServerHost</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-1">@client.ClientIp</div>
                                 </td>
                                 <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-2">@client.RegisterAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-2">@client.ClientName</div>
                                 </td>
                                 <td data-field="Items">
-                                    <div class="layui-table-cell laytable-cell-14-0-3">@client.HeartbeatAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-3">@client.ActivateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td data-field="Games">
-                                    <div class="layui-table-cell laytable-cell-14-0-4">@client.UseAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
-                                </td>
-                                <td data-field="Games">
-                                    <div class="layui-table-cell laytable-cell-14-0-5">@client.JobName</div>
+                                    <div class="layui-table-cell laytable-cell-14-0-4">@string.Join(",",client.Jobs)</div>
                                 </td>
                             </tr>
                         }
@@ -91,8 +83,7 @@
     .laytable-cell-14-0-1{ width: 300px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 150px; }
-    .laytable-cell-14-0-4{ width: 150px; }
-    .laytable-cell-14-0-5{ width: 400px; }
+    .laytable-cell-14-0-4{ width: 400px; }
 </style>
 
 @code{
@@ -101,7 +92,7 @@
     private int _totalCount;
     private int _pageSize = 9999;
 
-    private List<ClientConnectVO> _lst = new();
+    private List<ClientVO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
@@ -109,8 +100,8 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<INodeClient>().ToClientListAsync() ?? new();
-        _lst = _lst.OrderByDescending(o => o.RegisterAt).ToList();
+        _lst = await _iocManager.Resolve<IClientRegister>().ToClientListAsync() ?? new();
+        _lst = _lst.OrderByDescending(o => o.ActivateAt).ToList();
         _totalCount = _lst.Count;
     }
 }

@@ -9,6 +9,5 @@ namespace FOPS.Com.FssServer.Tasks.Dal
     public class TaskCache : ITaskCache
     {
         public const string Key = "FSS_Task_All";
-        public static string FailKey(int groupId) => $"FSS_Task_Fail:{groupId}";
     }
 }

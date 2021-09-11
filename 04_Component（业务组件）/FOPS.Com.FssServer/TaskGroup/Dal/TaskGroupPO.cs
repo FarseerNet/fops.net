@@ -81,7 +81,7 @@ namespace FOPS.Com.FssServer.TaskGroup.Dal
         /// 运行平均耗时
         /// </summary>
         [Field(Name = "run_speed_avg")]
-        public int? RunSpeedAvg { get; set; }
+        public long? RunSpeedAvg { get; set; }
         
         /// <summary>
         /// 运行次数

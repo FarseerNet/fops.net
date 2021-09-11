@@ -22,35 +22,6 @@ namespace FOPS.Com.FssServer.Tasks
         /// <summary>
         /// 创建Task，并更新到缓存
         /// </summary>
-        public async Task<TaskVO> CreateAsync(TaskGroupVO taskGroup,TaskVO curTask)
-        {
-            // 创建一条新的Task
-            var po = new TaskPO
-            {
-                TaskGroupId = taskGroup.Id,
-                StartAt     = taskGroup.NextAt,
-                Caption     = taskGroup.Caption,
-                JobName     = taskGroup.JobName,
-                RunSpeed    = 0,
-                ClientHost  = "",
-                ClientIp    = "",
-                Progress    = 0,
-                Status      = EumTaskType.None,
-                CreateAt    = DateTime.Now,
-                RunAt       = DateTime.Now,
-                ServerNode  = ""
-            };
-            await TaskAgent.AddAsync(po);
-            taskGroup.TaskId = po.Id.GetValueOrDefault();
-            var task             = po.Map<TaskVO>();
-
-            await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId);
-            return task;
-        }
-
-        /// <summary>
-        /// 创建Task，并更新到缓存
-        /// </summary>
         public async Task<TaskVO> CreateAsync(TaskGroupVO taskGroup)
         {
             var task = await TaskAgent.ToUnExecutedTaskAsync(taskGroup.Id).MapAsync<TaskVO, TaskPO>();
@@ -64,17 +35,16 @@ namespace FOPS.Com.FssServer.Tasks
                     Caption     = taskGroup.Caption,
                     JobName     = taskGroup.JobName,
                     RunSpeed    = 0,
-                    ClientHost  = "",
+                    ClientId    = 0,
                     ClientIp    = "",
                     Progress    = 0,
                     Status      = EumTaskType.None,
                     CreateAt    = DateTime.Now,
                     RunAt       = DateTime.Now,
-                    ServerNode  = ""
+                    SchedulerAt = DateTime.Now,
                 };
                 await TaskAgent.AddAsync(po);
-                taskGroup.TaskId = po.Id.GetValueOrDefault();
-                task             = po.Map<TaskVO>();
+                task = po.Map<TaskVO>();
             }
 
             await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId);
@@ -88,7 +58,19 @@ namespace FOPS.Com.FssServer.Tasks
         {
             var taskGroup = await TaskGroupInfo.ToInfoAsync(taskGroupId);
             var task      = await CreateAsync(taskGroup);
+            taskGroup.TaskId = task.Id;
             await TaskGroupUpdate.UpdateAsync(taskGroup);
+            return task;
+        }
+
+        /// <summary>
+        /// 创建Task，并更新到缓存
+        /// </summary>
+        public async Task<TaskVO> GetOrCreateAsync(TaskGroupVO taskGroup)
+        {
+            var task = await CreateAsync(taskGroup);
+            taskGroup.TaskId = task.Id;
+            await TaskGroupUpdate.SaveAsync(taskGroup);
             return task;
         }
     }
