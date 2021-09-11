@@ -12,6 +12,19 @@
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
         任务组
+        <select style="display:inline;width: 200px;" @onchange="EnableChange">
+            <option value="-1">全部</option>
+            <option value="1">开启</option>
+            <option value="0">停止</option>
+        </select>
+
+        <select style="display:inline;width: 200px;" @onchange="JobChange">
+            <option value="">全部</option>
+            @foreach (var jobName in lstJobName)
+            {
+                <option value="@jobName">@jobName</option>
+            }
+        </select>
         <div class="layui-right">
             <button class="layui-btn layui-btn-right" @onclick=RefreshCache><i class="am-icon-plus"></i> 刷新缓存</button>
             <button class="layui-btn layui-btn-right" @onclick=GotoAdd><i class="am-icon-plus"></i> 添加任务组</button>
@@ -152,6 +165,9 @@
     private List<TaskGroupVO> _lst = new();
     private bool _isFirst;
     private Timer _timer;
+    private int enable = -1;
+    private List<string> lstJobName = new();
+    private string jobName;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -187,7 +203,16 @@
     private async Task GetList()
     {
         _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync() ?? new();
-        _lst = _lst.OrderBy(o=>o.JobName).ThenByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderBy(o => o.JobName).ThenByDescending(o => o.Id).ToList();
+
+    // 取出JobName
+        lstJobName = _lst.Select(o => o.JobName).Distinct().ToList();
+    // 筛选JobName
+        if (!string.IsNullOrWhiteSpace(jobName)) _lst = _lst.FindAll(o => o.JobName == jobName);
+
+    // 筛选状态
+        if (enable > -1) _lst = _lst.FindAll(o => o.IsEnable == enable.ConvertType(false));
+
         _totalCount = _lst.Count;
         _lst = _lst.ToList(_pageSize, PageIndex);
     }
@@ -203,7 +228,7 @@
         await _iocManager.Resolve<ITaskUpdate>().ClearCacheAsync();
         await GetList();
 
-        await js.InvokeVoidAsync("layer.msg", "刷新成功", new {icon = 1});
+        await js.InvokeVoidAsync("layer.msg", "刷新成功", new { icon = 1 });
         nav.NavigateTo("/fss/task_group/list");
     }
 
@@ -236,6 +261,19 @@
         }
         var id = await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(newInfo);
         nav.NavigateTo($"/fss/task_group/update/{id}");
+    }
+
+    // 筛选组状态
+    private Task EnableChange(ChangeEventArgs args)
+    {
+        enable = args.Value.ConvertType(0);
+        return GetList();
+    }
+
+    private Task JobChange(ChangeEventArgs args)
+    {
+        jobName = args.Value.ToString();
+        return GetList();
     }
 
 }
