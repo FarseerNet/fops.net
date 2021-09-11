@@ -9,11 +9,11 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 创建Task，并更新到缓存
         /// </summary>
-        Task<TaskVO> GetOrCreateAsync(int taskGroupId);
+        Task<TaskVO> GetOrCreateAsync(TaskGroupVO taskGroup);
 
         /// <summary>
         /// 创建Task，并更新到缓存
         /// </summary>
-        Task<TaskVO> GetOrCreateAsync(TaskGroupVO taskGroup);
+        Task<TaskVO> GetOrCreateAsync(int taskGroupId);
     }
 }

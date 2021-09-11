@@ -84,7 +84,7 @@
                                     <div class="layui-table-cell laytable-cell-task-3">
                                         @if (info.Status is EumTaskType.Working or EumTaskType.Fail or EumTaskType.Success)
                                         {
-                                            info.RunAt.ToString("yyyy-MM-dd HH:mm:ss");
+                                            @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss");
                                         }
                                     </div>
                                 </td>

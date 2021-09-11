@@ -21,6 +21,16 @@ namespace FOPS.Com.FssServer.Tasks
         public  ITaskAdd           TaskAdd           { get; set; }
         private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
 
+
+        /// <summary>
+        /// 移除缓存
+        /// </summary>
+        public async Task ClearCacheAsync()
+        {
+            await RedisCacheManager.Db.KeyDeleteAsync(TaskCache.Key);
+            await TaskInfo.ToGroupListAsync();
+        }
+        
         /// <summary>
         /// 任务组修改时，需要同步JobName
         /// </summary>

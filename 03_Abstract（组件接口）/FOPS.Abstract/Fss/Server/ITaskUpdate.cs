@@ -15,5 +15,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 保存Task（taskGroup必须是最新的）
         /// </summary>
         Task SaveFinishAsync(TaskVO task, TaskGroupVO taskGroup);
+
+        /// <summary>
+        /// 移除缓存
+        /// </summary>
+        Task ClearCacheAsync();
     }
 }

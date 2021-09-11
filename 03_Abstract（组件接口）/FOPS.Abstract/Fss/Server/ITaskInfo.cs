@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FS.DI;
@@ -15,5 +16,10 @@ namespace FOPS.Abstract.Fss.Server
         /// 今日执行失败数量
         /// </summary>
         Task<int> TodayFailCountAsync();
+
+        /// <summary>
+        /// 获取所有任务组
+        /// </summary>
+        Task<List<TaskVO>> ToGroupListAsync();
     }
 }
