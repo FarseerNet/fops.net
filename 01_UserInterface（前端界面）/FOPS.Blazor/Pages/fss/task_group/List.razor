@@ -200,6 +200,7 @@
     private async Task RefreshCache()
     {
         await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
+        await _iocManager.Resolve<ITaskUpdate>().ClearCacheAsync();
         await GetList();
 
         await js.InvokeVoidAsync("layer.msg", "刷新成功", new {icon = 1});
