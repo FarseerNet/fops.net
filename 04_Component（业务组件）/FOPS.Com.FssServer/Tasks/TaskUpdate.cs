@@ -43,12 +43,27 @@ namespace FOPS.Com.FssServer.Tasks
         }
 
         /// <summary>
+        /// 更新Task（如果状态是成功、失败、重新调度，则应该调Save）
+        /// </summary>
+        public async Task UpdateAsync(TaskVO task)
+        {
+            await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
+        }
+        
+        /// <summary>
+        /// 保存Task
+        /// </summary>
+        public async Task SaveAsync(TaskVO task)
+        {
+            await UpdateAsync(task);
+            await TaskAgent.UpdateAsync(task.Id, task.Map<TaskPO>());
+        }
+
+        /// <summary>
         /// 保存Task（taskGroup必须是最新的）这里与FSS的逻辑不一致。因为FSS需要发消息
         /// </summary>
         public async Task SaveFinishAsync(TaskVO task, TaskGroupVO taskGroup)
         {
-            await TaskAgent.UpdateAsync(task.Id, task.Map<TaskPO>());
-
             // 说明上一次任务，没有设置下一次的时间（动态设置）
             // 本次的时间策略晚，则通过时间策略计算出来
             if (DateTime.Now > taskGroup.NextAt)
@@ -73,6 +88,8 @@ namespace FOPS.Com.FssServer.Tasks
                 // 完成后，立即生成一个新的任务
                 await TaskAdd.GetOrCreateAsync(taskGroup);
             }
+
+            await SaveAsync(task);
         }
     }
 }
