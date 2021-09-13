@@ -14,7 +14,7 @@ namespace FOPS.Com.FssServer.Tasks.Dal
         /// <summary>
         /// 获取所有任务列表
         /// </summary>
-        public Task<List<TaskPO>> ToTopListAsync(int top) => FssContext.Data.Task.Where(o => o.Status != EumTaskType.Success && o.Status != EumTaskType.Fail).Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp}).Desc(o => o.CreateAt).ToListAsync(top);
+        public Task<List<TaskPO>> ToTopListAsync(int top) => FssContext.Data.Task.Where(o => o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler).Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp}).Asc(o => o.StartAt).ToListAsync(top);
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表
