@@ -62,7 +62,18 @@
                     <div class="laytable-cell-task-1">@info.Caption</div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                    <div class="layui-table-cell laytable-cell-task-2">
+                        @{
+                            if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
+                            {
+                                @($"超时{(DateTime.Now - info.StartAt).TotalSeconds.ConvertType(0)}秒")
+                            }
+                            else
+                            {
+                                @info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")
+                            }
+                        }
+                    </div>
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-task-3">@info.Progress%</div>
@@ -129,7 +140,7 @@
     {
         if (firstRender)
         {
-            _timer = new Timer(5000);
+            _timer = new Timer(3000);
             _timer.Elapsed += async (_, _) =>
             {
                 try
@@ -147,4 +158,5 @@
         }
         return Task.FromResult(0);
     }
+
 }
