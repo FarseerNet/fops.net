@@ -131,6 +131,7 @@
                                     <div class="layui-table-cell laytable-cell-14-0-9">
                                         <button class="layui-btn layui-btn-sm" @onclick="() => GotoUpdate(info.Id)">编辑</button>
                                         <button class="layui-btn layui-btn-sm layui-btn-normal" @onclick="() => Copy(info)">复制</button>
+                                        <button class="layui-btn layui-btn-sm @(info.IsEnable ? "layui-btn-primary" : "layui-btn-danger")" @onclick="() => SetEnable(info)">@(info.IsEnable ? "停止" : "开启")</button>
                                     </div>
                                 </td>
                             </tr>
@@ -153,11 +154,12 @@
     .laytable-cell-14-0-6{ width: 150px; }
     .laytable-cell-14-0-7{ width: 80px; }
     .laytable-cell-14-0-8{ width: 80px; }
-    .laytable-cell-14-0-9{ width: 150px; }
+    .laytable-cell-14-0-9{ width: 200px; }
 </style>
 
 @code{
 
+    private int _lastIndex;
     [Parameter] public int PageIndex { get; set; }
     private int _totalCount;
     private int _pageSize = 20;
@@ -171,9 +173,11 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_isFirst) return;
+        if (_isFirst && _lastIndex == PageIndex) return;
         _isFirst = true;
 
+        if (PageIndex < 1) PageIndex = 1;
+        _lastIndex = PageIndex;
         await GetList();
     }
 
@@ -202,6 +206,7 @@
 
     private async Task GetList()
     {
+        Console.WriteLine("GetList");
         _lst = await _iocManager.Resolve<ITaskGroupList>().ToListAsync() ?? new();
         _lst = _lst.OrderBy(o => o.JobName).ThenByDescending(o => o.Id).ToList();
 
@@ -274,6 +279,13 @@
     {
         jobName = args.Value.ToString();
         return GetList();
+    }
+
+    private async Task SetEnable(TaskGroupVO info)
+    {
+        info.IsEnable = !info.IsEnable;
+        await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(info);
+        await GetList();
     }
 
 }

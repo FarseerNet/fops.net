@@ -173,6 +173,7 @@
 
 @code{
 
+    private int _lastIndex;
     [Parameter] public int PageIndex { get; set; } = 1;
     [Parameter] public int GroupId { get; set; }
     private int _totalCount;
@@ -184,10 +185,11 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_isFirst) return;
+        if (_isFirst && _lastIndex == PageIndex) return;
         _isFirst = true;
 
         if (PageIndex < 1) PageIndex = 1;
+        _lastIndex = PageIndex;
         _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount) ?? new();
     }
 

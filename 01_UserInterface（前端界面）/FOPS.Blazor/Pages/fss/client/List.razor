@@ -88,6 +88,7 @@
 
 @code{
 
+    private int _lastIndex;
     [Parameter] public int PageIndex { get; set; }
     private int _totalCount;
     private int _pageSize = 9999;
@@ -97,8 +98,11 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_isFirst) return;
+        if (_isFirst && _lastIndex == PageIndex) return;
         _isFirst = true;
+
+        if (PageIndex < 1) PageIndex = 1;
+        _lastIndex = PageIndex;
 
         _lst = await _iocManager.Resolve<IClientRegister>().ToClientListAsync() ?? new();
         _lst = _lst.OrderByDescending(o => o.ActivateAt).ToList();
