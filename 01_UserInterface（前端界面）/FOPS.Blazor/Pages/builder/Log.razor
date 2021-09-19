@@ -162,7 +162,7 @@
             await js.InvokeVoidAsync("layer.msg", "已加入到队列", new { icon = 1, title = "执行结果" });
             _isFirst = false;
             _lstLog = Array.Empty<string>();
-            nav.NavigateTo($"/builder/log/{Id}");
+            nav.NavigateTo($"/builder/log/{Id}", true);
             await OnParametersSetAsync();
             await InvokeAsync(StateHasChanged);
         }
