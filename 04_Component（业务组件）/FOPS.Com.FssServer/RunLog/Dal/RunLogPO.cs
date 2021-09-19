@@ -1,10 +1,9 @@
 using System;
 using FS.Core.Mapping.Attribute;
-using FS.Mapper;
 using Nest;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace FSS.Com.MetaInfoServer.RunLog.Dal
+namespace FOPS.Com.FssServer.RunLog.Dal
 {
     /// <summary>
     /// 运行日志
