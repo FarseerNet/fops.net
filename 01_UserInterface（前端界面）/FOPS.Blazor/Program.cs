@@ -23,7 +23,6 @@ namespace FOPS.Blazor
         {
             return Host.CreateDefaultBuilder(args).UseWindsorContainerServiceProvider().ConfigureWebHostDefaults(webBuilder =>
             {
-                //Setup a HTTP/2 endpoint without TLS.
                 webBuilder.UseKestrel().UseStartup<Startup>();
             });
         }
