@@ -21,13 +21,11 @@ namespace FOPS.Blazor
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
-                //.ConfigureLogging(log => log.ClearProviders())
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    //Setup a HTTP/2 endpoint without TLS.
-                    webBuilder.UseStartup<Startup>();
-                });
+            return Host.CreateDefaultBuilder(args).UseWindsorContainerServiceProvider().ConfigureWebHostDefaults(webBuilder =>
+            {
+                //Setup a HTTP/2 endpoint without TLS.
+                webBuilder.UseKestrel().UseStartup<Startup>();
+            });
         }
     }
 }
