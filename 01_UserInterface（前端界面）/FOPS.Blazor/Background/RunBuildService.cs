@@ -27,18 +27,27 @@ namespace FOPS.Blazor.Background
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             await Task.Delay(5000, stoppingToken);
-            _logger.LogInformation("开始执行构建队列");
-            while (true)
+            var threadCount                  = Environment.ProcessorCount - 1;
+            if (threadCount < 1) threadCount = 1;
+            _logger.LogInformation($"开始执行构建队列，共几个{threadCount}线程");
+            
+            for (int i = 0; i < threadCount; i++)
             {
-                try
+                Task.Factory.StartNew(async () =>
                 {
-                    await _ioc.Resolve<IBuildOpr>().Build();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e,e.Message);
-                }
-                await Task.Delay(1000, stoppingToken);
+                    while (true)
+                    {
+                        try
+                        {
+                            await _ioc.Resolve<IBuildOpr>().Build();
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, e.Message);
+                        }
+                        await Task.Delay(1000, stoppingToken);
+                    }
+                }, TaskCreationOptions.LongRunning);
             }
         }
     }
