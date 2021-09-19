@@ -154,14 +154,14 @@
     /// 构建
     private async Task AddBuild()
     {
-        _isFirst = true;
-        _lstLog = Array.Empty<string>();
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
             Id = await _iocManager.Resolve<IBuildService>().Add(_info.ProjectId, _info.ClusterId);
+            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
             await js.InvokeVoidAsync("layer.msg", "已加入到队列", new { icon = 1, title = "执行结果" });
             _isFirst = false;
+            _lstLog = Array.Empty<string>();
             nav.NavigateTo($"/builder/log/{Id}");
             await OnParametersSetAsync();
             await InvokeAsync(StateHasChanged);
