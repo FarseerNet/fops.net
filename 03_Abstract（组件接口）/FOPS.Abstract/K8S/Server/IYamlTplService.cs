@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.K8S.Server
 {
-    public interface IYamlTplService: ITransientDependency
+    public interface IYamlTplService: ISingletonDependency
     {
         /// <summary>
         /// Yaml模板列表

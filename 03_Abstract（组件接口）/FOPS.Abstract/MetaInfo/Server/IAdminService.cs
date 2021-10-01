@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IAdminService: ITransientDependency
+    public interface IAdminService: ISingletonDependency
     {
         /// <summary>
         /// Admin列表

@@ -2,7 +2,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IBuildLogService: ITransientDependency
+    public interface IBuildLogService: ISingletonDependency
     {
         /// <summary>
         /// 写入构建日志

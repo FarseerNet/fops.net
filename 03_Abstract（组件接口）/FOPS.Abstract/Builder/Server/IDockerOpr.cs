@@ -9,7 +9,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IDockerOpr: ITransientDependency
+    public interface IDockerOpr: ISingletonDependency
     {
         /// <summary>
         /// 取得dockerHub

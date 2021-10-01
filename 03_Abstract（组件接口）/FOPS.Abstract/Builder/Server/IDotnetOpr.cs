@@ -8,7 +8,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IDotnetOpr: ITransientDependency
+    public interface IDotnetOpr: ISingletonDependency
     {
         /// <summary>
         /// 获取项目的根目录

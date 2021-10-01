@@ -4,7 +4,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskGroupCache: ITransientDependency
+    public interface ITaskGroupCache: ISingletonDependency
     {
         /// <summary>
         /// 保存任务组信息

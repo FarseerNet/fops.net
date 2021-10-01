@@ -8,7 +8,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IKubectlOpr: ITransientDependency
+    public interface IKubectlOpr: ISingletonDependency
     {
         /// <summary>
         /// 更新k8s版本

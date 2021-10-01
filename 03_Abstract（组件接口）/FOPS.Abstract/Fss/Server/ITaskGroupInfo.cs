@@ -4,7 +4,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskGroupInfo: ITransientDependency
+    public interface ITaskGroupInfo: ISingletonDependency
     {
         /// <summary>
         /// 获取任务信息

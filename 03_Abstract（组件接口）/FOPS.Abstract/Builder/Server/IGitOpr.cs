@@ -9,7 +9,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IGitOpr: ITransientDependency
+    public interface IGitOpr: ISingletonDependency
     {
         /// <summary>
         /// 消除仓库

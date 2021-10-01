@@ -4,7 +4,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskAdd: ITransientDependency
+    public interface ITaskAdd: ISingletonDependency
     {
         /// <summary>
         /// 创建Task，并更新到缓存

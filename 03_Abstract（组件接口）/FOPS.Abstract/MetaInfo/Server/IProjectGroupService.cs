@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IProjectGroupService: ITransientDependency
+    public interface IProjectGroupService: ISingletonDependency
     {
         /// <summary>
         /// 项目组列表

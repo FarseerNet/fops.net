@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Docker.Server
 {
-    public interface IDockerHubService: ITransientDependency
+    public interface IDockerHubService: ISingletonDependency
     {
         /// <summary>
         /// DockerHub列表

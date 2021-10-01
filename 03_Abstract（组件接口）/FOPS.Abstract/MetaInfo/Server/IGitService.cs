@@ -6,7 +6,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IGitService: ITransientDependency
+    public interface IGitService: ISingletonDependency
     {
         /// <summary>
         /// Git列表

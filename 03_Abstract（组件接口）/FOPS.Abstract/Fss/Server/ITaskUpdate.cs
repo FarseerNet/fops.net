@@ -4,7 +4,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskUpdate: ITransientDependency
+    public interface ITaskUpdate: ISingletonDependency
     {
         /// <summary>
         /// 任务组修改时，需要同步JobName

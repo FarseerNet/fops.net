@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskGroupList: ITransientDependency
+    public interface ITaskGroupList: ISingletonDependency
     {
         /// <summary>
         /// 获取全部任务列表

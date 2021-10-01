@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.MetaInfo.Server
 {
-    public interface IClusterService: ITransientDependency
+    public interface IClusterService: ISingletonDependency
     {
         /// <summary>
         /// 集群列表

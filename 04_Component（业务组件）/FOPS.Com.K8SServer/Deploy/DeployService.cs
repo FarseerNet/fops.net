@@ -16,7 +16,6 @@ namespace FOPS.Com.K8SServer.Deploy
 {
     public class DeployService : IDeployService
     {
-        public IBuildService   BuildService   { get; set; }
         public IClusterService ClusterService { get; set; }
         public IKubectlOpr     KubectlOpr     { get; set; }
 

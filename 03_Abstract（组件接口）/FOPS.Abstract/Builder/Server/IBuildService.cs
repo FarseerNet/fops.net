@@ -6,7 +6,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IBuildService: ITransientDependency
+    public interface IBuildService: ISingletonDependency
     {
         /// <summary>
         /// 创建构建任务

@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface IClientRegister: ITransientDependency
+    public interface IClientRegister: ISingletonDependency
     {
         /// <summary>
         /// 取出全局客户端列表

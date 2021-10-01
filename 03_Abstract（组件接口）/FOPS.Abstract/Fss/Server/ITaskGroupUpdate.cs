@@ -4,7 +4,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
 {
-    public interface ITaskGroupUpdate: ITransientDependency
+    public interface ITaskGroupUpdate: ISingletonDependency
     {
         /// <summary>
         /// 更新TaskGroup
