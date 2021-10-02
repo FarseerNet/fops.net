@@ -104,7 +104,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lst = await _iocManager.Resolve<IClientRegister>().ToClientListAsync() ?? new();
+        _lst = await _iocManager.Resolve<IClientRegister>().ToListAsync() ?? new();
         _lst = _lst.OrderByDescending(o => o.ActivateAt).ToList();
         _totalCount = _lst.Count;
     }

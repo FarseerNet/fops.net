@@ -1,20 +1,15 @@
-using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Server;
-using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.TaskGroup.Dal;
-using FS.DI;
 using FS.Extends;
-using FS.Utils.Common;
-using FS.Utils.Component;
 
 namespace FOPS.Com.FssServer.TaskGroup
 {
     public class TaskGroupUpdate : ITaskGroupUpdate
     {
-        public ITaskGroupCache TaskGroupCache { get; set; }
-        public ITaskGroupAgent TaskGroupAgent { get; set; }
+        public TaskGroupCache TaskGroupCache { get; set; }
+        public TaskGroupAgent TaskGroupAgent { get; set; }
 
         /// <summary>
         /// 更新TaskGroup

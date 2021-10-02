@@ -43,20 +43,20 @@ namespace FOPS.Com.K8SServer.Deploy
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
             if (projectVO == null) throw new Exception("项目不存在");
-            
+
             // 替换模板内容
             var lstYaml = ReplaceTemplate(projectVO: projectVO, lstTpl: lstTpl);
 
             // 拼接已经选择的所有脚本
             var yaml = string.Join("\r\n---\r\n", lstYaml);
-            
+
             return await DeployAsync(projectVO.Name, yaml, clusterVO);
         }
 
         /// <summary>
         /// 发布
         /// </summary>
-        public async Task<RunShellResult> DeployAsync(string projectName,string yaml, ClusterVO clusterVO)
+        public async Task<RunShellResult> DeployAsync(string projectName, string yaml, ClusterVO clusterVO)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
 
@@ -66,12 +66,12 @@ namespace FOPS.Com.K8SServer.Deploy
                 var info = await ClusterService.ToInfoAsync(clusterVO.Id);
                 clusterVO.Config = info.Config;
             }
-            
+
             // kube配置文件    
             var env        = new BuildEnvironment();
             var configFile = KubectlOpr.GetConfigFile(env, clusterVO.Name);
             KubectlOpr.CreateConfigFile(env, clusterVO);
-            
+
             return await RunApplyCmd("single", yaml, configFile);
         }
 
@@ -84,9 +84,9 @@ namespace FOPS.Com.K8SServer.Deploy
 
             // 取出已选择的模板
             if (projectVO.K8STplDeployment > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplDeployment).Template);
-            if (projectVO.K8STplService > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplService).Template);
-            if (projectVO.K8STplIngress > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplIngress).Template);
-            if (projectVO.K8STplConfig > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplConfig).Template);
+            if (projectVO.K8STplService    > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplService).Template);
+            if (projectVO.K8STplIngress    > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplIngress).Template);
+            if (projectVO.K8STplConfig     > 0) lstYaml.Add(lstTpl.Find(o => o.Id == projectVO.K8STplConfig).Template);
 
             // 替换模板
             for (var index = 0; index < lstYaml.Count; index++)

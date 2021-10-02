@@ -21,5 +21,13 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取所有任务组
         /// </summary>
         Task<List<TaskVO>> ToGroupListAsync();
+        /// <summary>
+        /// 获取当前任务组的任务
+        /// </summary>
+        Task<TaskVO> ToInfoByGroupIdAsync(int taskGroupId);
+        /// <summary>
+        /// 计算任务的平均运行速度
+        /// </summary>
+        Task<long> StatAvgSpeedAsync(int taskGroupId);
     }
 }

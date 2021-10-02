@@ -1,54 +1,70 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using FOPS.Abstract.Fss.Enum;
-using FOPS.Com.FssServer.Abstract;
+using FS.DI;
 
 namespace FOPS.Com.FssServer.Tasks.Dal
 {
     /// <summary>
     /// 任务数据库层
     /// </summary>
-    public class TaskAgent : ITaskAgent
+    public class TaskAgent : ISingletonDependency
     {
         /// <summary>
         /// 获取所有任务列表
         /// </summary>
-        public Task<List<TaskPO>> ToTopListAsync(int top) => FssContext.Data.Task.Where(o => o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler).Select(o => new {o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp}).Asc(o => o.StartAt).ToListAsync(top);
+        public Task<List<TaskPO>> ToTopListAsync(int top) => MetaInfoContext.Data.Task.Where(o => o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler).Select(o => new { o.Id, o.Caption, o.Progress, o.Status, o.StartAt, o.CreateAt, o.ClientIp }).Asc(o => o.StartAt).ToListAsync(top);
 
         /// <summary>
         /// 获取指定任务组执行成功的任务列表
         /// </summary>
-        public Task<List<TaskPO>> ToSuccessListAsync(int groupId, int top) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success).Desc(o=>o.CreateAt).ToListAsync(top);
+        public Task<List<TaskPO>> ToSuccessListAsync(int groupId, int top) => MetaInfoContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success).Desc(o => o.CreateAt).ToListAsync(top);
+
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        public Task<List<TaskPO>> ToNoneListAsync() => MetaInfoContext.Data.Task.Where(o => o.Status == EumTaskType.None).Asc(o => o.CreateAt).ToListAsync();
+
+        /// <summary>
+        /// 拉取30秒内要执行的任务
+        /// </summary>
+        public Task<List<TaskPO>> ToNoneListAsync(int top, string[] clientJobs) => MetaInfoContext.Data.Task.Where(o => o.Status == EumTaskType.None && clientJobs.Contains(o.JobName) && o.StartAt < DateTime.Now.AddSeconds(30)).Asc(o => o.StartAt).ToListAsync(top);
 
         /// <summary>
         /// 清除成功的任务记录（1天前）
         /// </summary>
-        public Task ClearSuccessAsync(int groupId, int taskId) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success && o.CreateAt < DateTime.Now.AddDays(-1) && o.Id < taskId).DeleteAsync();
+        public Task ClearSuccessAsync(int groupId, int taskId) => MetaInfoContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success && o.CreateAt < DateTime.Now.AddDays(-1) && o.Id < taskId).DeleteAsync();
 
         /// <summary>
         /// 获取任务信息
         /// </summary>
-        public Task<TaskPO> ToEntityAsync(int id) => FssContext.Data.Task.Where(o => o.Id == id).ToEntityAsync();
+        public Task<TaskPO> ToEntityAsync(int id) => MetaInfoContext.Data.Task.Where(o => o.Id == id).ToEntityAsync();
 
         /// <summary>
         /// 更新任务信息
         /// </summary>
-        public Task UpdateAsync(int id, TaskPO task) => FssContext.Data.Task.Where(o => o.Id == id).UpdateAsync(task);
+        public Task UpdateAsync(int id, TaskPO task) => MetaInfoContext.Data.Task.Where(o => o.Id == id).UpdateAsync(task);
 
         /// <summary>
         /// 添加任务信息
         /// </summary>
-        public Task AddAsync(TaskPO task) => FssContext.Data.Task.InsertAsync(task, true);
+        public Task AddAsync(TaskPO task) => MetaInfoContext.Data.Task.InsertAsync(task, true);
 
         /// <summary>
         /// 获取未执行的任务信息
         /// </summary>
-        public Task<TaskPO> ToUnExecutedTaskAsync(int groupId) => FssContext.Data.Task.Where(o => o.TaskGroupId == groupId && (o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler)).ToEntityAsync();
+        public Task<TaskPO> ToUnExecutedTaskAsync(int groupId) => MetaInfoContext.Data.Task.Where(o => o.TaskGroupId == groupId && (o.Status == EumTaskType.None || o.Status == EumTaskType.Scheduler)).ToEntityAsync();
+
+        /// <summary>
+        /// 取前100条的运行速度
+        /// </summary>
+        public Task<List<long>> ToSpeedListAsync(int groupId) => MetaInfoContext.Data.Task.Where(o => o.TaskGroupId == groupId && o.Status == EumTaskType.Success).Desc(o => o.CreateAt).ToSelectListAsync(100, o => o.RunSpeed.GetValueOrDefault());
 
         /// <summary>
         /// 今日执行失败数量
         /// </summary>
-        public Task<int> TodayFailCountAsync() => FssContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();
+        public Task<int> TodayFailCountAsync() => MetaInfoContext.Data.Task.Where(o => o.Status == EumTaskType.Fail && o.CreateAt >= DateTime.Now.Date).CountAsync();
     }
 }

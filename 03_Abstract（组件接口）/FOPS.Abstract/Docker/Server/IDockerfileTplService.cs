@@ -5,7 +5,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Docker.Server
 {
-    public interface IDockerfileTplService: ISingletonDependency
+    public interface IDockerfileTplService : ISingletonDependency
     {
         /// <summary>
         /// Dockerfile模板列表

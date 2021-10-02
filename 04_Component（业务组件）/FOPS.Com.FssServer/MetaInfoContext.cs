@@ -9,9 +9,9 @@ namespace FOPS.Com.FssServer
     /// <summary>
     /// 元信息上下文
     /// </summary>
-    public class FssContext : DbContext<FssContext>
+    public class MetaInfoContext : DbContext<MetaInfoContext>
     {
-        public FssContext() : base("fss_db")
+        public MetaInfoContext() : base("fss_db")
         {
         }
         

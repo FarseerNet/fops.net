@@ -10,7 +10,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 取出全局客户端列表
         /// </summary>
-        Task<List<ClientVO>> ToClientListAsync();
+        Task<List<ClientVO>> ToListAsync();
 
         /// <summary>
         /// 取出全局客户端数量

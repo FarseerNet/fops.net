@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
-using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
-using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.TaskGroup.Dal;
-using FS.Cache.Redis;
+using FOPS.Infrastructure.Repository;
+using FS.Cache;
 using FS.DI;
 using FS.Extends;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 
 namespace FOPS.Com.FssServer.TaskGroup
 {
@@ -20,10 +18,8 @@ namespace FOPS.Com.FssServer.TaskGroup
     /// </summary>
     public class TaskGroupList : ITaskGroupList
     {
-        public ITaskGroupAgent TaskGroupAgent { get; set; }
-        public IIocManager     IocManager     { get; set; }
-
-        private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
+        public TaskGroupAgent TaskGroupAgent { get; set; }
+        public TaskGroupCache TaskGroupCache { get; set; }
 
         /// <summary>
         /// 获取全部任务列表
@@ -31,28 +27,24 @@ namespace FOPS.Com.FssServer.TaskGroup
         public async Task<List<TaskGroupVO>> ToListAndSaveAsync()
         {
             var taskGroupVos = await TaskGroupAgent.ToListAsync().MapAsync<TaskGroupVO, TaskGroupPO>();
-            await RedisCacheManager.CacheManager.SaveAsync(TaskGroupCache.Key, taskGroupVos, o => o.Id);
+            await TaskGroupCache.SaveAsync(taskGroupVos);
             return taskGroupVos;
         }
 
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        public Task<List<TaskGroupVO>> ToListAsync()
-        {
-            return RedisCacheManager.CacheManager.GetListAsync(TaskGroupCache.Key,
-                _ => TaskGroupAgent.ToListAsync().MapAsync<TaskGroupVO, TaskGroupPO>()
-                , o => o.Id);
-        }
+        public Task<List<TaskGroupVO>> ToListInCacheAsync(EumCacheStoreType cacheStoreType = EumCacheStoreType.Redis) => TaskGroupCache.ToListAsync(cacheStoreType);
 
         /// <summary>
         /// 获取任务组数量
         /// </summary>
         public Task<long> Count()
         {
-            return RedisCacheManager.Db.HashLengthAsync(TaskGroupCache.Key);
+            var key = CacheKeys.TaskGroupKey(EumCacheStoreType.Redis);
+            return RedisContext.Instance.CacheManager.GetCountAsync(key);
         }
-        
+
         /// <summary>
         /// 获取未执行的任务列表
         /// </summary>
@@ -66,7 +58,7 @@ namespace FOPS.Com.FssServer.TaskGroup
             }
             catch (Exception e)
             {
-                IocManager.Logger<TaskGroupList>().LogError(e, e.Message);
+                IocManager.Instance.Logger<TaskGroupList>().LogError(e, e.Message);
                 return 0;
             }
         }

@@ -2,11 +2,8 @@ using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Server;
-using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.Tasks.Dal;
-using FS.Cache;
-using FS.Cache.Redis;
-using FS.DI;
+using FOPS.Infrastructure.Repository;
 using FS.Extends;
 using FS.Utils.Component;
 
@@ -14,42 +11,38 @@ namespace FOPS.Com.FssServer.Tasks
 {
     public class TaskUpdate : ITaskUpdate
     {
-        public  ITaskInfo          TaskInfo          { get; set; }
-        public  ITaskAgent         TaskAgent         { get; set; }
-        public  ITaskGroupUpdate   TaskGroupUpdate   { get; set; }
-        public  IIocManager        IocManager        { get; set; }
-        public  ITaskAdd           TaskAdd           { get; set; }
-        private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
+        public TaskAgent        TaskAgent       { get; set; }
+        public ITaskAdd         TaskAdd         { get; set; }
+        public ITaskGroupUpdate TaskGroupUpdate { get; set; }
+        public ITaskGroupInfo   TaskGroupInfo   { get; set; }
+        public ITaskInfo        TaskInfo        { get; set; }
+        public TaskCache        TaskCache       { get; set; }
 
+        /// <summary>
+        /// 更新Task（如果状态是成功、失败、重新调度，则应该调Save）
+        /// </summary>
+        public Task UpdateAsync(TaskVO task) => TaskCache.SaveAsync(task);
 
         /// <summary>
         /// 移除缓存
         /// </summary>
         public async Task ClearCacheAsync()
         {
-            await RedisCacheManager.Db.KeyDeleteAsync(TaskCache.Key);
+            await CacheKeys.TaskForGroupClear();
             await TaskInfo.ToGroupListAsync();
         }
-        
+
         /// <summary>
         /// 任务组修改时，需要同步JobName
         /// </summary>
         public async Task UpdateJobName(int taskId, string jobName)
         {
-            await FssContext.Data.Task.Where(o => o.Id == taskId).UpdateAsync(new TaskPO() { JobName = jobName });
+            await MetaInfoContext.Data.Task.Where(o => o.Id == taskId).UpdateAsync(new TaskPO() { JobName = jobName });
             var task = await TaskInfo.ToInfoByDbAsync(taskId);
             if (task == null) return;
-            await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
+            await TaskCache.SaveAsync(task);
         }
 
-        /// <summary>
-        /// 更新Task（如果状态是成功、失败、重新调度，则应该调Save）
-        /// </summary>
-        public async Task UpdateAsync(TaskVO task)
-        {
-            await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId, new CacheOption());
-        }
-        
         /// <summary>
         /// 保存Task
         /// </summary>
@@ -60,10 +53,22 @@ namespace FOPS.Com.FssServer.Tasks
         }
 
         /// <summary>
-        /// 保存Task（taskGroup必须是最新的）这里与FSS的逻辑不一致。因为FSS需要发消息
+        /// 保存Task（taskGroup必须是最新的）
+        /// </summary>
+        public async Task SaveFinishAsync(TaskVO task)
+        {
+            var taskGroup = await TaskGroupInfo.ToInfoAsync(task.TaskGroupId);
+            await SaveFinishAsync(task, taskGroup);
+        }
+
+        /// <summary>
+        /// 保存Task（taskGroup必须是最新的）
         /// </summary>
         public async Task SaveFinishAsync(TaskVO task, TaskGroupVO taskGroup)
         {
+            // 要先保存状态
+            await SaveAsync(task);
+
             // 说明上一次任务，没有设置下一次的时间（动态设置）
             // 本次的时间策略晚，则通过时间策略计算出来
             if (DateTime.Now > taskGroup.NextAt)
@@ -88,8 +93,6 @@ namespace FOPS.Com.FssServer.Tasks
                 // 完成后，立即生成一个新的任务
                 await TaskAdd.GetOrCreateAsync(taskGroup);
             }
-
-            await SaveAsync(task);
         }
     }
 }

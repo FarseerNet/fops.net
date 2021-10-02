@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
+using FS.Cache;
 using FS.DI;
 
 namespace FOPS.Abstract.Fss.Server
@@ -10,7 +11,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        Task<List<TaskGroupVO>> ToListAsync();
+        Task<List<TaskGroupVO>> ToListInCacheAsync(EumCacheStoreType cacheStoreType = EumCacheStoreType.Redis);
 
         /// <summary>
         /// 获取全部任务列表

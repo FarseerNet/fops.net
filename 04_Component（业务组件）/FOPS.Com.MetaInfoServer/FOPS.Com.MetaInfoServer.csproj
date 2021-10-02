@@ -14,8 +14,4 @@
         <ProjectReference Include="..\..\03_Abstract（组件接口）\FOPS.Abstract\FOPS.Abstract.csproj" />
         <ProjectReference Include="..\..\05_Infrastructure（基础设施）\FOPS.Infrastructure.Common\FOPS.Infrastructure.Common.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Abstract" />
-    </ItemGroup>
 </Project>

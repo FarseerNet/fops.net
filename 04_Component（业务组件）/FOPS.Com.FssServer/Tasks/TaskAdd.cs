@@ -3,21 +3,18 @@ using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
-using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.Tasks.Dal;
 using FS.Cache.Redis;
-using FS.DI;
 using FS.Extends;
 
 namespace FOPS.Com.FssServer.Tasks
 {
     public class TaskAdd : ITaskAdd
     {
-        public  ITaskAgent         TaskAgent         { get; set; }
-        public  IIocManager        IocManager        { get; set; }
-        private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
-        public  ITaskGroupInfo     TaskGroupInfo     { get; set; }
-        public  ITaskGroupUpdate   TaskGroupUpdate   { get; set; }
+        public TaskAgent        TaskAgent       { get; set; }
+        public TaskCache        TaskCache       { get; set; }
+        public ITaskGroupInfo   TaskGroupInfo   { get; set; }
+        public ITaskGroupUpdate TaskGroupUpdate { get; set; }
 
         /// <summary>
         /// 创建Task，并更新到缓存
@@ -47,7 +44,7 @@ namespace FOPS.Com.FssServer.Tasks
                 task = po.Map<TaskVO>();
             }
 
-            await RedisCacheManager.CacheManager.SaveAsync(TaskCache.Key, task, task.TaskGroupId);
+            await TaskCache.SaveAsync(task);
             return task;
         }
 

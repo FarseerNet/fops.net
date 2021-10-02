@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Server;
-using FOPS.Com.FssServer.Abstract;
 using FOPS.Com.FssServer.TaskGroup.Dal;
 using FS.Extends;
 using FS.Utils.Common;
@@ -12,8 +11,8 @@ namespace FOPS.Com.FssServer.TaskGroup
 {
     public class TaskGroupAdd : ITaskGroupAdd
     {
-        public ITaskGroupAgent TaskGroupAgent { get; set; }
-        public ITaskGroupInfo  TaskGroupInfo  { get; set; }
+        public TaskGroupAgent TaskGroupAgent { get; set; }
+        public ITaskGroupInfo TaskGroupInfo  { get; set; }
 
         /// <summary>
         /// 添加任务信息

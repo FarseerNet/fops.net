@@ -20,5 +20,9 @@ namespace FOPS.Abstract.Fss.Server
         /// 移除缓存
         /// </summary>
         Task ClearCacheAsync();
+        /// <summary>
+        /// 更新Task（如果状态是成功、失败、重新调度，则应该调Save）
+        /// </summary>
+        Task UpdateAsync(TaskVO task);
     }
 }

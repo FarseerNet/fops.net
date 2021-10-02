@@ -7,7 +7,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.K8S.Server
 {
-    public interface IDeployService: ISingletonDependency
+    public interface IDeployService : ISingletonDependency
     {
         /// <summary>
         /// 发布

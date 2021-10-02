@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer.Net.LinkTrack", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer.Net.AspNetCore", "..\Farseer.Net\Framework\Farseer.Net.AspNetCore\Farseer.Net.AspNetCore.csproj", "{C3E49B05-FB5D-4563-9422-271C0BC7465F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Infrastructure.Repository", "05_Infrastructure（基础设施）\FOPS.Infrastructure.Repository\FOPS.Infrastructure.Repository.csproj", "{3829BA23-79EF-4661-ADEE-B290AD4264E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,7 @@ Global
 		{78588E73-7529-484A-BEB3-ECC556D9052D} = {9DBAC993-2CB8-48C5-9E12-68FF156ACDBF}
 		{DDD38E43-90DA-432B-B56E-26D87721A6CF} = {1684AFF4-C227-4EAD-A272-CE78CFB8AB8A}
 		{C3E49B05-FB5D-4563-9422-271C0BC7465F} = {1684AFF4-C227-4EAD-A272-CE78CFB8AB8A}
+		{3829BA23-79EF-4661-ADEE-B290AD4264E8} = {EEEE309A-3C36-48C6-8396-FD7E1F9603F5}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4831230E-2AA0-426D-A7A6-13BC59345ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -173,5 +176,9 @@ Global
 		{C3E49B05-FB5D-4563-9422-271C0BC7465F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3E49B05-FB5D-4563-9422-271C0BC7465F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3E49B05-FB5D-4563-9422-271C0BC7465F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3829BA23-79EF-4661-ADEE-B290AD4264E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3829BA23-79EF-4661-ADEE-B290AD4264E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3829BA23-79EF-4661-ADEE-B290AD4264E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3829BA23-79EF-4661-ADEE-B290AD4264E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

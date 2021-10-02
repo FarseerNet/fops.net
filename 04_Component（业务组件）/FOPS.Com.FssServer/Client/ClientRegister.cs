@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FOPS.Abstract.Fss.Entity;
 using FOPS.Abstract.Fss.Server;
+using FOPS.Infrastructure.Repository;
 using FS.Cache.Redis;
 using FS.DI;
 using FS.Extends;
@@ -17,24 +18,20 @@ namespace FOPS.Com.FssServer.Client
     // ReSharper disable once UnusedType.Global
     public class ClientRegister : IClientRegister
     {
-        public  IIocManager        IocManager        { get; set; }
-        private IRedisCacheManager RedisCacheManager => IocManager.Resolve<IRedisCacheManager>("fss_redis");
-
         /// <summary>
         /// 取出全局客户端列表
         /// </summary>
-        public async Task<List<ClientVO>> ToClientListAsync()
+        public async Task<List<ClientVO>> ToListAsync()
         {
-            const string Key        = "FSS_ClientList";
-            var          hashGetAll = await RedisCacheManager.Db.HashGetAllAsync(Key);
-            if (hashGetAll == null || hashGetAll.Length == 0) return null;
-            var lst = hashGetAll.Select(o => JsonConvert.DeserializeObject<ClientVO>(o.Value.ToString())).ToList();
+            var key = CacheKeys.ClientKey;
+            var lst = await RedisContext.Instance.CacheManager.GetListAsync(key, () => new List<ClientVO>(), o => o.Id);
+
             for (int i = 0; i < lst.Count; i++)
             {
                 // 心跳大于1秒中，任为已经下线了
                 if ((DateTime.Now - lst[i].ActivateAt).TotalMinutes >= 1)
                 {
-                    await RedisCacheManager.Db.HashDeleteAsync(Key, lst[i].Id);
+                    await CacheKeys.ClientClear(lst[i].Id);
                     lst.RemoveAt(i);
                     i--;
                 }
@@ -48,8 +45,8 @@ namespace FOPS.Com.FssServer.Client
         /// </summary>
         public Task<long> ToClientCountAsync()
         {
-            const string Key = "FSS_ClientList";
-            return RedisCacheManager.Db.HashLengthAsync(Key);
+            var key = CacheKeys.ClientKey;
+            return RedisContext.Instance.CacheManager.GetCountAsync(key);
         }
     }
 }
