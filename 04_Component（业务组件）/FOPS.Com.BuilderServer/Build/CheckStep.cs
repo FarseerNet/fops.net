@@ -8,15 +8,15 @@ using FS.Core.Entity;
 
 namespace FOPS.Com.BuilderServer.Build
 {
-    public class CheckStep:IBuildStep
+    public class CheckStep : IBuildStep
     {
         public IBuildLogService BuildLogService { get; set; }
-        
+
         public Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"前置检查。");
-            
+
             // 自动创建目录
             BuildLogService.Write(build.Id, $"自动创建目录。");
             if (!System.IO.Directory.Exists(env.FopsDirRoot)) System.IO.Directory.CreateDirectory(env.FopsDirRoot);
@@ -30,7 +30,7 @@ namespace FOPS.Com.BuilderServer.Build
             BuildLogService.Write(build.Id, $"先删除之前编译的目标文件。");
             if (System.IO.Directory.Exists(env.ProjectReleaseDirRoot)) System.IO.Directory.Delete(env.ProjectReleaseDirRoot, true);
             System.IO.Directory.CreateDirectory(env.ProjectReleaseDirRoot);
-            
+
             return Task.FromResult(new RunShellResult(false, "前置检查通过。"));
         }
     }

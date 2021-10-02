@@ -31,7 +31,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
             return result.IsError switch
             {
                 false => new RunShellResult(false, $"编译完成。"),
-                true  => new RunShellResult(true,  $"编译出错了。")
+                true  => new RunShellResult(true, $"编译出错了。")
             };
         }
 
@@ -40,7 +40,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         private async Task<RunShellResult> Publish(BuildEnvironment env, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
-            await ShellTools.Run("dotnet",        $"restore",                                           actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
+            await ShellTools.Run("dotnet", $"restore", actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
             return await ShellTools.Run("dotnet", $"publish -c Release -o {env.ProjectReleaseDirRoot}", actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
         }
 
@@ -49,7 +49,7 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// </summary>
         public async Task<RunShellResult> Publish(string savePath, string source, Action<string> actReceiveOutput)
         {
-            await ShellTools.Run("dotnet",        $"restore",                          actReceiveOutput, null, source);
+            await ShellTools.Run("dotnet", $"restore", actReceiveOutput, null, source);
             return await ShellTools.Run("dotnet", $"publish -c Release -o {savePath}", actReceiveOutput, null, source);
         }
     }

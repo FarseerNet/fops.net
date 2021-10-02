@@ -20,8 +20,8 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 获取存储k8s Config的路径
         /// </summary>
-        public string GetConfigFile(BuildEnvironment env, string clusterName) =>$"{env.KubePath}{clusterName}";
-        
+        public string GetConfigFile(BuildEnvironment env, string clusterName) => $"{env.KubePath}{clusterName}";
+
         /// <summary>
         /// 更新k8s版本
         /// </summary>
@@ -29,8 +29,8 @@ namespace FOPS.Com.BuilderServer.Kubectl
         {
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
             var env        = new BuildEnvironment();
-            var configFile = GetConfigFile(env,cluster.Name);
-            CreateConfigFile(env,cluster);
+            var configFile = GetConfigFile(env, cluster.Name);
+            CreateConfigFile(env, cluster);
             // Docker仓库，如果配置了，说明需要上传，则镜像名要设置前缀
             var docker = await DockerHubService.ToInfoAsync(project.DockerHub);
 

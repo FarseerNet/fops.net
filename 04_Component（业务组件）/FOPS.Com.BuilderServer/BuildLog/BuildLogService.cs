@@ -22,7 +22,7 @@ namespace FOPS.Com.BuilderServer.BuildLog
 
             IocManager.Logger<BuildLogService>().LogDebug($"构建任务id={buildId}：{log}。");
         }
-        
+
         /// <summary>
         /// 清除历史记录（正常不会存在，当buildId被重置时，有可能会冲突）
         /// </summary>
@@ -38,7 +38,7 @@ namespace FOPS.Com.BuilderServer.BuildLog
         public string[] View(int buildId)
         {
             var path = SavePath + $"{buildId}.txt";
-            return !System.IO.File.Exists(path) ? new string[0] : System.IO.File.ReadAllLines(path);
+            return !System.IO.File.Exists(path) ? Array.Empty<string>() : System.IO.File.ReadAllLines(path);
         }
     }
 }

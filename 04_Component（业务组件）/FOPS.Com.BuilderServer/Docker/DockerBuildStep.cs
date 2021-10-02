@@ -17,11 +17,11 @@ namespace FOPS.Com.BuilderServer.Docker
     /// <summary>
     /// Docker打包
     /// </summary>
-    public class DockerBuildStep:IBuildStep
+    public class DockerBuildStep : IBuildStep
     {
         public IBuildLogService      BuildLogService      { get; set; }
         public IDockerfileTplService DockerfileTplService { get; set; }
-        
+
         /// <summary>
         /// 构建
         /// </summary>
@@ -55,7 +55,7 @@ namespace FOPS.Com.BuilderServer.Docker
             return result.IsError switch
             {
                 false => new RunShellResult(false, $"镜像打包完成。"),
-                true  => new RunShellResult(true,  $"镜像打包出错了。")
+                true  => new RunShellResult(true, $"镜像打包出错了。")
             };
         }
     }

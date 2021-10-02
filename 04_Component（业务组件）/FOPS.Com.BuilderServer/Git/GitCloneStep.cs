@@ -17,7 +17,7 @@ namespace FOPS.Com.BuilderServer.Git
     {
         public IGitOpr     GitOpr     { get; set; }
         public IGitService GitService { get; set; }
-        
+
         /// <summary>
         /// Clone代码
         /// </summary>
@@ -31,12 +31,12 @@ namespace FOPS.Com.BuilderServer.Git
             }
 
             // 获取Git存放的路径
-            var gitPath = GitOpr.GetGitPath(env,git);
+            var gitPath = GitOpr.GetGitPath(env, git);
 
             // 让git记住密码
             await ShellTools.Run("git", "config --global credential.helper store", actReceiveOutput, env, null, cancellationToken);
-            
-            var result =  await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env, null, cancellationToken);
+
+            var result = await ShellTools.Run("git", $"clone -b {git.Branch} {url} {gitPath}", actReceiveOutput, env, null, cancellationToken);
             if (result.IsError)
             {
                 return new RunShellResult(true, "Git克隆失败");

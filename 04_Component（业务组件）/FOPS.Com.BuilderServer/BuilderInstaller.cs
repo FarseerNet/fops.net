@@ -35,17 +35,17 @@ namespace FOPS.Com.BuilderServer
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
-            container.Register(Component.For<IBuildStep, DockerBuildStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, DockerLoginStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, DockerUploadStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, DotnetBuildStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, GitCloneStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, GitPullAllStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, GitPullStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, KubectlUpdateImageStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, ShellStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, CopyToDistStep>().LifestyleTransient());
-            container.Register(Component.For<IBuildStep, CheckStep>().LifestyleTransient());
+            container.Register(Component.For<IBuildStep, DockerBuildStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, DockerLoginStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, DockerUploadStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, DotnetBuildStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, GitCloneStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, GitPullAllStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, GitPullStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, KubectlUpdateImageStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, ShellStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, CopyToDistStep>().LifestyleSingleton());
+            container.Register(Component.For<IBuildStep, CheckStep>().LifestyleSingleton());
         }
     }
 }

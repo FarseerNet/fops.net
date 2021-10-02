@@ -13,8 +13,8 @@ namespace FOPS.Com.BuilderServer.Git
 {
     public class GitOpr : IGitOpr
     {
-        public IGitService      GitService      { get; set; }
-        public IIocManager      IocManager      { get; set; }
+        public IGitService GitService { get; set; }
+        public IIocManager IocManager { get; set; }
 
         /// <summary>
         /// 获取Git存放的路径
@@ -70,7 +70,7 @@ namespace FOPS.Com.BuilderServer.Git
 
             // 获取Git存放的路径
             var env     = new BuildEnvironment();
-            var gitPath = GetGitPath(env,info);
+            var gitPath = GetGitPath(env, info);
             return await ShellTools.Run("rm", $"-rf {gitPath}", null, null);
         }
     }

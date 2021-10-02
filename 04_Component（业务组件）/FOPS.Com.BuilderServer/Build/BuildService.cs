@@ -16,8 +16,8 @@ namespace FOPS.Com.BuilderServer.Build
     /// </summary>
     public class BuildService : IBuildService
     {
-        public IProjectService   ProjectService   { get; set; }
-        public IBuildLogService  BuildLogService  { get; set; }
+        public IProjectService  ProjectService  { get; set; }
+        public IBuildLogService BuildLogService { get; set; }
 
         /// <summary>
         /// 创建构建任务
@@ -37,7 +37,7 @@ namespace FOPS.Com.BuilderServer.Build
                 FinishAt    = DateTime.Now,
             };
 
-            await BuilderContext.Data.Build.InsertAsync(po,true);
+            await BuilderContext.Data.Build.InsertAsync(po, true);
             return po.Id.GetValueOrDefault();
         }
 
@@ -55,7 +55,7 @@ namespace FOPS.Com.BuilderServer.Build
             });
         }
 
-        
+
 
         /// <summary>
         /// 设置任务成功
@@ -86,7 +86,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// 获取构建队列前30
         /// </summary>
         /// <returns></returns>
-        public Task<List<BuildVO>> ToBuildingList(int pageSize, int pageIndex) => BuilderContext.Data.Build.Select(o => new {o.Id, o.Status, o.BuildNumber, o.IsSuccess, o.ProjectId, o.CreateAt, o.FinishAt}).Desc(o => o.Id).ToListAsync(pageSize, pageIndex).MapAsync<BuildVO, BuildPO>();
+        public Task<List<BuildVO>> ToBuildingList(int pageSize, int pageIndex) => BuilderContext.Data.Build.Select(o => new { o.Id, o.Status, o.BuildNumber, o.IsSuccess, o.ProjectId, o.CreateAt, o.FinishAt }).Desc(o => o.Id).ToListAsync(pageSize, pageIndex).MapAsync<BuildVO, BuildPO>();
 
         /// <summary>
         /// 查看构建信息

@@ -3,7 +3,7 @@ using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
 {
-    public interface IBuildOpr: ISingletonDependency
+    public interface IBuildOpr : ISingletonDependency
     {
         /// <summary>
         /// 构建

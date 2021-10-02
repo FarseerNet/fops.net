@@ -15,11 +15,11 @@ namespace FOPS.Com.BuilderServer.Docker
     /// <summary>
     /// Docker上传镜像
     /// </summary>
-    public class DockerUploadStep:IBuildStep
+    public class DockerUploadStep : IBuildStep
     {
-        public IBuildLogService      BuildLogService      { get; set; }
-        public IProjectService       ProjectService       { get; set; }
-        
+        public IBuildLogService BuildLogService { get; set; }
+        public IProjectService  ProjectService  { get; set; }
+
         /// <summary>
         /// 构建
         /// </summary>
@@ -27,7 +27,7 @@ namespace FOPS.Com.BuilderServer.Docker
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始上传镜像。");
-            
+
             // 上传
             var result = await ShellTools.Run("docker", $"push {env.DockerImage}", actReceiveOutput, env, null, cancellationToken);
 
