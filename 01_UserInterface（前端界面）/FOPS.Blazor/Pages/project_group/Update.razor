@@ -151,6 +151,8 @@
                 icon = 2,
                 title = "出错了"
             });
+            nav.NavigateTo("/project/list");
+            return;
         }
         await _iocManager.Resolve<IProjectGroupService>().DeleteAsync(Id);
         GotoList();

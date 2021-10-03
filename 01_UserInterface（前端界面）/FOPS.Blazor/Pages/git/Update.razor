@@ -2,6 +2,7 @@
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
+@using FOPS.Abstract.Builder.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -132,7 +133,16 @@
                 icon = 2,
                 title = "出错了"
             });
+            nav.NavigateTo("/project/list");
+            return;
         }
+        var gitResult = await _iocManager.Resolve<IGitOpr>().ClearAsync(Id);
+        if (gitResult.IsError)
+        {
+            await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "清除失败"});
+            return;
+        }
+        
         await _iocManager.Resolve<IGitService>().DeleteAsync(Id);
         GotoList();
     }
