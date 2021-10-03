@@ -26,7 +26,7 @@ namespace FOPS.Com.FssServer.Tasks
         public Task<TaskVO> ToInfoByGroupIdAsync(int taskGroupId)
         {
             var key = CacheKeys.TaskForGroupKey;
-            return RedisContext.Instance.CacheManager.GetItemAsync(key, taskGroupId, () => TaskAdd.GetOrCreateAsync(taskGroupId), o => o.TaskGroupId);
+            return RedisContext.Instance.CacheManager.GetItemAsync(key, taskGroupId, () => TaskAdd.GetOrCreateAsync(taskGroupId));
         }
         
         /// <summary>
@@ -50,7 +50,7 @@ namespace FOPS.Com.FssServer.Tasks
                 }
 
                 return lst;
-            }, o => o.TaskGroupId);
+            });
         }
 
         /// <summary>

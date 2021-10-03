@@ -24,7 +24,7 @@ namespace FOPS.Com.FssServer.Client
         public async Task<List<ClientVO>> ToListAsync()
         {
             var key = CacheKeys.ClientKey;
-            var lst = await RedisContext.Instance.CacheManager.GetListAsync(key, () => new List<ClientVO>(), o => o.Id);
+            var lst = await RedisContext.Instance.CacheManager.GetListAsync(key, () => new List<ClientVO>());
 
             for (int i = 0; i < lst.Count; i++)
             {
