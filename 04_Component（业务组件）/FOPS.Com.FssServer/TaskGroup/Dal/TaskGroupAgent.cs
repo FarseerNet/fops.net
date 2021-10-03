@@ -28,6 +28,11 @@ namespace FOPS.Com.FssServer.TaskGroup.Dal
         /// 添加任务组
         /// </summary>
         public Task AddAsync(TaskGroupPO po) => MetaInfoContext.Data.TaskGroup.InsertAsync(po, true);
+        
+        /// <summary>
+        /// 删除当前任务组下的所有
+        /// </summary>
+        public Task<int> DeleteAsync(int taskGroupId) => MetaInfoContext.Data.TaskGroup.Where(o => o.Id == taskGroupId).DeleteAsync();
 
     }
 }

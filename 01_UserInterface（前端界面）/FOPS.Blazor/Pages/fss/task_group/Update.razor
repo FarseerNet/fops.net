@@ -1,6 +1,7 @@
 @page "/fss/task_group/update/{id:int}"
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
+@using FOPS.Abstract.MetaInfo.Server
 @using FS.Extends
 @using FS.Utils.Common
 @using FS.Utils.Component
@@ -109,24 +110,34 @@
 
 <div class="layui-footer" style="left: 0;">
     <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+    <button class="layui-btn layui-btn-danger" @onclick="Delete">删除</button>
 </div>
 
 @code{
 
-    [Parameter] public int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
-    private TaskGroupVO _info = new() {IsEnable = true,Cron = "1000"};
+    private TaskGroupVO _info = new()
+    {
+        IsEnable = true,
+        Cron = "1000"
+    };
 
     private async Task UpdateInfo()
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+            {
+                icon = 2,
+                title = "出错了"
+            });
             GotoList();
         }
         try
         {
-            // 是否为数字
+    // 是否为数字
             if (IsType.IsInt(_info.Cron))
             {
                 _info.IntervalMs = _info.Cron.ConvertType(0L);
@@ -140,8 +151,8 @@
                 throw new Exception("Cron格式错误");
 
             await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(_info);
-            
-            // 需要修改当前任务的JobName
+
+    // 需要修改当前任务的JobName
             if (_info.TaskId > 0)
             {
                 await _iocManager.Resolve<ITaskUpdate>().UpdateJobName(_info.TaskId, _info.JobName);
@@ -150,12 +161,19 @@
             {
                 await _iocManager.Resolve<ITaskAdd>().GetOrCreateAsync(_info.Id);
             }
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "修改成功", new
+            {
+                icon = 1
+            });
             GotoList();
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
     }
 
@@ -163,7 +181,11 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+            {
+                icon = 2,
+                title = "出错了"
+            });
             GotoList();
         }
     }
@@ -175,7 +197,11 @@
             _info = await _iocManager.Resolve<ITaskGroupInfo>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "任务组不存在", new {icon = 2, title = "出错了"});
+                await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
                 GotoList();
                 return;
             }
@@ -186,6 +212,12 @@
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");
+    }
+
+    private async Task Delete()
+    {
+        await _iocManager.Resolve<ITaskGroupDelete>().DeleteAsync(Id);
+        GotoList();
     }
 
 }

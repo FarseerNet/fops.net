@@ -61,5 +61,15 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 应用列表
         /// </summary>
         Task<List<ProjectVO>> ToAppListAsync();
+        
+        /// <summary>
+        /// 使用项目组的数量
+        /// </summary>
+        Task<int> GroupCountAsync(int groupId);
+        
+        /// <summary>
+        /// 使用Git的数量
+        /// </summary>
+        Task<int> GitCountAsync(int gitId);
     }
 }

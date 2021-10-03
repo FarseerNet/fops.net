@@ -56,6 +56,7 @@
             <div class="layui-input-block">
                 <div class="layui-footer" style="left: 0;">
                     <button class="layui-btn" @onclick="UpdateInfo">保存</button>
+                    <button class="layui-btn layui-btn-danger" @onclick="Delete">删除</button>
                 </div>
             </div>
         </div>
@@ -119,6 +120,21 @@
     private void GotoList()
     {
         nav.NavigateTo("/git/list");
+    }
+
+    private async Task Delete()
+    {
+        var count = await _iocManager.Resolve<IProjectService>().GitCountAsync(Id);
+        if (count > 0)
+        {
+            await js.InvokeVoidAsync("layer.alert", $"删除Git前，需先删除Git的{count}个项目", new
+            {
+                icon = 2,
+                title = "出错了"
+            });
+        }
+        await _iocManager.Resolve<IGitService>().DeleteAsync(Id);
+        GotoList();
     }
 
 }

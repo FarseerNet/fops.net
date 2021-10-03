@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.MetaInfo.Entity;
@@ -112,6 +111,16 @@ namespace FOPS.Com.MetaInfoServer.Project
         /// 项目数量
         /// </summary>
         public Task<int> CountAsync() => MetaInfoContext.Data.Project.CountAsync();
+
+        /// <summary>
+        /// 使用项目组的数量
+        /// </summary>
+        public Task<int> GroupCountAsync(int groupId) => MetaInfoContext.Data.Project.Where(o => o.GroupId == groupId).CountAsync();
+
+        /// <summary>
+        /// 使用Git的数量
+        /// </summary>
+        public Task<int> GitCountAsync(int gitId) => MetaInfoContext.Data.Project.Where(o => o.GitId == gitId).CountAsync();
 
         /// <summary>
         /// 添加项目
