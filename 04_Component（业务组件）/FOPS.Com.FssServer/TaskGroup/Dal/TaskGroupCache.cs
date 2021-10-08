@@ -49,7 +49,7 @@ namespace FOPS.Com.FssServer.TaskGroup.Dal
         public Task<TaskGroupVO> ToEntityAsync(int taskGroupId)
         {
             var key = CacheKeys.TaskGroupKey(EumCacheStoreType.Redis);
-            return RedisContext.Instance.CacheManager.GetItemAsync<TaskGroupVO, int>(key, taskGroupId, () => TaskGroupAgent.ToListAsync().MapAsync<TaskGroupVO, TaskGroupPO>());
+            return RedisContext.Instance.CacheManager.GetItemAsync(key, taskGroupId, () => TaskGroupAgent.ToListAsync().MapAsync<TaskGroupVO, TaskGroupPO>());
         }
     }
 }

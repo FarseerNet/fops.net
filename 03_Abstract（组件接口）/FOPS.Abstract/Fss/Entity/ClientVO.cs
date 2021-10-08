@@ -6,6 +6,7 @@ namespace FOPS.Abstract.Fss.Entity
     /// <summary>
     /// 客户端连接信息
     /// </summary>
+    [Serializable]
     public class ClientVO
     {
         /// <summary>

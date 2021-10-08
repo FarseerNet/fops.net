@@ -5,6 +5,7 @@ namespace FOPS.Abstract.Fss.Entity
     /// <summary>
     /// 任务组记录
     /// </summary>
+    [Serializable]
     public class TaskGroupVO
     {
         /// <summary>
