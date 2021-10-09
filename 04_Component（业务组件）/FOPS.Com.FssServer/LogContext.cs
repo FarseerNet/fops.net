@@ -30,7 +30,7 @@ namespace FOPS.Com.FssServer
 
         protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
         {
-            map["RunLog"].SetName($"FssLog_{DateTime.Now.ToString(_elasticIndexFormat)}", 2, 0, "FssLog");
+            map["RunLog"].SetName($"FssLog_{DateTime.Now.ToString(_elasticIndexFormat)}", 2, 0, 1, "FssLog");
         }
 
         /// <summary>
