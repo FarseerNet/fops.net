@@ -33,7 +33,11 @@
         排序
         <select style="display:inline;width: 200px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
-            <option value="1">1小时内耗时最高</option>
+            <option value="60">1小时耗时最高</option>
+            <option value="30">30分钟耗时最高</option>
+            <option value="10">10分钟耗时最高</option>
+            <option value="5">5分钟耗时最高</option>
+            <option value="1">1分钟耗时最高</option>
         </select>
         <div class="layui-input-inline">
             <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="orders-market-search-submit" @onclick="GetList"><i class="am-icon-search"></i> 搜索</button>
@@ -222,15 +226,9 @@
         {
             indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
         }
-        switch (_curSort)
-        {
-            case "0":
-                indexSet.Sort(s => s.Descending(d => d.StartTs));
-                break;
-            case "1":
-                indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddHours(-1).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
-                break;
-        }
+        if (_curSort == "0") indexSet.Sort(s => s.Descending(d => d.StartTs));
+        else indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
+
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
 
     // 替换参数
