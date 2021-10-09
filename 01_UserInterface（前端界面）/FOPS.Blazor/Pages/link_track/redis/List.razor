@@ -1,0 +1,185 @@
+@page "/link_track/redis/list"
+@page "/link_track/redis/list/{pageIndex:int}"
+@using Microsoft.AspNetCore.Components
+@using FS.Core.LinkTrack
+@using FS.Extends
+@using FS.LinkTrack
+@using FS.LinkTrack.Dal
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        应用
+        <select style="display:inline;width: 200px;" @onchange="GroupChange">
+            <option value="">全部</option>
+            @foreach (var projectVO in _lstAppId)
+            {
+                <option value="@projectVO.AppId">@projectVO.AppId</option>
+            }
+        </select>
+        <div class="layui-input-inline w100">
+            <input type="text" class="layui-input" placeholder="Topic" style="height: 30px;width:200px;" @bind="searchMethod">
+        </div>
+        <div class="layui-input-inline w100">
+            <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="orders-market-search-submit" @onclick="GetList"><i class="am-icon-search"></i> 搜索</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-0">
+                                    <span>AppId</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-1">
+                                    <span>ContextId</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-2">
+                                    <span>请求时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-3">
+                                    <span>耗时</span>
+                                </div>
+                            </th>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>Key</span>
+                                </div>
+                            </th>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>Hash Field</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-0"> @info.AppId</div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-1">
+                                        <a href="/link_track/info/@(info.ContextId)">@info.ContextId</a>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-2">
+                                        @info.StartTs.ToTimestamps().ToString("yyyy-MM-dd HH:mm:ss")
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-3">
+                                        @if (info.UseTs >= 100)
+                                        {
+                                            <strong class="layui-badge layui-bg-red">@(info.UseTs) ms</strong>
+                                        }
+                                        else if (info.UseTs >= 50)
+                                        {
+                                            <strong class="layui-badge layui-bg-blue">@(info.UseTs) ms</strong>
+                                        }
+                                        else
+                                        {
+                                            <span>@(info.UseTs) ms</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.RedisKey</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.RedisHashFields</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/redis/list/{index}"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+    .laytable-cell-14-0-0{ width: 130px; }
+    .laytable-cell-14-0-1{ width: 160px; }
+    .laytable-cell-14-0-2{ width: 150px; }
+    .laytable-cell-14-0-3{ width: 100px; }
+    .laytable-cell-14-0-4{ width: 150px; }
+    select { width: 150px; }
+</style>
+
+@code{
+
+    private int _lastIndex;
+    private long _totalCount;
+    private int _pageSize = 20;
+    [Parameter]
+    public int PageIndex { get; set; }
+    private bool _isFirst;
+    private List<SlowQueryPO> _lst = new();
+    private List<ProjectVO> _lstAppId = new();
+    private string _curAppId = "";
+
+    private string searchMethod;
+    private long searchUseTs;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isFirst && _lastIndex == PageIndex) return;
+        _isFirst = true;
+
+        if (PageIndex < 1) PageIndex = 1;
+        _lastIndex = PageIndex;
+
+        _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
+        GetList();
+    }
+    private void GroupChange(ChangeEventArgs args)
+    {
+        _curAppId = args.Value.ToString();
+        GetList();
+    }
+    public void GetList()
+    {
+        searchMethod = searchMethod?.Trim();
+        var indexSet = LinkTrackEsContext.Data.SlowQuery.Where(o => o.Term(t => t.CallType, EumCallType.Redis)).Sort(s => s.Descending(d => d.StartTs));
+        if (!string.IsNullOrWhiteSpace(_curAppId))
+        {
+            indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
+        }
+        if (!string.IsNullOrWhiteSpace(searchMethod))
+        {
+            indexSet.Where(o => o.QueryString(t => t.Fields(f => f.Field(f => f.RedisKey)).Query($"*{searchMethod}*")));
+        }
+        if (searchUseTs > 0)
+        {
+            indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
+        }
+        _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
+    }
+}
