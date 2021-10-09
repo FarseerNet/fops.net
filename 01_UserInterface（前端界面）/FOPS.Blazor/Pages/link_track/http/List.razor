@@ -22,11 +22,16 @@
             }
         </select>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="地址" style="height: 30px;width:200px;" @bind="searchMethod">
+            <input type="text" class="layui-input" placeholder="地址" style="height: 30px;width:400px;" @bind="searchMethod">
         </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
         </div>
+        排序
+        <select style="display:inline;width: 200px;" @onchange="SortChange">
+            <option value="0">按最新时间</option>
+            <option value="1">1小时内耗时最高</option>
+        </select>
         <div class="layui-input-inline">
             <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="orders-market-search-submit" @onclick="GetList"><i class="am-icon-search"></i> 搜索</button>
         </div>
@@ -109,7 +114,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="laytable-cell-14-0-4"><strong class="layui-badge layui-bg-green">@info.HttpMethod</strong>  @info.HttpUrl</div>
+                                    <div class="laytable-cell-14-0-4">
+                                        <strong class="layui-badge layui-bg-green">@info.HttpMethod</strong> @info.HttpUrl
+                                    </div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-7">
@@ -149,6 +156,7 @@
     private List<SlowQueryPO> _lst = new();
     private List<ProjectVO> _lstAppId = new();
     private string _curAppId = "";
+    private string _curSort = "0";
 
     private string searchMethod;
     private long searchUseTs;
@@ -169,10 +177,15 @@
         _curAppId = args.Value.ToString();
         GetList();
     }
+    private void SortChange(ChangeEventArgs args)
+    {
+        _curSort = args.Value.ToString();
+        GetList();
+    }
     public void GetList()
     {
         searchMethod = searchMethod?.Trim();
-        var indexSet = LinkTrackEsContext.Data.SlowQuery.Where(o => o.Term(t => t.CallType, EumCallType.HttpClient)).Sort(s => s.Descending(d => d.StartTs));
+        var indexSet = LinkTrackEsContext.Data.SlowQuery.Where(o => o.Term(t => t.CallType, EumCallType.HttpClient));
         if (!string.IsNullOrWhiteSpace(_curAppId))
         {
             indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
@@ -184,6 +197,15 @@
         if (searchUseTs > 0)
         {
             indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
+        }
+        switch (_curSort)
+        {
+            case "0":
+                indexSet.Sort(s => s.Descending(d => d.StartTs));
+                break;
+            case "1":
+                indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddHours(-1).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
+                break;
         }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
