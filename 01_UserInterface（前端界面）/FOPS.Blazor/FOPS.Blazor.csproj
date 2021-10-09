@@ -51,4 +51,12 @@
       <PackageReference Include="MySqlConnector" Version="1.3.11" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\link_track\es" />
+      <Folder Include="Pages\link_track\grpc" />
+      <Folder Include="Pages\link_track\http" />
+      <Folder Include="Pages\link_track\mq" />
+      <Folder Include="Pages\link_track\redis" />
+    </ItemGroup>
+
 </Project>

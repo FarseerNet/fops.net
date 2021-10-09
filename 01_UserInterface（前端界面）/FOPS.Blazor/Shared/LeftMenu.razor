@@ -28,7 +28,7 @@
             </li>
             @{
                 var configurationSection = _iocManager.Resolve<IConfigurationRoot>().GetSection("Database");
-                var dbConfig             = configurationSection.Get<DbConfig>();
+                var dbConfig = configurationSection.Get<DbConfig>();
                 if (dbConfig.Items.Any(o => o.Name == "fss_db"))
                 {
                     <li data-name="fss" class="layui-nav-item">
@@ -73,8 +73,38 @@
                         </a>
                         <dl class="layui-nav-child">
                             <dd data-name="grid">
-                                <NavLink class="nav-link" href="/link_track/list" Match="NavLinkMatch.All">
+                                <NavLink class="nav-link" href="/link_track/link/list" Match="NavLinkMatch.All">
                                     链路追踪
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/db/list" Match="NavLinkMatch.All">
+                                    数据库
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/redis/list" Match="NavLinkMatch.All">
+                                    Redis
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/http/list" Match="NavLinkMatch.All">
+                                    Http
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/grpc/list" Match="NavLinkMatch.All">
+                                    Grpc
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/es/list" Match="NavLinkMatch.All">
+                                    Elasticsear
+                                </NavLink>
+                            </dd>
+                            <dd>
+                                <NavLink class="nav-link" href="/link_track/mq/list" Match="NavLinkMatch.All">
+                                    Mq
                                 </NavLink>
                             </dd>
                         </dl>

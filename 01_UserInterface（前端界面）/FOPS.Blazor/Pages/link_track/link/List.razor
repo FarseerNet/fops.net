@@ -1,5 +1,5 @@
-@page "/link_track/list"
-@page "/link_track/list/{pageIndex:int}"
+@page "/link_track/link/list"
+@page "/link_track/link/list/{pageIndex:int}"
 @using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.MetaInfo.Server
 @using FOPS.Abstract.K8S.Enum
@@ -155,7 +155,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/link/list/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -228,7 +228,6 @@
         }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
-
 
     // 显示报文详情
     private async Task ShowBody(LinkTrackContext info)

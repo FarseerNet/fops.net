@@ -1,4 +1,4 @@
-@page "/link_track/info/{contextId}"
+@page "/link_track/link/info/{contextId}"
 @using FS.LinkTrack
 @using FS.Core.LinkTrack
 @using FS.Extends
@@ -333,7 +333,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/link_track/list");
+        nav.NavigateTo("/link_track/link/list");
     }
 
     private async Task Request()
