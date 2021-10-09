@@ -15,22 +15,23 @@ namespace FOPS.Blazor.Background
     /// </summary>
     public class RunBuildService : BackgroundService
     {
-        private readonly IIocManager         _ioc;
-        readonly         ILogger             _logger;
+        private readonly IIocManager _ioc;
+        readonly         ILogger     _logger;
 
         public RunBuildService(IIocManager ioc)
         {
-            _ioc                = ioc;
-            _logger             = _ioc.Logger<RunBuildService>();
+            _ioc    = ioc;
+            _logger = _ioc.Logger<RunBuildService>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             await Task.Delay(5000, stoppingToken);
-            var threadCount                  = Environment.ProcessorCount - 1;
-            if (threadCount < 1) threadCount = 1;
+            //var threadCount                  = Environment.ProcessorCount - 1;
+            //if (threadCount < 1) threadCount = 1;
+            var threadCount = 1;
             _logger.LogInformation($"开始执行构建队列，共{threadCount}个线程");
-            
+
             for (int i = 0; i < threadCount; i++)
             {
                 Task.Factory.StartNew(async () =>
