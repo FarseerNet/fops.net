@@ -141,7 +141,7 @@
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-7">
-                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看报文</button>
+                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">详情</button>
                                     </div>
                                 </td>
                             </tr>
@@ -244,24 +244,28 @@
         }
     }
 
-    // 显示报文详情
+    // 显示详情
     private async Task ShowBody(SlowQueryPO info)
     {
         var lstContent = new List<string>();
-        var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
+        string useTsHtml;
         if (info.UseTs >= 100)
         {
-            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
+            useTsHtml = $"<span>执行耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
         }
         else if (info.UseTs >= 50)
         {
-            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
+            useTsHtml = $"<span>执行耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
+        }
+        else
+        {
+            useTsHtml = $"<span>执行耗时：{info.UseTs} ms</span>";
         }
 
         lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.DbName}</strong> <strong class='layui-badge layui-bg-blue'>{info.DbTableName}</strong> {useTsHtml}</pre>");
         if (!string.IsNullOrWhiteSpace(info.DbSql))
         {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Sql：</strong>{info.DbSql}</pre>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Sql</strong> {info.DbSql}</pre>");
         }
 
         await js.InvokeVoidAsync("layer.open", new

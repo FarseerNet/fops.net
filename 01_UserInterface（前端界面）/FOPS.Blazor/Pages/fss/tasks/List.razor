@@ -8,6 +8,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -97,7 +98,8 @@
                                     <div class="layui-table-cell laytable-cell-task-3">
                                         @if (info.Status is EumTaskType.Working or EumTaskType.Fail or EumTaskType.Success)
                                         {
-                                            @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss");
+                                            @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                            ;
                                         }
                                     </div>
                                 </td>
@@ -174,8 +176,10 @@
 @code{
 
     private int _lastIndex;
-    [Parameter] public int PageIndex { get; set; } = 1;
-    [Parameter] public int GroupId { get; set; }
+    [Parameter]
+    public int PageIndex { get; set; } = 1;
+    [Parameter]
+    public int GroupId { get; set; }
     private int _totalCount;
     private int _pageSize = 20;
     private string PageUrl => "/fss/tasks/list/" + GroupId + "/{index}";
@@ -190,7 +194,9 @@
 
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
-        _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount) ?? new();
+        var page = await _iocManager.Resolve<IFssApi>().GetTaskListAsync(storage,GroupId, _pageSize, PageIndex);
+        _lst = page?.List;
+        _totalCount = page.TotalCount;
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -202,7 +208,10 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<ITaskList>().ToListAsync(GroupId, _pageSize, PageIndex, out _totalCount) ?? new();
+                    
+                    var page = await _iocManager.Resolve<IFssApi>().GetTaskListAsync(storage,GroupId, _pageSize, PageIndex);
+                    _lst = page?.List;
+                    _totalCount = page.TotalCount;
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }
@@ -223,13 +232,7 @@
 
     private async Task Cancel(TaskVO info)
     {
-        info = await _iocManager.Resolve<ITaskInfo>().ToInfoByDbAsync(info.Id);
-        info.Status = EumTaskType.Fail;
-        
-        var taskGroup = await _iocManager.Resolve<ITaskGroupInfo>().ToInfoAsync(info.TaskGroupId);
-        // 这里不设置的话，下次执行时间，有可能还是将来的，导致如果设置错了时间的话，会一直等待原来设置错的时间
-        taskGroup.NextAt = taskGroup.LastRunAt;
-        await _iocManager.Resolve<ITaskUpdate>().SaveFinishAsync(info, taskGroup);
+        await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.Id);
     }
 
 }

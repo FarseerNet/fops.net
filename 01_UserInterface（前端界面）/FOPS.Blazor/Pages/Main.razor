@@ -1,7 +1,6 @@
 @page "/main"
 @page "/"
 @inject IJSRuntime js;
-@using FS.Extends
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.MetaInfo.Server
 @using FOPS.Abstract.Docker.Server
@@ -9,6 +8,7 @@
 @using FOPS.Abstract.Builder.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-row layui-col-space15">
     <div class="layui-col-sm6 layui-col-md3">
@@ -94,36 +94,36 @@
                             <div carousel-item>
                                 <ul class="layui-row layui-col-space10 layui-this">
                                     <li class="layui-col-xs6">
-                                        <NavLink href="/fss/task_group/list" class="nav-link layadmin-backlog-body">
+                                        <navlink href="/fss/task_group/list" class="nav-link layadmin-backlog-body">
                                             <h3>FSS任务组</h3>
                                             <p>
                                                 <cite>@_taskGroupCount</cite>
                                             </p>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <NavLink href="/fss/tasks/unrunlist" class="nav-link layadmin-backlog-body">
+                                        <navlink href="/fss/tasks/unrunlist" class="nav-link layadmin-backlog-body">
                                             <h3>超时未执行</h3>
                                             <p>
                                                 <cite>@_toUnRunCount</cite>
                                             </p>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <NavLink href="/fss/client/list" class="nav-link layadmin-backlog-body">
+                                        <navlink href="/fss/client/list" class="nav-link layadmin-backlog-body">
                                             <h3>客户端</h3>
                                             <p>
                                                 <cite>@_clientCount</cite>
                                             </p>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs6">
-                                        <NavLink href="/fss/tasks/faillist" class="nav-link layadmin-backlog-body">
+                                        <navlink href="/fss/tasks/faillist" class="nav-link layadmin-backlog-body">
                                             <h3>今日失败</h3>
                                             <p>
                                                 <cite>@_todayFailCount</cite>
                                             </p>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                 </ul>
                                 <ul class="layui-row layui-col-space10">
@@ -149,52 +149,52 @@
                             <div carousel-item>
                                 <ul class="layui-row layui-col-space10 layui-this">
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/builder/list">
+                                        <navlink href="/builder/list">
                                             <i class="layui-icon layui-icon-console"></i>
                                             <cite>构建</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/k8s/deploy/list">
+                                        <navlink href="/k8s/deploy/list">
                                             <i class="layui-icon layui-icon-chat"></i>
                                             <cite>POD发布</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/k8s/single/deploy">
+                                        <navlink href="/k8s/single/deploy">
                                             <i class="layui-icon layui-icon-find-fill"></i>
                                             <cite>yaml发布</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/project/list">
+                                        <navlink href="/project/list">
                                             <i class="layui-icon layui-icon-template-1"></i>
                                             <cite>项目设置</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
+                                        <navlink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
                                             <i class="layui-icon layui-icon-chart"></i>
                                             <cite>FSS任务组</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
+                                        <navlink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
                                             <i class="layui-icon layui-icon-set"></i>
                                             <cite>FSS客户端</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/docker/tpl/list">
+                                        <navlink href="/docker/tpl/list">
                                             <i class="layui-icon layui-icon-survey"></i>
                                             <cite>容器模板</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                     <li class="layui-col-xs3">
-                                        <NavLink href="/k8s/tpl/list">
+                                        <navlink href="/k8s/tpl/list">
                                             <i class="layui-icon layui-icon-user"></i>
                                             <cite>K8S模板</cite>
-                                        </NavLink>
+                                        </navlink>
                                     </li>
                                 </ul>
                             </div>
@@ -292,35 +292,37 @@
 
     protected override async Task OnInitializedAsync()
     {
-    // FSS 任务组数
-        _taskGroupCount = await _iocManager.Resolve<ITaskGroupList>().Count();
-    // FSS 未执行数
-        _toUnRunCount = await _iocManager.Resolve<ITaskGroupList>().ToUnRunCountAsync();
-    // FSS 客户端数
-        _clientCount = await _iocManager.Resolve<IClientRegister>().ToClientCountAsync();
-    // FSS 今日失败数
-        _todayFailCount = await _iocManager.Resolve<ITaskInfo>().TodayFailCountAsync();
-    // 项目数量
-        _projectCount = await _iocManager.Resolve<IProjectService>().CountAsync();
-        _projectGroupCount = await _iocManager.Resolve<IProjectGroupService>().CountAsync();
-    // Git数量
-        _gitCount = await _iocManager.Resolve<IGitService>().CountAsync();
-
-        _dockerHubCount = await _iocManager.Resolve<IDockerHubService>().CountAsync();
-        _dockerfileTplCount = await _iocManager.Resolve<IDockerfileTplService>().CountAsync();
-
-        _clusterCount = await _iocManager.Resolve<IClusterService>().CountAsync();
-        _yamlTplCount = await _iocManager.Resolve<IYamlTplService>().CountAsync();
-
-        _buildCount = await _iocManager.Resolve<IBuildService>().CountAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // 初始化脚本
             await js.InvokeVoidAsync("layuiConfig.use", "index", "console");
+    // 初始化脚本
+            
+    // FSS 任务组数
+            _taskGroupCount = await _iocManager.Resolve<IFssApi>().GetTaskGroupCountAsync(storage);
+    // FSS 未执行数
+            _toUnRunCount = await _iocManager.Resolve<IFssApi>().GetTaskGroupUnRunCountAsync(storage);
+    // FSS 客户端数
+            _clientCount = await _iocManager.Resolve<IFssApi>().GetClientCountAsync(storage);
+    // FSS 今日失败数
+            _todayFailCount = await _iocManager.Resolve<IFssApi>().TodayTaskFailCountAsync(storage);
+    // 项目数量
+            _projectCount = await _iocManager.Resolve<IProjectService>().CountAsync();
+            _projectGroupCount = await _iocManager.Resolve<IProjectGroupService>().CountAsync();
+    // Git数量
+            _gitCount = await _iocManager.Resolve<IGitService>().CountAsync();
+
+            _dockerHubCount = await _iocManager.Resolve<IDockerHubService>().CountAsync();
+            _dockerfileTplCount = await _iocManager.Resolve<IDockerfileTplService>().CountAsync();
+
+            _clusterCount = await _iocManager.Resolve<IClusterService>().CountAsync();
+            _yamlTplCount = await _iocManager.Resolve<IYamlTplService>().CountAsync();
+
+            _buildCount = await _iocManager.Resolve<IBuildService>().CountAsync();
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

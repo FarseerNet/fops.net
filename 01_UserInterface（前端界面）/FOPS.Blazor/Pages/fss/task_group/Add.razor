@@ -4,6 +4,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-row layui-col-space15">
     <div class="layui-col-md6">
@@ -68,24 +69,43 @@
 
 @code{
 
-    private readonly TaskGroupVO _info = new() {IsEnable = true, StartAt = DateTime.Now, Data = "{}"};
+    private readonly TaskGroupVO _info = new()
+    {
+        IsEnable = true,
+        StartAt = DateTime.Now,
+        Data = "{}"
+    };
 
     private async Task AddInfo()
     {
         try
         {
-            if (_info.Caption == null || _info.Cron == null || _info.Data == null || _info.JobName == null)
+            var result = await _iocManager.Resolve<IFssApi>().AddTaskGroupAsync(storage,_info);
+            if (result.Status)
             {
-                throw new Exception("标题、时间间隔、传输数据、Job名称 必须填写");
+                await js.InvokeVoidAsync("layer.msg", "添加成功", new
+                {
+                    icon = 1
+                });
+                nav.NavigateTo("/fss/task_group/list");
             }
-            _info.Id=await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(_info);
-            await _iocManager.Resolve<ITaskAdd>().GetOrCreateAsync(_info.Id);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
-            nav.NavigateTo("/fss/task_group/list");
+            else
+            {
+                await js.InvokeVoidAsync("layer.alert", result.StatusMessage, new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
+            }
+
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
     }
 

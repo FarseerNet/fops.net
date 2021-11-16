@@ -4,10 +4,10 @@
 @using FOPS.Abstract.Fss.Entity
 @using FS.Extends
 @using System.Timers;
-@using Newtonsoft.Json
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -160,7 +160,8 @@
 @code{
 
     private int _lastIndex;
-    [Parameter] public int PageIndex { get; set; }
+    [Parameter]
+    public int PageIndex { get; set; }
     private int _totalCount;
     private int _pageSize = 20;
 
@@ -207,7 +208,7 @@
     private async Task GetList()
     {
         Console.WriteLine("GetList");
-        _lst = await _iocManager.Resolve<ITaskGroupList>().ToListInCacheAsync() ?? new();
+        _lst = await _iocManager.Resolve<IFssApi>().GetTaskGroupListAsync(storage) ?? new();
         _lst = _lst.OrderBy(o => o.JobName).ThenByDescending(o => o.Id).ToList();
 
     // 取出JobName
@@ -229,11 +230,14 @@
 
     private async Task RefreshCache()
     {
-        await _iocManager.Resolve<ITaskGroupList>().ToListAndSaveAsync();
-        await _iocManager.Resolve<ITaskUpdate>().ClearCacheAsync();
+        await _iocManager.Resolve<IFssApi>().GetTaskGroupListAndSaveAsync(storage);
+        await _iocManager.Resolve<IFssApi>().ClearTaskCacheAsync(storage);
         await GetList();
 
-        await js.InvokeVoidAsync("layer.msg", "刷新成功", new { icon = 1 });
+        await js.InvokeVoidAsync("layer.msg", "刷新成功", new
+        {
+            icon = 1
+        });
         nav.NavigateTo("/fss/task_group/list");
     }
 
@@ -250,22 +254,8 @@
     /// 复制项目
     private async Task Copy(TaskGroupVO info)
     {
-        var newInfo = JsonConvert.DeserializeObject<TaskGroupVO>(JsonConvert.SerializeObject(info));
-        newInfo.Caption += "复制";
-        newInfo.Id = 0;
-        newInfo.ActivateAt = DateTime.MinValue;
-        newInfo.NextAt = DateTime.MinValue;
-        newInfo.TaskId = 0;
-        newInfo.RunCount = 0;
-        newInfo.LastRunAt = DateTime.MinValue;
-        newInfo.RunSpeedAvg = 0;
-        if (newInfo.IntervalMs > 0)
-        {
-            newInfo.Cron = newInfo.IntervalMs.ToString();
-            newInfo.IntervalMs = 0;
-        }
-        var id = await _iocManager.Resolve<ITaskGroupAdd>().AddAsync(newInfo);
-        nav.NavigateTo($"/fss/task_group/update/{id}");
+        var id = await _iocManager.Resolve<IFssApi>().CopyTaskGroupAsync(storage,info.Id);
+        nav.NavigateTo($"/fss/task_group/update/{id.Data}");
     }
 
     // 筛选组状态
@@ -284,7 +274,7 @@
     private async Task SetEnable(TaskGroupVO info)
     {
         info.IsEnable = !info.IsEnable;
-        await _iocManager.Resolve<ITaskGroupUpdate>().SaveAsync(info);
+        await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,info);
         await GetList();
     }
 

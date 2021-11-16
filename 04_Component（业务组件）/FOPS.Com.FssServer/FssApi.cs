@@ -1,0 +1,225 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Blazored.LocalStorage;
+using FOPS.Abstract.Fss.Entity;
+using FOPS.Abstract.Fss.Server;
+using FS.Core;
+using FS.Core.Http;
+using FS.Core.Net;
+using Newtonsoft.Json;
+
+namespace FOPS.Com.FssServer
+{
+    public class FssApi : IFssApi
+    {
+        /// <summary>
+        /// 取出全局客户端列表
+        /// </summary>
+        public async Task<List<ClientVO>> GetClientListAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync<ApiResponseJson<List<ClientVO>>>($"{fssServer}/meta/GetClientList", "{}", new(), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 取出全局客户端数量
+        /// </summary>
+        public async Task<long> GetClientCountAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetClientCount", "{}", ApiResponseJson<long>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : 0;
+        }
+
+        /// <summary>
+        /// 添加任务组信息
+        /// </summary>
+        public async Task<ApiResponseJson<int>> AddTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            return await HttpPostJson.TryPostAsync($"{fssServer}/meta/AddTaskGroup", JsonConvert.SerializeObject(vo), ApiResponseJson<int>.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 复制任务组信息
+        /// </summary>
+        public async Task<ApiResponseJson<int>> CopyTaskGroupAsync(ILocalStorageService localStorageService, int taskGroupId)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            return await HttpPostJson.TryPostAsync($"{fssServer}/meta/CopyTaskGroup", JsonConvert.SerializeObject(new { Id = taskGroupId }), ApiResponseJson<int>.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 删除任务组
+        /// </summary>
+        public async Task<ApiResponseJson> DeleteTaskGroupAsync(ILocalStorageService localStorageService, int taskGroupId)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            return await HttpPostJson.TryPostAsync($"{fssServer}/meta/DeleteTaskGroup", JsonConvert.SerializeObject(new { Id = taskGroupId }), ApiResponseJson.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 获取任务组信息
+        /// </summary>
+        public async Task<TaskGroupVO> GetTaskGroupInfoAsync(ILocalStorageService localStorageService, int taskGroupId)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskGroupInfo", JsonConvert.SerializeObject(new { Id = taskGroupId }), ApiResponseJson<TaskGroupVO>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 获取全部任务列表
+        /// </summary>
+        public async Task<List<TaskGroupVO>> GetTaskGroupListAndSaveAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskGroupListAndSave", "{}", ApiResponseJson<List<TaskGroupVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 获取全部任务组列表
+        /// </summary>
+        public async Task<List<TaskGroupVO>> GetTaskGroupListAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskGroupList", "{}", ApiResponseJson<List<TaskGroupVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 获取任务组数量
+        /// </summary>
+        public async Task<long> GetTaskGroupCountAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskGroupCount", "{}", ApiResponseJson<long>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : 0;
+        }
+
+        /// <summary>
+        /// 获取未执行的任务数量
+        /// </summary>
+        public async Task<int> GetTaskGroupUnRunCountAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskGroupUnRunCount", "{}", ApiResponseJson<int>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : 0;
+        }
+
+        /// <summary>
+        /// 更新TaskGroup
+        /// </summary>
+        public async Task UpdateTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            await HttpPostJson.TryPostAsync($"{fssServer}/meta/UpdateTaskGroup", JsonConvert.SerializeObject(vo), ApiResponseJson.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 保存TaskGroup
+        /// </summary>
+        public async Task SaveTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            await HttpPostJson.TryPostAsync($"{fssServer}/meta/SaveTaskGroup", JsonConvert.SerializeObject(vo), ApiResponseJson.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 创建Task，并更新到缓存
+        /// </summary>
+        public async Task<ApiResponseJson<TaskVO>> GetOrCreateTaskAsync(ILocalStorageService localStorageService, int taskGroupId)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            return await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetOrCreateTask", JsonConvert.SerializeObject(new { Id = taskGroupId }), ApiResponseJson<TaskVO>.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 获取任务信息
+        /// </summary>
+        public async Task<TaskVO> GetTaskInfoByDbAsync(ILocalStorageService localStorageService, int id)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskInfoByDb", JsonConvert.SerializeObject(new { Id = id }), ApiResponseJson<TaskVO>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 今日执行失败数量
+        /// </summary>
+        public async Task<int> TodayTaskFailCountAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/TodayTaskFailCount", "{}", ApiResponseJson<int>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : 0;
+        }
+
+        /// <summary>
+        /// 获取全部任务列表
+        /// </summary>
+        public async Task<List<TaskVO>> GetTopTaskListAsync(ILocalStorageService localStorageService, int top)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTopTaskList", JsonConvert.SerializeObject(new { Top = top }), ApiResponseJson<List<TaskVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 获取指定任务组的任务列表
+        /// </summary>
+        public async Task<DataSplitList<TaskVO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskList", JsonConvert.SerializeObject(new { GroupId = groupId, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
+        }
+
+        /// <summary>
+        /// 获取失败的任务
+        /// </summary>
+        public async Task<DataSplitList<TaskVO>> GetTaskFailListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskFailList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
+        }
+
+        /// <summary>
+        /// 获取未执行的任务列表
+        /// </summary>
+        public async Task<DataSplitList<TaskVO>> GetTaskUnRunListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskUnRunList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
+        }
+        /// <summary>
+        /// 移除缓存
+        /// </summary>
+        public async Task ClearTaskCacheAsync(ILocalStorageService localStorageService)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            await HttpPostJson.TryPostAsync($"{fssServer}/meta/ClearTaskCache", "{}", ApiResponseJson<int>.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 任务组修改时，需要同步JobName
+        /// </summary>
+        public async Task UpdateTaskJobName(ILocalStorageService localStorageService, int taskId, string jobName)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskUnRunList", JsonConvert.SerializeObject(new { TaskId = taskId, JobName = jobName }), ApiResponseJson.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        public async Task CancelTask(ILocalStorageService localStorageService, int taskId)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            await HttpPostJson.TryPostAsync($"{fssServer}/meta/CancelTask", JsonConvert.SerializeObject(new { Id = taskId }), ApiResponseJson.Error("出错了"), 2000);
+        }
+    }
+}

@@ -8,6 +8,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -163,7 +164,10 @@
 
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
-        _lst = await _iocManager.Resolve<ITaskList>().ToFailListAsync(_pageSize, PageIndex, out _totalCount)??new();
+        
+        var page = await _iocManager.Resolve<IFssApi>().GetTaskFailListAsync(storage,_pageSize, PageIndex);
+        _lst = page?.List;
+        _totalCount = page.TotalCount;
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -175,7 +179,9 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<ITaskList>().ToFailListAsync(_pageSize, PageIndex, out _totalCount)??new();
+                    var page = await _iocManager.Resolve<IFssApi>().GetTaskFailListAsync(storage,_pageSize, PageIndex);
+                    _lst = page?.List;
+                    _totalCount = page.TotalCount;
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }

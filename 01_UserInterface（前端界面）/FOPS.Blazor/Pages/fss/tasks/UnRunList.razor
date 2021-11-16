@@ -8,6 +8,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -75,7 +76,9 @@
                             var info = _lst[index];
                             <tr data-index="@index">
                                 <td>
-                                    <div class="laytable-cell-task-1"><a href="/fss/tasks/list/@info.TaskGroupId">【@info.JobName】@info.Caption</a></div>
+                                    <div class="laytable-cell-task-1">
+                                        <a href="/fss/tasks/list/@info.TaskGroupId">【@info.JobName】@info.Caption</a>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-2">@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -83,7 +86,7 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-3">
                                         @{
-                                            var ts = DateTime.Now-info.StartAt;
+                                            var ts = DateTime.Now - info.StartAt;
                                             if (ts.TotalSeconds > 0)
                                             {
                                                 <label>@ts.GetDateDesc()</label>
@@ -156,7 +159,8 @@
 @code{
 
     private int _lastIndex;
-    [Parameter] public int PageIndex { get; set; } = 1;
+    [Parameter]
+    public int PageIndex { get; set; } = 1;
     private int _totalCount;
     private int _pageSize = 20;
     private List<TaskVO> _lst = new();
@@ -172,7 +176,7 @@
         _lastIndex = PageIndex;
         await GetList();
     }
-    
+
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -194,12 +198,14 @@
         }
         return Task.FromResult(0);
     }
-    
+
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<ITaskList>().ToUnRunListAsync(_pageSize, PageIndex, out _totalCount)??new();
+        var page = await _iocManager.Resolve<IFssApi>().GetTaskUnRunListAsync(storage,_pageSize, PageIndex);
+        _lst = page?.List;
+        _totalCount = page.TotalCount;
     }
-    
+
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");

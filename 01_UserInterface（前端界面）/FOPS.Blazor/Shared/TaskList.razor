@@ -12,6 +12,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-table-header">
     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
@@ -132,20 +133,20 @@
     {
         if (_isFirst) return;
         _isFirst = true;
-
-        _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
     }
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            _lst = await _iocManager.Resolve<IFssApi>().GetTopTaskListAsync(storage, 20);
+
             _timer = new Timer(3000);
             _timer.Elapsed += async (_, _) =>
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<ITaskList>().ToTopListAsync(20);
+                    _lst = await _iocManager.Resolve<IFssApi>().GetTopTaskListAsync(storage, 20);
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }
@@ -156,7 +157,6 @@
             };
             _timer.Enabled = true;
         }
-        return Task.FromResult(0);
     }
 
 }

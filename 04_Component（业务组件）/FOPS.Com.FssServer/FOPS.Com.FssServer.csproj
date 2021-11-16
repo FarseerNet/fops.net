@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
@@ -14,5 +14,9 @@
         <ProjectReference Include="..\..\03_Abstract（组件接口）\FOPS.Abstract\FOPS.Abstract.csproj" />
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.ElasticSearch\Farseer.Net.ElasticSearch.csproj" />
         <ProjectReference Include="..\..\05_Infrastructure（基础设施）\FOPS.Infrastructure.Repository\FOPS.Infrastructure.Repository.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
     </ItemGroup>
 </Project>

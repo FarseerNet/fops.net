@@ -378,10 +378,10 @@
             switch (info.Method)
             {
                 case "POST":
-                    linkTrackContextPO.ResponseBody = await Net.PostAsync(info.Path, info.RequestBody, header, Encoding.UTF8, info.ContentType);
+                    linkTrackContextPO.ResponseBody = await HttpPost.PostAsync(info.Path, info.RequestBody, header, info.ContentType);
                     break;
                 case "GET":
-                    linkTrackContextPO.ResponseBody = await Net.GetAsync(info.Path, info.RequestBody, header, Encoding.UTF8);
+                    linkTrackContextPO.ResponseBody = await HttpGet.GetAsync(info.Path, info.RequestBody, header);
                     break;
             }
             linkTrackContextPO.EndTs = DateTime.Now.ToTimestamps();

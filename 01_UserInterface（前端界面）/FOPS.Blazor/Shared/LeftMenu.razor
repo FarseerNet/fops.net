@@ -27,9 +27,8 @@
                 </dl>
             </li>
             @{
-                var configurationSection = _iocManager.Resolve<IConfigurationRoot>().GetSection("Database");
-                var dbConfig = configurationSection.Get<DbConfig>();
-                if (dbConfig.Items.Any(o => o.Name == "fss_db"))
+                var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS:Server").GetChildren();
+                if (fssServer.Any())
                 {
                     <li data-name="fss" class="layui-nav-item">
                         <a href="javascript:;" lay-tips="FSS" lay-direction="2">
@@ -104,7 +103,7 @@
                             </dd>
                             <dd>
                                 <NavLink class="nav-link" href="/link_track/es/list" Match="NavLinkMatch.All">
-                                    Elasticsear
+                                    Elasticsearch
                                 </NavLink>
                             </dd>
                         </dl>

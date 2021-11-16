@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using FOPS.Blazor.Background;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,13 +10,11 @@ using FOPS.Com.DockerServer;
 using FOPS.Com.FssServer;
 using FOPS.Com.K8SServer;
 using FOPS.Com.MetaInfoServer;
-using FS;
 using FS.Cache.Redis;
 using FS.Core;
 using FS.Data;
 using FS.DI;
 using FS.ElasticSearch;
-using FS.LinkTrack;
 using FS.Mapper;
 using FS.Modules;
 using FS.MQ.RedisStream;
@@ -53,11 +52,11 @@ namespace FOPS.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddFarseerIoc();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHostedService<RunBuildService>(); 
-            
+            services.AddBlazoredLocalStorage();
+            services.AddFarseerIoc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
