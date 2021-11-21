@@ -30,6 +30,9 @@
         <div class="layui-input-inline w150">
             <input type="text" class="layui-input" placeholder="请求地址" style="height: 30px;width:400px;" @bind="searchUrl">
         </div>
+        <div class="layui-input-inline w80">
+            <input type="text" class="layui-input" placeholder="Method" style="height: 30px;width:150px;" @bind="method">
+        </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="客户端IP" style="height: 30px;width:120px;" @bind="searchIp">
         </div>
@@ -196,6 +199,7 @@
 
     private string searchUrl;
     private string searchIp;
+    private string method;
     private long searchUseTs;
 
     protected override async Task OnParametersSetAsync()
@@ -232,7 +236,11 @@
         }
         if (!string.IsNullOrWhiteSpace(searchUrl))
         {
-            indexSet.Where(o => o.QueryString(t => t.Fields(f => f.Field(f => f.Path)).Query($"*{searchUrl}*")));
+            indexSet.Where(o => o.Match(t => t.Field(f=>f.Path).Query(searchUrl)));
+        }
+        if (!string.IsNullOrWhiteSpace(method))
+        {
+            indexSet.Where(o => o.Term(t => t.Method, method));
         }
         if (!string.IsNullOrWhiteSpace(searchIp))
         {
@@ -242,7 +250,7 @@
         {
             indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
         }
-        
+
         if (_curSort == "0") indexSet.Sort(s => s.Descending(d => d.StartTs));
         else indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
 
