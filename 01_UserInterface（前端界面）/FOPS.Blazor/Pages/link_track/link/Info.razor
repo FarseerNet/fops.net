@@ -77,7 +77,9 @@
                         <span class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
                             <strong class="layui-badge layui-bg-green" lay-tips="时间轴：@linkTrackVO.StartTs ms">@linkTrackVO.AppId</strong>
                             <span lay-tips="@linkTrackVO.Desc">@linkTrackVO.Caption</span>
-                            <a href="javascript:;" @onclick="o=>ViewCsharpCallMethods(linkTrackVO)"><span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span></a>
+                            <a href="javascript:;" @onclick="o => ViewCsharpCallMethods(linkTrackVO)">
+                                <span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span>
+                            </a>
                             @if (linkTrackVO.UseTs >= 100)
                             {
                                 <strong class="layui-badge layui-bg-red"> 耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -164,7 +166,8 @@
 
 @code{
 
-    [Parameter] public string ContextId { get; set; }
+    [Parameter]
+    public string ContextId { get; set; }
     private List<LinkTrackContextPO> _lst = new();
 
     protected override async Task OnParametersSetAsync()
@@ -177,8 +180,8 @@
 
     private async Task GetList()
     {
-        _lst = await LinkTrackEsContext.Data.LinkTrackContext.Sort(s => s.Ascending(d => d.StartTs))
-            .Where(o => o.Term(t => t.ContextId, ContextId)).ToListAsync();
+        _lst = await LinkTrackEsContext.Data.LinkTrackContext.Asc(d => d.StartTs)
+                                       .Where(t => t.ContextId == ContextId).ToListAsync();
 
         if (_lst.Count == 0) GotoList();
 
@@ -187,7 +190,15 @@
 
 
         AddLinkTrack(_lst[0], startTs);
-        lstVo.Add(new LinkTrackVO {Rgba = LinkTrackVO.RgbaList[0], AppId = _lst[0].AppId, StartTs = _lst[0].EndTs - startTs, UseTs = -1, Caption = $"调用完成", Desc = $"耗时：{_lst[0].UseTs} ms"});
+        lstVo.Add(new LinkTrackVO
+        {
+            Rgba = LinkTrackVO.RgbaList[0],
+            AppId = _lst[0].AppId,
+            StartTs = _lst[0].EndTs - startTs,
+            UseTs = -1,
+            Caption = $"调用完成",
+            Desc = $"耗时：{_lst[0].UseTs} ms"
+        });
     }
 
     private int rgbaIndex = -1;
@@ -389,7 +400,11 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = e.Message});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = e.Message
+            });
         }
         await js.InvokeVoidAsync("layer.close", load);
     }
@@ -401,7 +416,7 @@
         {
             lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{HttpUtility.HtmlEncode(csharpCallMethod)}</pre>");
         }
-        
+
         await js.InvokeVoidAsync("layer.open", new
         {
             type = 1,

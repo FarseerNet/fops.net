@@ -229,30 +229,19 @@
     {
         searchUrl = searchUrl?.Trim();
         searchIp = searchIp?.Trim();
-        var indexSet = LinkTrackEsContext.Data.LinkTrackContext;
-        if (!string.IsNullOrWhiteSpace(_curAppId))
-        {
-            indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
-        }
-        if (!string.IsNullOrWhiteSpace(searchUrl))
-        {
-            indexSet.Where(o => o.Match(t => t.Field(f=>f.Path).Query(searchUrl)));
-        }
-        if (!string.IsNullOrWhiteSpace(method))
-        {
-            indexSet.Where(o => o.Term(t => t.Method, method));
-        }
-        if (!string.IsNullOrWhiteSpace(searchIp))
-        {
-            indexSet.Where(o => o.Term(t => t.RequestIp, searchIp));
-        }
-        if (searchUseTs > 0)
-        {
-            indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
-        }
+        var indexSet = LinkTrackEsContext.Data.LinkTrackContext
+                                         .Where(t => t.AppId == _curAppId)
+                                         .Where(t => t.RequestIp == searchIp)
+                                         .Where(t => t.UseTs >= searchUseTs)
+                                         .Where(t => t.Method == method)
+                                         .Where(o => o.Path.Contains(searchUrl));
 
-        if (_curSort == "0") indexSet.Sort(s => s.Descending(d => d.StartTs));
-        else indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
+
+        if (_curSort == "0") indexSet.Desc(d => d.StartTs);
+        else
+        {
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
+        }
 
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }

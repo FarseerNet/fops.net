@@ -189,23 +189,17 @@
     public void GetList()
     {
         searchMethod = searchMethod?.Trim();
-        var indexSet = LinkTrackEsContext.Data.SlowQuery.Where(o => o.Term(t => t.CallType, EumCallType.HttpClient));
-        if (!string.IsNullOrWhiteSpace(_curAppId))
-        {
-            indexSet.Where(o => o.Term(t => t.AppId, _curAppId));
-        }
-        if (!string.IsNullOrWhiteSpace(searchMethod))
-        {
-            indexSet.Where(o => o.QueryString(t => t.Fields(f => f.Field(f => f.HttpUrl)).Query($"*{searchMethod}*")));
-        }
-        if (searchUseTs > 0)
-        {
-            indexSet.Where(o => o.LongRange(l => l.Field(f => f.UseTs).GreaterThanOrEquals(searchUseTs)));
-        }
+        var indexSet = LinkTrackEsContext.Data.SlowQuery
+                                         .Where(o => o.CallType == EumCallType.HttpClient)
+                                         .Where(o => o.AppId == _curAppId)
+                                         .Where(o => o.HttpUrl.Contains(searchMethod))
+                                         .Where(o => o.UseTs >= searchUseTs);
         
-        if (_curSort == "0") indexSet.Sort(s => s.Descending(d => d.StartTs));
-        else indexSet.Where(o => o.LongRange(l => l.Field(f => f.StartTs).GreaterThanOrEquals(DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()))).Sort(s => s.Descending(d => d.UseTs));
-
+        if (_curSort == "0") indexSet.Desc(d => d.StartTs);
+        else
+        {
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
+        }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 
