@@ -240,7 +240,8 @@
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
         {
-            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps())
+                    .Desc(d => d.UseTs);
         }
 
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
