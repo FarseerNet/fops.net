@@ -9,6 +9,7 @@
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
+@implements IDisposable;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -232,7 +233,11 @@
 
     private async Task Cancel(TaskVO info)
     {
-        await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.Id);
+        await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.TaskGroupId);
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

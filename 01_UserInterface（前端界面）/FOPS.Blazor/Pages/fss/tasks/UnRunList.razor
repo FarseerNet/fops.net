@@ -9,6 +9,7 @@
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
+@implements IDisposable;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -55,11 +56,6 @@
                                 </div>
                             </th>
                             <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-task-7">
-                                    <span>客户端IP</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-8">
                                     <span>创建时间</span>
                                 </div>
@@ -86,14 +82,13 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-3">
                                         @{
-                                            var ts = DateTime.Now - info.StartAt;
-                                            if (ts.TotalSeconds > 0)
+                                            if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
                                             {
-                                                <label>@ts.GetDateDesc()</label>
+                                                <strong class='layui-badge layui-bg-red'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
                                             }
                                             else
                                             {
-                                                <label>@ts.TotalMilliseconds 毫秒</label>
+                                                @($"等待 {(info.StartAt - DateTime.Now).GetDateDesc()}")
                                             }
                                         }
                                     </div>
@@ -128,9 +123,6 @@
                                                 break;
                                         }
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="layui-table-cell laytable-cell-task-7">@info.ClientIp</div>
                                 </td>
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -211,4 +203,8 @@
         nav.NavigateTo("/fss/task_group/list");
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

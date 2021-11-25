@@ -8,6 +8,7 @@
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
+@implements IDisposable;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -40,11 +41,6 @@
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-0">
                                     <span>组ID</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-1">
-                                    <span>任务ID</span>
                                 </div>
                             </th>
                             <th data-field="Title">
@@ -100,9 +96,6 @@
                             <tr data-index="@index">
                                 <td>
                                     <div class="laytable-cell-14-0-0">【@(info.IsEnable ? "开启" : "停止")】 @info.Id</div>
-                                </td>
-                                <td data-field="Type">
-                                    <div class="layui-table-cell laytable-cell-14-0-1">@info.TaskId</div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="laytable-cell-14-0-2">
@@ -229,8 +222,7 @@
 
     private async Task RefreshCache()
     {
-        await _iocManager.Resolve<IFssApi>().GetTaskGroupListAndSaveAsync(storage);
-        await _iocManager.Resolve<IFssApi>().ClearTaskCacheAsync(storage);
+        await _iocManager.Resolve<IFssApi>().SyncCacheToDbAsync(storage);
         await GetList();
 
         await js.InvokeVoidAsync("layer.msg", "刷新成功", new
@@ -277,4 +269,8 @@
         await GetList();
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

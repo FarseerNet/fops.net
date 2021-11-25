@@ -14,11 +14,6 @@ namespace FOPS.Abstract.Fss.Entity
         public int Id { get; set; }
         
         /// <summary>
-        /// 任务ID
-        /// </summary>
-        public int TaskId { get; set; }
-        
-        /// <summary>
         /// 任务组标题
         /// </summary>
         public string Caption { get; set; }

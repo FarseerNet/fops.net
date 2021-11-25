@@ -13,6 +13,7 @@
 @inject NavigationManager nav;
 @inject IJSRuntime js;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
+@implements IDisposable;
 
 <div class="layui-table-header">
     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
@@ -65,13 +66,17 @@
                 <td>
                     <div class="layui-table-cell laytable-cell-task-2">
                         @{
-                            if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
+                            if (info.Status == EumTaskType.Working)
                             {
-                                @($"超时{(DateTime.Now - info.StartAt).TotalSeconds.ConvertType(0)}秒")
+                                @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")
+                            }
+                            else if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
+                            {
+                                <strong class='layui-badge layui-bg-red'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
                             }
                             else
                             {
-                                @info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                @($"等待 {(info.StartAt - DateTime.Now).GetDateDesc()}")
                             }
                         }
                     </div>
@@ -90,7 +95,7 @@
                                 <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
                                 break;
                             case EumTaskType.Working:
-                                <button class="layui-btn layui-btn-xs layui-btn-normal">@info.Status.GetName()</button>
+                                <button class="layui-btn layui-btn-xs">@info.Status.GetName()</button>
                                 break;
                             case EumTaskType.Fail:
                                 <button class="layui-btn layui-btn-xs layui-btn-danger">@info.Status.GetName()</button>
@@ -159,5 +164,8 @@
             _timer.Enabled = true;
         }
     }
-
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

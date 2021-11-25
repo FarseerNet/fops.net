@@ -9,6 +9,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@implements IDisposable;
 
 <div class="layui-table-header">
     <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
@@ -169,8 +170,12 @@
             };
             _timer.Enabled = true;
         }
-        
+
         return Task.FromResult(0);
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

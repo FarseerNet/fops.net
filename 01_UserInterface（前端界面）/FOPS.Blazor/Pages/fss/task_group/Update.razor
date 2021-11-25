@@ -83,12 +83,6 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">子任务ID</label>
-                    <div class="layui-input-block">
-                        <label class="layui-form-label" style="width:150px">@_info.TaskId</label>
-                    </div>
-                </div>
-                <div class="layui-form-item">
                     <label class="layui-form-label">平均耗时</label>
                     <div class="layui-input-block">
                         <label class="layui-form-label" style="width:150px">@_info.RunSpeedAvg</label>
@@ -151,17 +145,8 @@
             else
                 throw new Exception("Cron格式错误");
 
-            await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,_info);
-
-    // 需要修改当前任务的JobName
-            if (_info.TaskId > 0)
-            {
-                await _iocManager.Resolve<IFssApi>().UpdateTaskJobName(storage,_info.TaskId, _info.JobName);
-            }
-            else
-            {
-                await _iocManager.Resolve<IFssApi>().GetOrCreateTaskAsync(storage,_info.Id);
-            }
+            await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,_info); 
+            
             await js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
                 icon = 1

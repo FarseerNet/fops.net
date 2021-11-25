@@ -8,6 +8,7 @@
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@implements IDisposable;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -169,4 +170,8 @@
         nav.NavigateTo($"/builder/log/{Id}", true);
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

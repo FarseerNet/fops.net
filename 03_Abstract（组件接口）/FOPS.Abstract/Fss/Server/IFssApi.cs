@@ -10,7 +10,6 @@ namespace FOPS.Abstract.Fss.Server
 {
     public interface IFssApi: ISingletonDependency
     {
-
         /// <summary>
         /// 取出全局客户端列表
         /// </summary>
@@ -38,7 +37,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        Task<List<TaskGroupVO>> GetTaskGroupListAndSaveAsync(ILocalStorageService localStorageService);
+        Task SyncCacheToDbAsync(ILocalStorageService localStorageService);
         /// <summary>
         /// 获取全部任务组列表
         /// </summary>
@@ -52,21 +51,9 @@ namespace FOPS.Abstract.Fss.Server
         /// </summary>
         Task<int> GetTaskGroupUnRunCountAsync(ILocalStorageService localStorageService);
         /// <summary>
-        /// 更新TaskGroup
-        /// </summary>
-        Task UpdateTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo);
-        /// <summary>
         /// 保存TaskGroup
         /// </summary>
         Task SaveTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo);
-        /// <summary>
-        /// 创建Task，并更新到缓存
-        /// </summary>
-        Task<ApiResponseJson<TaskVO>> GetOrCreateTaskAsync(ILocalStorageService localStorageService, int taskGroupId);
-        /// <summary>
-        /// 获取任务信息
-        /// </summary>
-        Task<TaskVO> GetTaskInfoByDbAsync(ILocalStorageService localStorageService, int id);
         /// <summary>
         /// 今日执行失败数量
         /// </summary>
@@ -88,16 +75,8 @@ namespace FOPS.Abstract.Fss.Server
         /// </summary>
         Task<DataSplitList<TaskVO>> GetTaskUnRunListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
         /// <summary>
-        /// 移除缓存
-        /// </summary>
-        Task ClearTaskCacheAsync(ILocalStorageService localStorageService);
-        /// <summary>
-        /// 任务组修改时，需要同步JobName
-        /// </summary>
-        Task UpdateTaskJobName(ILocalStorageService localStorageService, int taskId, string jobName);
-        /// <summary>
         /// 取消任务
         /// </summary>
-        Task CancelTask(ILocalStorageService localStorageService, int taskId);
+        Task CancelTask(ILocalStorageService localStorageService, int taskGroupId);
     }
 }
