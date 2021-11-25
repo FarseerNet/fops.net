@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using FOPS.Abstract.Fss.Entity;
+using FOPS.Abstract.Fss.Enum;
 using FOPS.Abstract.Fss.Server;
 using FS.Core;
 using FS.Core.Http;
@@ -129,13 +130,23 @@ namespace FOPS.Com.FssServer
         }
 
         /// <summary>
-        /// 获取全部任务列表
+        /// 获取进行中的任务
         /// </summary>
-        public async Task<List<TaskVO>> GetTopTaskListAsync(ILocalStorageService localStorageService, int top)
+        public async Task<List<TaskVO>> GetTaskUnFinishListAsync(ILocalStorageService localStorageService, int top)
         {
             var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTopTaskList", JsonConvert.SerializeObject(new { Top = top }), ApiResponseJson<List<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskUnFinishList", JsonConvert.SerializeObject(new { Top = top }), ApiResponseJson<List<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new();
+        }
+
+        /// <summary>
+        /// 获取所有任务
+        /// </summary>
+        public async Task<DataSplitList<TaskVO>> GetAllTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetAllTaskList", JsonConvert.SerializeObject(new { Status = status, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new(new(), 0);
         }
 
         /// <summary>

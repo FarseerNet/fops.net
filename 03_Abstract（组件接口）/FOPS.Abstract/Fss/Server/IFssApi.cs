@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using FOPS.Abstract.Fss.Entity;
+using FOPS.Abstract.Fss.Enum;
 using FS.Core;
 using FS.Core.Net;
 using FS.DI;
@@ -62,7 +63,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        Task<List<TaskVO>> GetTopTaskListAsync(ILocalStorageService localStorageService, int top);
+        Task<List<TaskVO>> GetTaskUnFinishListAsync(ILocalStorageService localStorageService, int top);
         /// <summary>
         /// 获取指定任务组的任务列表
         /// </summary>
@@ -83,5 +84,9 @@ namespace FOPS.Abstract.Fss.Server
         /// 获取日志
         /// </summary>
         Task<DataSplitList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex);
+        /// <summary>
+        /// 获取所有任务
+        /// </summary>
+        Task<DataSplitList<TaskVO>> GetAllTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex);
     }
 }

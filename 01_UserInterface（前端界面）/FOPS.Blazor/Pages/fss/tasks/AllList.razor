@@ -1,5 +1,5 @@
-@page "/fss/tasks/unrunlist/{pageIndex:int}"
-@page "/fss/tasks/unrunlist"
+@page "/fss/tasks/alllist/{pageIndex:int}"
+@page "/fss/tasks/alllist"
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
 @using FOPS.Abstract.Fss.Enum
@@ -13,7 +13,14 @@
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        未执行任务列表
+        全部任务列表
+        <select style="display:inline;width: 200px;" @onchange="StatusChange">
+            <option value="">全部</option>
+            @foreach (var taskType in typeof(EumTaskType).ToList())
+            {
+                <option value="@taskType">@(((EumTaskType)taskType).GetName())</option>
+            }
+        </select>
         <div class="layui-right">
             <button class="layui-btn layui-btn-right" @onclick=GotoList><i class="am-icon-plus"></i>任务组列表</button>
         </div>
@@ -53,6 +60,11 @@
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-6">
                                     <span>状态</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-7">
+                                    <span>客户端ID</span>
                                 </div>
                             </th>
                             <th data-field="Type">
@@ -129,6 +141,9 @@
                                     </div>
                                 </td>
                                 <td>
+                                    <div class="layui-table-cell laytable-cell-task-7">@info.ClientId</div>
+                                </td>
+                                <td>
                                     <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                             </tr>
@@ -137,7 +152,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/tasks/unrunlist/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/tasks/alllist/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -148,7 +163,7 @@
 .laytable-cell-task-4 {width: 100px;}
 .laytable-cell-task-5 {width: 100px;}
 .laytable-cell-task-6 {width: 80px;}
-.laytable-cell-task-7 {width: 120px;}
+.laytable-cell-task-7 {width: 180px;}
 .laytable-cell-task-8 {width: 150px;}
 </style>
 
@@ -160,6 +175,7 @@
     private int _totalCount;
     private int _pageSize = 20;
     private List<TaskVO> _lst = new();
+    private EumTaskType? _taskType;
     private Timer _timer;
     private bool _isFirst;
 
@@ -197,14 +213,21 @@
 
     private async Task GetList()
     {
-        var page = await _iocManager.Resolve<IFssApi>().GetTaskUnRunListAsync(storage,_pageSize, PageIndex);
-        _lst = page?.List;
+        var page = await _iocManager.Resolve<IFssApi>().GetAllTaskListAsync(storage, _taskType, _pageSize, PageIndex);
+        _lst = page.List;
         _totalCount = page.TotalCount;
     }
 
     private void GotoList()
     {
         nav.NavigateTo("/fss/task_group/list");
+    }
+
+    private Task StatusChange(ChangeEventArgs args)
+    {
+        if (args.Value.ToString() == "") _taskType = null;
+        else _taskType = (EumTaskType)args.Value.ConvertType(0);
+        return GetList();
     }
 
     public void Dispose()

@@ -144,7 +144,7 @@
     {
         if (firstRender)
         {
-            _lst = await _iocManager.Resolve<IFssApi>().GetTopTaskListAsync(storage, 20);
+            _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, 20);
             await InvokeAsync(StateHasChanged);
             
             _timer = new Timer(3000);
@@ -152,7 +152,7 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<IFssApi>().GetTopTaskListAsync(storage, 20);
+                    _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, 20);
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }
