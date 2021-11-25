@@ -40,7 +40,7 @@
             </th>
             <th data-field="Type">
                 <div class="layui-table-cell laytable-cell-task-5">
-                    <span>客户端IP</span>
+                    <span>客户端ID</span>
                 </div>
             </th>
             <th data-field="Type">
@@ -105,7 +105,7 @@
                     </div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-task-5">@info.ClientIp</div>
+                    <div class="layui-table-cell laytable-cell-task-5">@info.ClientId</div>
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -120,7 +120,7 @@
 .laytable-cell-task-2 {width: 150px;}
 .laytable-cell-task-3 {width: 60px;}
 .laytable-cell-task-4 {width: 80px;}
-.laytable-cell-task-5 {width: 120px;}
+.laytable-cell-task-5 {width: 180px;}
 .laytable-cell-task-6 {width: 150px;}
 </style>
 
@@ -140,7 +140,8 @@
         if (firstRender)
         {
             _lst = await _iocManager.Resolve<IFssApi>().GetTopTaskListAsync(storage, 20);
-
+            await InvokeAsync(StateHasChanged);
+            
             _timer = new Timer(3000);
             _timer.Elapsed += async (_, _) =>
             {
