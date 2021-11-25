@@ -1,0 +1,173 @@
+@page "/fss/runlog/list/{pageIndex:int}"
+@page "/fss/runlog/list"
+@using FOPS.Abstract.Fss.Server
+@using FOPS.Abstract.Fss.Entity
+@using FS.Core
+@using FS.Extends
+@using Microsoft.Extensions.Logging
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+<div class="layui-card">
+    <div class="layui-card-header" id="anchor-play-header">
+        日志列表
+        <select style="display:inline;width: 200px;" @onchange="JobChange">
+            <option value="">全部</option>
+            @foreach (var jobName in lstJobName)
+            {
+                <option value="@jobName">@jobName</option>
+            }
+        </select>
+
+        <select style="display:inline;width: 200px;" @onchange="LevelChange">
+            <option value="">全部</option>
+            @foreach (var logLevel in typeof(LogLevel).ToList())
+            {
+                <option value="@logLevel">@(((LogLevel)logLevel).ToString())</option>
+            }
+        </select>
+    </div>
+    <div class="layui-card-body">
+        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+            <div class="layui-table-box">
+                <div class="layui-table-header">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <thead>
+                        <tr>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-task-0">
+                                    <span>任务组ID</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-1">
+                                    <span>任务名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-2">
+                                    <span>JobName</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-3">
+                                    <span>日志内容</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-4">
+                                    <span>日志时间</span>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-table-body layui-table-main">
+                    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+                        <tbody>
+                        @for (var index = 0; index < _lst.Count; index++)
+                        {
+                            var info = _lst[index];
+                            <tr data-index="@index">
+                                <td>
+                                    <div class="laytable-cell-task-0">@info.TaskGroupId</div>
+                                </td>
+                                <td>
+                                    <div class="laytable-cell-task-1">@info.Caption</div>
+                                </td>
+                                <td>
+                                    <div class="laytable-cell-task-2">@info.JobName</div>
+                                </td>
+                                <td>
+                                    <div class="laytable-cell-task-3">
+                                        @switch (info.LogLevel)
+                                        {
+                                            case LogLevel.Trace:
+                                            case LogLevel.Information:
+                                                <strong class='layui-badge layui-bg-blue'>Info</strong>
+                                                break;
+                                            case LogLevel.Debug:
+                                            case LogLevel.Critical:
+                                                <strong class='layui-badge layui-bg-blue'>@info.LogLevel.ToString()</strong>
+                                                break;
+                                            case LogLevel.Warning:
+                                                <strong class='layui-badge layui-bg-danger'>@info.LogLevel.ToString()</strong>
+                                                break;
+                                            case LogLevel.Error:
+                                                <strong class='layui-badge'>@info.LogLevel.ToString()</strong>
+                                                break;
+                                        }
+                                        @($" {@info.Content}")
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-4">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="@PageUrl"></PageSplit>
+        </div>
+    </div>
+</div>
+<style>
+.laytable-cell-task-0 {width: 80px;}
+.laytable-cell-task-1 {width: 200px;}
+.laytable-cell-task-2 {width: 150px;}
+.laytable-cell-task-3 {width: 950px;}
+.laytable-cell-task-4 {width: 160px;}
+</style>
+
+@code{
+
+    [Parameter]
+    public int PageIndex { get; set; } = 1;
+    private int _totalCount;
+    private int _pageSize = 20;
+    private string PageUrl => "/fss/runlog/list/{index}";
+    private List<RunLogVO> _lst = new();
+    private List<string> lstJobName = new();
+    private string jobName;
+    private LogLevel? logLevel;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var lstTask = await _iocManager.Resolve<IFssApi>().GetTaskGroupListAsync(storage) ?? new();
+    // 取出JobName
+            lstJobName = lstTask.Select(o => o.JobName).Distinct().ToList();
+
+            await GetList();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task GetList()
+    {
+        if (PageIndex < 1) PageIndex = 1;
+
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new DataSplitList<RunLogVO>(new(), 0);
+        _lst = data.List;
+        _totalCount = data.TotalCount;
+    }
+
+    private Task JobChange(ChangeEventArgs args)
+    {
+        jobName = args.Value.ToString();
+        return GetList();
+    }
+
+    private Task LevelChange(ChangeEventArgs args)
+    {
+        if (args.Value.ToString() == "") logLevel = null;
+        else logLevel = (LogLevel)args.Value.ConvertType(0);
+        return GetList();
+    }
+}

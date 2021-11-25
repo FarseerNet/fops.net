@@ -6,6 +6,7 @@ using FOPS.Abstract.Fss.Server;
 using FS.Core;
 using FS.Core.Http;
 using FS.Core.Net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace FOPS.Com.FssServer
@@ -174,6 +175,16 @@ namespace FOPS.Com.FssServer
         {
             var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
             await HttpPostJson.TryPostAsync($"{fssServer}/meta/CancelTask", JsonConvert.SerializeObject(new { Id = taskGroupId }), ApiResponseJson.Error("出错了"), 2000);
+        }
+
+        /// <summary>
+        /// 获取日志
+        /// </summary>
+        public async Task<DataSplitList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex)
+        {
+            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetRunLogList", JsonConvert.SerializeObject(new { JobName = jobName, LogLevel = logLevel, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<RunLogVO>>.Error("出错了"), 2000);
+            return result is { Status: true } ? result.Data : new(new List<RunLogVO>(), 0);
         }
     }
 }

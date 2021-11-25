@@ -5,6 +5,7 @@ using FOPS.Abstract.Fss.Entity;
 using FS.Core;
 using FS.Core.Net;
 using FS.DI;
+using Microsoft.Extensions.Logging;
 
 namespace FOPS.Abstract.Fss.Server
 {
@@ -78,5 +79,9 @@ namespace FOPS.Abstract.Fss.Server
         /// 取消任务
         /// </summary>
         Task CancelTask(ILocalStorageService localStorageService, int taskGroupId);
+        /// <summary>
+        /// 获取日志
+        /// </summary>
+        Task<DataSplitList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex);
     }
 }
