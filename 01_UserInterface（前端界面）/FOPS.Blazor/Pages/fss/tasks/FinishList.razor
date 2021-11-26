@@ -1,5 +1,5 @@
-@page "/fss/tasks/faillist/{pageIndex:int}"
-@page "/fss/tasks/faillist"
+@page "/fss/tasks/finishlist/{pageIndex:int}"
+@page "/fss/tasks/finishlist"
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
 @using FOPS.Abstract.Fss.Enum
@@ -13,7 +13,7 @@
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        任务执行失败列表
+        完成的任务
         <div class="layui-right">
             <button class="layui-btn layui-btn-right" @onclick=GotoList><i class="am-icon-plus"></i>任务组列表</button>
         </div>
@@ -133,7 +133,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/tasks/faillist/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/fss/tasks/finishlist/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -166,7 +166,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
         
-        var page = await _iocManager.Resolve<IFssApi>().GetTaskFailListAsync(storage,_pageSize, PageIndex);
+        var page = await _iocManager.Resolve<IFssApi>().GetTaskFinishListAsync(storage,_pageSize, PageIndex);
         _lst = page?.List;
         _totalCount = page.TotalCount;
     }
@@ -175,12 +175,12 @@
     {
         if (firstRender)
         {
-            _timer = new Timer(5000);
+            _timer = new Timer(1000);
             _timer.Elapsed += async (_, _) =>
             {
                 try
                 {
-                    var page = await _iocManager.Resolve<IFssApi>().GetTaskFailListAsync(storage,_pageSize, PageIndex);
+                    var page = await _iocManager.Resolve<IFssApi>().GetTaskFinishListAsync(storage,_pageSize, PageIndex);
                     _lst = page?.List;
                     _totalCount = page.TotalCount;
     // 刷新页面

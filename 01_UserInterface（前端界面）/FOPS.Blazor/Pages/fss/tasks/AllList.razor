@@ -13,7 +13,7 @@
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
-        全部任务列表
+        当前任务
         <select style="display:inline;width: 200px;" @onchange="StatusChange">
             <option value="">全部</option>
             @foreach (var taskType in typeof(EumTaskType).ToList())
@@ -72,6 +72,11 @@
                                     <span>创建时间</span>
                                 </div>
                             </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-9">
+                                    <span>操作</span>
+                                </div>
+                            </th>
                         </tr>
                         </thead>
                     </table>
@@ -96,11 +101,11 @@
                                         @{
                                             if (info.Status == EumTaskType.Working)
                                             {
-                                                @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                                <strong class='layui-badge layui-bg-green'>@($"用时 {(DateTime.Now - info.RunAt).GetDateDesc()}")</strong>
                                             }
                                             else if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
                                             {
-                                                <strong class='layui-badge layui-bg-red'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
+                                                <strong class='layui-badge'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
                                             }
                                             else
                                             {
@@ -146,6 +151,16 @@
                                 <td>
                                     <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-task-9">
+                                        @if (info.Status is EumTaskType.Scheduler or EumTaskType.Working)
+                                        {
+                                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => Cancel(info)">
+                                                <i class="layui-icon"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -165,6 +180,7 @@
 .laytable-cell-task-6 {width: 80px;}
 .laytable-cell-task-7 {width: 180px;}
 .laytable-cell-task-8 {width: 150px;}
+.laytable-cell-task-9 {width: 80px;}
 </style>
 
 @code{
@@ -193,7 +209,7 @@
     {
         if (firstRender)
         {
-            _timer = new Timer(5000);
+            _timer = new Timer(1000);
             _timer.Elapsed += async (_, _) =>
             {
                 try
@@ -213,7 +229,7 @@
 
     private async Task GetList()
     {
-        var page = await _iocManager.Resolve<IFssApi>().GetAllTaskListAsync(storage, _taskType, _pageSize, PageIndex);
+        var page = await _iocManager.Resolve<IFssApi>().GetEnableTaskListAsync(storage, _taskType, _pageSize, PageIndex);
         _lst = page.List;
         _totalCount = page.TotalCount;
     }
@@ -228,6 +244,11 @@
         if (args.Value.ToString() == "") _taskType = null;
         else _taskType = (EumTaskType)args.Value.ConvertType(0);
         return GetList();
+    }
+
+    private async Task Cancel(TaskVO info)
+    {
+        await _iocManager.Resolve<IFssApi>().CancelTask(storage, info.TaskGroupId);
     }
 
     public void Dispose()

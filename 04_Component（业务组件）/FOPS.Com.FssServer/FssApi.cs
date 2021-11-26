@@ -140,12 +140,12 @@ namespace FOPS.Com.FssServer
         }
 
         /// <summary>
-        /// 获取所有任务
+        /// 获取在用的任务
         /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetAllTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex)
+        public async Task<DataSplitList<TaskVO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex)
         {
             var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetAllTaskList", JsonConvert.SerializeObject(new { Status = status, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetEnableTaskList", JsonConvert.SerializeObject(new { Status = status, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new(), 0);
         }
 
@@ -160,22 +160,12 @@ namespace FOPS.Com.FssServer
         }
 
         /// <summary>
-        /// 获取失败的任务
+        /// 获取已完成的任务列表
         /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetTaskFailListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
+        public async Task<DataSplitList<TaskVO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
         {
             var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskFailList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
-            return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
-        }
-
-        /// <summary>
-        /// 获取未执行的任务列表
-        /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetTaskUnRunListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
-        {
-            var fssServer = await localStorageService.GetItemAsStringAsync("FssServer");
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskUnRunList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskFinishList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
         }
 

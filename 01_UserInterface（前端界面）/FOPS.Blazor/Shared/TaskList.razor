@@ -49,6 +49,11 @@
                     <span>创建时间</span>
                 </div>
             </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-7">
+                    <span>操作</span>
+                </div>
+            </th>
         </tr>
         </thead>
     </table>
@@ -68,11 +73,11 @@
                         @{
                             if (info.Status == EumTaskType.Working)
                             {
-                                @info.RunAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                <strong class='layui-badge layui-bg-green'>@($"用时 {(DateTime.Now - info.RunAt).GetDateDesc()}")</strong>
                             }
                             else if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
                             {
-                                <strong class='layui-badge layui-bg-red'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
+                                <strong class='layui-badge'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
                             }
                             else
                             {
@@ -115,6 +120,16 @@
                 <td>
                     <div class="layui-table-cell laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                 </td>
+                <td data-field="Title">
+                    <div class="layui-table-cell laytable-cell-task-7">
+                        @if (info.Status is EumTaskType.Scheduler or EumTaskType.Working)
+                        {
+                            <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => Cancel(info)">
+                                <i class="layui-icon"></i>
+                            </button>
+                        }
+                    </div>
+                </td>
             </tr>
         }
         </tbody>
@@ -127,6 +142,7 @@
 .laytable-cell-task-4 {width: 80px;}
 .laytable-cell-task-5 {width: 180px;}
 .laytable-cell-task-6 {width: 150px;}
+.laytable-cell-task-7 {width: 80px;}
 </style>
 
 @code{
@@ -146,8 +162,8 @@
         {
             _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, 20);
             await InvokeAsync(StateHasChanged);
-            
-            _timer = new Timer(3000);
+
+            _timer = new Timer(1000);
             _timer.Elapsed += async (_, _) =>
             {
                 try
@@ -164,6 +180,12 @@
             _timer.Enabled = true;
         }
     }
+
+    private async Task Cancel(TaskVO info)
+    {
+        await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.TaskGroupId);
+    }
+    
     public void Dispose()
     {
         _timer?.Dispose();

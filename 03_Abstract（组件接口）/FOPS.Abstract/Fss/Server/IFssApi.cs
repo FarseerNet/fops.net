@@ -69,13 +69,9 @@ namespace FOPS.Abstract.Fss.Server
         /// </summary>
         Task<DataSplitList<TaskVO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex);
         /// <summary>
-        /// 获取失败的任务
+        /// 获取已完成的任务列表
         /// </summary>
-        Task<DataSplitList<TaskVO>> GetTaskFailListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
-        /// <summary>
-        /// 获取未执行的任务列表
-        /// </summary>
-        Task<DataSplitList<TaskVO>> GetTaskUnRunListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
+        Task<DataSplitList<TaskVO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
         /// <summary>
         /// 取消任务
         /// </summary>
@@ -85,8 +81,8 @@ namespace FOPS.Abstract.Fss.Server
         /// </summary>
         Task<DataSplitList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex);
         /// <summary>
-        /// 获取所有任务
+        /// 获取在用的任务
         /// </summary>
-        Task<DataSplitList<TaskVO>> GetAllTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex);
+        Task<DataSplitList<TaskVO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex);
     }
 }
