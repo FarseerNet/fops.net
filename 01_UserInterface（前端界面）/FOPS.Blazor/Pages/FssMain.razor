@@ -1,0 +1,52 @@
+@page "/fssmain"
+@inject IJSRuntime js;
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-md6">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md14">
+                <div class="layui-card">
+                    <div class="layui-card-header" id="anchor-play-header">
+                        进行中的任务
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1">
+                            <div class="layui-table-box">
+                                <TaskList PageSize="25"></TaskList>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header" id="anchor-play-header">
+                任务日志
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1">
+                    <div class="layui-table-box">
+                        <FssLog PageSize="27"></FssLog>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await js.InvokeVoidAsync("layuiConfig.use", "index", "console");
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

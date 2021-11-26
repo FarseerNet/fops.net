@@ -146,6 +146,8 @@
 </style>
 
 @code{
+    [Parameter]
+    public int PageSize { get; set; } = 20;
     private List<TaskVO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
@@ -160,7 +162,7 @@
     {
         if (firstRender)
         {
-            _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, 20);
+            await GetList();
             await InvokeAsync(StateHasChanged);
 
             _timer = new Timer(1000);
@@ -168,8 +170,7 @@
             {
                 try
                 {
-                    _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, 20);
-    // 刷新页面
+                    await GetList();
                     await InvokeAsync(StateHasChanged);
                 }
                 catch (Exception e)
@@ -179,6 +180,10 @@
             };
             _timer.Enabled = true;
         }
+    }
+    private async Task GetList()
+    {
+        _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, PageSize);
     }
 
     private async Task Cancel(TaskVO info)

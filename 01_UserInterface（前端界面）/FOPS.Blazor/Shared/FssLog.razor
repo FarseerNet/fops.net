@@ -1,0 +1,124 @@
+@using FOPS.Abstract.Fss.Server
+@using FOPS.Abstract.Fss.Entity
+@using FS.Core
+@using Microsoft.Extensions.Logging
+@using System.Timers
+@inject IIocManager _iocManager;
+@inject NavigationManager nav;
+@inject IJSRuntime js;
+@inject Blazored.LocalStorage.ILocalStorageService storage;
+@implements IDisposable;
+
+
+<div class="layui-table-header">
+    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+        <thead>
+        <tr>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-log-0">
+                    <span>日志时间</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-log-1">
+                    <span>任务名称</span>
+                </div>
+            </th>
+            <th data-field="Type">
+                <div class="layui-table-cell laytable-cell-task-log-2">
+                    <span>日志内容</span>
+                </div>
+            </th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div class="layui-table-body layui-table-main">
+    <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="auto" lay-size="sm">
+        <tbody>
+        @for (var index = 0; index < _lst.Count; index++)
+        {
+            var info = _lst[index];
+            <tr data-index="@index">
+                <td>
+                    <div class="layui-table-cell laytable-cell-task-log-0">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-log-1">
+                        <span lay-tips="@info.JobName">@info.Caption</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="laytable-cell-task-log-2">
+                        @switch (info.LogLevel)
+                        {
+                            case LogLevel.Trace:
+                            case LogLevel.Information:
+                                <strong class='layui-badge layui-bg-blue'>Info</strong>
+                                break;
+                            case LogLevel.Debug:
+                            case LogLevel.Critical:
+                                <strong class='layui-badge layui-bg-blue'>@info.LogLevel.ToString()</strong>
+                                break;
+                            case LogLevel.Warning:
+                                <strong class='layui-badge layui-bg-danger'>@info.LogLevel.ToString()</strong>
+                                break;
+                            case LogLevel.Error:
+                                <strong class='layui-badge'>@info.LogLevel.ToString()</strong>
+                                break;
+                        }
+                        @($" {@info.Content}")
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<style>
+.laytable-cell-task-log-1 {width: 200px;}
+.laytable-cell-task-log-2 {width: 950px;}
+.laytable-cell-task-log-0 {width: 160px;}
+</style>
+
+@code{
+    [Parameter]
+    public int PageSize { get; set; } = 25;
+    private List<RunLogVO> _lst = new();
+    private Timer _timer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetList();
+            await InvokeAsync(StateHasChanged);
+            
+            _timer = new Timer(1000);
+            _timer.Elapsed += async (_, _) =>
+            {
+                try
+                {
+                    await GetList();
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
+            _timer.Enabled = true;
+        }
+    }
+
+    private async Task GetList()
+    {
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, null, null, PageSize, 1) ?? new DataSplitList<RunLogVO>(new(), 0);
+        _lst = data.List;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}
