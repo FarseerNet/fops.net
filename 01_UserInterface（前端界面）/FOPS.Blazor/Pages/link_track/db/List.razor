@@ -223,18 +223,6 @@
             indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
         }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
-
-    // 替换参数
-        foreach (var slowQueryPO in _lst)
-        {
-            if (slowQueryPO.DbSqlParam != null)
-            {
-                foreach (var sqlParam in slowQueryPO.DbSqlParam)
-                {
-                    slowQueryPO.DbSql = slowQueryPO.DbSql.Replace(sqlParam.Key, $"\"{sqlParam.Value}\"");
-                }
-            }
-        }
     }
 
     // 显示详情

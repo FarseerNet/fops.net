@@ -77,9 +77,7 @@
                         <span class="layui-progress-text" style="margin-left:@(linkTrackVO.StartTs / totalUse * 100)%;color:#000">
                             <strong class="layui-badge layui-bg-green" lay-tips="时间轴：@linkTrackVO.StartTs ms">@linkTrackVO.AppId</strong>
                             <span lay-tips="@linkTrackVO.Desc">@linkTrackVO.Caption</span>
-                            <a href="javascript:;" @onclick="o => ViewCsharpCallMethods(linkTrackVO)">
                                 <span style="color:#A0522D">@linkTrackVO.CsharpCallMethod</span>
-                            </a>
                             @if (linkTrackVO.UseTs >= 100)
                             {
                                 <strong class="layui-badge layui-bg-red"> 耗时：@(linkTrackVO.UseTs) ms</strong>
@@ -217,7 +215,7 @@
         });
         foreach (var linkTrackDetail in linkTrackContextPO.List)
         {
-            var firstStackTrace = linkTrackDetail.CallStackTraceList.FirstOrDefault();
+            var firstStackTrace = linkTrackDetail.CallStackTrace;
             var linkTrackVO = new LinkTrackVO
             {
                 Rgba = LinkTrackVO.RgbaList[rgbaIndex],
@@ -226,7 +224,6 @@
                 UseTs = linkTrackDetail.UseTs,
                 Desc = "",
                 CsharpCallMethod = firstStackTrace != null ? $"{firstStackTrace.ReturnType} {firstStackTrace.CallMethod}({string.Join(",", firstStackTrace.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {firstStackTrace.FileLineNumber}" : "",
-                CsharpCallMethods = linkTrackDetail.CallStackTraceList.Select(o => $"{o.ReturnType} {o.CallMethod}({string.Join(",", o.MethodParams.Select(oo => $"{oo.Value} {oo.Key}"))}) {o.FileLineNumber}").ToList()
             };
 
             switch (linkTrackDetail.CallType)
@@ -281,6 +278,7 @@
                     linkTrackDetail.Data.TryGetValue("RedisKey", out var redisKey);
                     linkTrackDetail.Data.TryGetValue("RedisHashFields", out var redisHashFields);
                     linkTrackVO.Caption = $"执行Redis => {linkTrackDetail.CallMethod} {redisKey} {redisHashFields} ";
+                    linkTrackVO.Desc = $"{linkTrackDetail.CallMethod} {redisKey} {redisHashFields}";
                     lstVo.Add(linkTrackVO);
                     break;
                 case EumCallType.Mq:
@@ -408,26 +406,4 @@
         }
         await js.InvokeVoidAsync("layer.close", load);
     }
-
-    private async Task ViewCsharpCallMethods(LinkTrackVO linkTrackVO)
-    {
-        var lstContent = new List<string>();
-        foreach (var csharpCallMethod in linkTrackVO.CsharpCallMethods)
-        {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{HttpUtility.HtmlEncode(csharpCallMethod)}</pre>");
-        }
-
-        await js.InvokeVoidAsync("layer.open", new
-        {
-            type = 1,
-            skin = "layui-layer-molv",
-            closeBtn = false,
-            area = "1500px",
-            anim = 10,
-            shadeClose = true,
-            title = $"{linkTrackVO.AppId} {linkTrackVO.Caption} {linkTrackVO.UseTs} ms",
-            content = string.Join("", lstContent)
-        });
-    }
-
 }
