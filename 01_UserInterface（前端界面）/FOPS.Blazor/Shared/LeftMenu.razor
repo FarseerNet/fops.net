@@ -32,7 +32,7 @@
                 </dl>
             </li>
             @{
-                var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS:Server").GetChildren();
+                var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
                 if (fssServer.Any())
                 {
                     <li data-name="fss" class="layui-nav-item">
@@ -71,9 +71,8 @@
                 }
             }
             @{
-                var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch");
-                var elasticSearchItemConfigs = esConfig.GetChildren().Select(o => o.Get<ElasticSearchItemConfig>());
-                if (elasticSearchItemConfigs.Any(o => o.Name == "LinkTrack"))
+                var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch").GetChildren();
+                if (esConfig.Any(o => o.Key == "LinkTrack"))
                 {
                     <li data-name="fss" class="layui-nav-item">
                         <a href="javascript:;" lay-tips="FSS" lay-direction="2">

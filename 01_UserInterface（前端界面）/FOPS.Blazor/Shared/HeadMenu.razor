@@ -98,7 +98,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        var fssServers = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS:Server").GetChildren();
+        var fssServers = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
         foreach (var configurationSection in fssServers)
         {
             _dicFssServer[configurationSection.Key] = configurationSection.Value;
