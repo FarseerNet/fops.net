@@ -15,7 +15,7 @@ namespace FOPS.Blazor
     {
         public static void Main(string[] args)
         {
-            FarseerApplication.Run<Startup>("FOPS.Blazor").Initialize(service => service.AddConsole());
+            FarseerApplication.Run<Startup>("FOPS.Blazor").Initialize();
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -101,7 +101,7 @@
         var fssServers = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS:Server").GetChildren();
         foreach (var configurationSection in fssServers)
         {
-            _dicFssServer[configurationSection.GetSection("Name").Value] = configurationSection.GetSection("Url").Value;
+            _dicFssServer[configurationSection.Key] = configurationSection.Value;
         }
     }
 
