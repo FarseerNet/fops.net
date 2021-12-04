@@ -3,7 +3,7 @@
     "FOPS.Blazor": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "",
       "applicationUrl": "http://localhost:88",
       "environmentVariables": {

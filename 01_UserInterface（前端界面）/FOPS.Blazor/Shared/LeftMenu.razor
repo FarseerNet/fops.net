@@ -5,185 +5,205 @@
 @inject IIocManager _iocManager;
 
 <div class="layui-side layui-side-menu">
-    <div class="layui-side-scroll">
-        <div class="layui-logo">
-            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-                <span>星云中心</span>
-            </NavLink>
-        </div>
+<div class="layui-side-scroll">
+<div class="layui-logo">
+    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+        <span>星云中心</span>
+    </NavLink>
+</div>
 
-        <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
-            <li data-name="home" class="layui-nav-item layui-nav-itemed">
-                <a href="javascript:;" lay-tips="控制台" lay-direction="2">
-                    <i class="layui-icon layui-icon-home"></i>
-                    <cite>控制台</cite>
+<ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+    <li data-name="home" class="layui-nav-item layui-nav-itemed">
+        <a href="javascript:;" lay-tips="控制台" lay-direction="2">
+            <i class="layui-icon layui-icon-home"></i>
+            <cite>控制台</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd data-name="console" class="layui-this">
+                <NavLink class="nav-link" href="/">
+                    大盘
+                </NavLink>
+            </dd>
+            <dd data-name="console">
+                <NavLink class="nav-link" href="/fssmain">
+                    Fss监控
+                </NavLink>
+            </dd>
+        </dl>
+    </li>
+    @{
+        var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
+        if (fssServer.Any())
+        {
+            <li data-name="fss" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="FSS" lay-direction="2">
+                    <i class="layui-icon layui-icon-component"></i>
+                    <cite>FSS</cite>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd data-name="console" class="layui-this">
-                        <NavLink class="nav-link" href="/">
-                            大盘
+                    <dd data-name="grid">
+                        <NavLink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
+                            任务组
                         </NavLink>
                     </dd>
-                    <dd data-name="console">
-                        <NavLink class="nav-link" href="/fssmain">
-                            Fss监控
+                    <dd data-name="grid">
+                        <NavLink class="nav-link" href="/fss/runlog/list" Match="NavLinkMatch.All">
+                            日志
+                        </NavLink>
+                    </dd>
+                    <dd data-name="grid">
+                        <NavLink class="nav-link" href="/fss/tasks/alllist" Match="NavLinkMatch.All">
+                            当前任务
+                        </NavLink>
+                    </dd>
+                    <dd data-name="grid">
+                        <NavLink class="nav-link" href="/fss/tasks/finishlist" Match="NavLinkMatch.All">
+                            完成的任务
+                        </NavLink>
+                    </dd>
+                    <dd data-name="form">
+                        <NavLink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
+                            客户端列表
                         </NavLink>
                     </dd>
                 </dl>
             </li>
-            @{
-                var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
-                if (fssServer.Any())
-                {
-                    <li data-name="fss" class="layui-nav-item">
-                        <a href="javascript:;" lay-tips="FSS" lay-direction="2">
-                            <i class="layui-icon layui-icon-component"></i>
-                            <cite>FSS</cite>
-                        </a>
+        }
+    }
+    @{
+        var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch").GetChildren();
+        if (esConfig.Any(o => o.Key == "LinkTrack"))
+        {
+            <li data-name="fss" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="FSS" lay-direction="2">
+                    <i class="layui-icon layui-icon-component"></i>
+                    <cite>链路</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="list">
+                        <NavLink class="nav-link" href="/link_track/link/apiserver">
+                            API请求
+                        </NavLink>
+                    </dd>
+                    <dd data-name="mobile">
+                        <NavLink class="nav-link" href="/link_track/link/consumer">
+                            MQ消费
+                        </NavLink>
+                    </dd>
+                    <dd data-name="mobile-pc">
+                        <NavLink class="nav-link" href="/link_track/link/fss">
+                            FSS任务
+                        </NavLink>
+                    </dd>
+                    <dd data-name="all">
+                        <NavLink class="nav-link" href="/link_track/link/backgroundservice">
+                            后台服务
+                        </NavLink>
+                    </dd>
+                    <dd>
+                        <a href="javascript:;">慢查询</a>
                         <dl class="layui-nav-child">
-                            <dd data-name="grid">
-                                <NavLink class="nav-link" href="/fss/task_group/list" Match="NavLinkMatch.All">
-                                    任务组
-                                </NavLink>
-                            </dd>
-                            <dd data-name="grid">
-                                <NavLink class="nav-link" href="/fss/runlog/list" Match="NavLinkMatch.All">
-                                    日志
-                                </NavLink>
-                            </dd>
-                            <dd data-name="grid">
-                                <NavLink class="nav-link" href="/fss/tasks/alllist" Match="NavLinkMatch.All">
-                                    当前任务
-                                </NavLink>
-                            </dd>
-                            <dd data-name="grid">
-                                <NavLink class="nav-link" href="/fss/tasks/finishlist" Match="NavLinkMatch.All">
-                                    完成的任务
-                                </NavLink>
-                            </dd>
-                            <dd data-name="form">
-                                <NavLink class="nav-link" href="/fss/client/list" Match="NavLinkMatch.All">
-                                    客户端列表
-                                </NavLink>
-                            </dd>
-                        </dl>
-                    </li>
-                }
-            }
-            @{
-                var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch").GetChildren();
-                if (esConfig.Any(o => o.Key == "LinkTrack"))
-                {
-                    <li data-name="fss" class="layui-nav-item">
-                        <a href="javascript:;" lay-tips="FSS" lay-direction="2">
-                            <i class="layui-icon layui-icon-component"></i>
-                            <cite>监控</cite>
-                        </a>
-                        <dl class="layui-nav-child">
-                            <dd data-name="grid">
-                                <NavLink class="nav-link" href="/link_track/link/list" Match="NavLinkMatch.All">
-                                    链路追踪
-                                </NavLink>
-                            </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/db/list" Match="NavLinkMatch.All">
+                            <dd data-name="list">
+                                <NavLink class="nav-link" href="/link_track/slow/db" Match="NavLinkMatch.All">
                                     数据库
                                 </NavLink>
                             </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/redis/list" Match="NavLinkMatch.All">
+                            <dd data-name="mobile">
+                                <NavLink class="nav-link" href="/link_track/slow/redis" Match="NavLinkMatch.All">
                                     Redis
                                 </NavLink>
                             </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/mq/list" Match="NavLinkMatch.All">
-                                    Mq
+                            <dd data-name="mobile-pc">
+                                <NavLink class="nav-link" href="/link_track/slow/mq" Match="NavLinkMatch.All">
+                                    MQ
                                 </NavLink>
                             </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/http/list" Match="NavLinkMatch.All">
+                            <dd data-name="all">
+                                <NavLink class="nav-link" href="/link_track/slow/http" Match="NavLinkMatch.All">
                                     Http
                                 </NavLink>
                             </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/grpc/list" Match="NavLinkMatch.All">
+                            <dd data-name="stack">
+                                <NavLink class="nav-link" href="/link_track/slow/grpc" Match="NavLinkMatch.All">
                                     Grpc
                                 </NavLink>
                             </dd>
-                            <dd>
-                                <NavLink class="nav-link" href="/link_track/es/list" Match="NavLinkMatch.All">
-                                    Elasticsearch
+                            <dd data-name="speed-dial">
+                                <NavLink class="nav-link" href="/link_track/slow/es" Match="NavLinkMatch.All">
+                                    ES
                                 </NavLink>
                             </dd>
                         </dl>
-                    </li>
-                }
-            }
-            <li data-name="deploy" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="构建" lay-direction="2">
-                    <i class="layui-icon layui-icon-app"></i>
-                    <cite>构建</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd data-name="content">
-                        <NavLink href="/builder/list">立即</NavLink>
                     </dd>
                 </dl>
             </li>
-            <li data-name="k8s" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="K8S" lay-direction="2">
-                    <i class="layui-icon layui-icon-template"></i>
-                    <cite>K8S</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd>
-                        <NavLink href="/k8s/cluster/list">集群管理</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/k8s/tpl/list">模板管理</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/k8s/deploy/list">POD发布</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/k8s/single/deploy">yaml发布</NavLink>
-                    </dd>
-                </dl>
-            </li>
-            <li data-name="docker" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="镜像" lay-direction="2">
-                    <i class="layui-icon layui-icon-template"></i>
-                    <cite>容器</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd>
-                        <NavLink href="/docker/tpl/list">模板管理</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/docker/hub/list">仓库管理</NavLink>
-                    </dd>
-                </dl>
-            </li>
-            <li data-name="set" class="layui-nav-item">
-                <a href="javascript:;" lay-tips="设置" lay-direction="2">
-                    <i class="layui-icon layui-icon-set"></i>
-                    <cite>设置</cite>
-                </a>
-                <dl class="layui-nav-child">
-                    <dd>
-                        <NavLink href="/project_group/list">项目组设置</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/project/list">项目设置</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/git/list">Git设置</NavLink>
-                    </dd>
-                    <dd>
-                        <NavLink href="/admin/list">管理员列表</NavLink>
-                    </dd>
-                </dl>
-            </li>
-        </ul>
-    </div>
+        }
+    }
+    <li data-name="deploy" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="构建" lay-direction="2">
+            <i class="layui-icon layui-icon-app"></i>
+            <cite>构建</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd data-name="content">
+                <NavLink href="/builder/list">立即</NavLink>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="k8s" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="K8S" lay-direction="2">
+            <i class="layui-icon layui-icon-template"></i>
+            <cite>K8S</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd>
+                <NavLink href="/k8s/cluster/list">集群管理</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/k8s/tpl/list">模板管理</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/k8s/deploy/list">POD发布</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/k8s/single/deploy">yaml发布</NavLink>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="docker" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="镜像" lay-direction="2">
+            <i class="layui-icon layui-icon-template"></i>
+            <cite>容器</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd>
+                <NavLink href="/docker/tpl/list">模板管理</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/docker/hub/list">仓库管理</NavLink>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="set" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="设置" lay-direction="2">
+            <i class="layui-icon layui-icon-set"></i>
+            <cite>设置</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd>
+                <NavLink href="/project_group/list">项目组设置</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/project/list">项目设置</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/git/list">Git设置</NavLink>
+            </dd>
+            <dd>
+                <NavLink href="/admin/list">管理员列表</NavLink>
+            </dd>
+        </dl>
+    </li>
+</ul>
+</div>
 </div>

@@ -1,12 +1,13 @@
-@page "/link_track/grpc/list"
-@page "/link_track/grpc/list/{pageIndex:int}"
+@page "/link_track/link/consumer"
+@page "/link_track/link/consumer/{pageIndex:int}"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
 @using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
+@using Newtonsoft.Json
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -21,14 +22,23 @@
                 <option value="@projectVO.AppId">@projectVO.AppId</option>
             }
         </select>
-        <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="地址" style="height: 30px;width:400px;" @bind="searchMethod">
+        
+        <select style="display:inline;width: 180px;" @bind="method">
+            <option value="">队列类型</option>
+            <option value="RabbitConsumer">RabbitConsumer</option>
+            <option value="RabbitConsumerBatch">RabbitConsumerBatch</option>
+            <option value="RedisStreamConsumer">RedisStreamConsumer</option>
+        </select>
+        <div class="layui-input-inline w120">
+            <input type="text" class="layui-input" placeholder="队列名称" style="height: 30px;width:200px;" @bind="_searchQueueName">
         </div>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
+            <input type="text" class="layui-input" placeholder="消费端IP" style="height: 30px;width:120px;" @bind="_searchIp">
         </div>
-        排序
-        <select style="display:inline;width: 200px;" @onchange="SortChange">
+        <div class="layui-input-inline w100">
+            <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="_searchUseTs">
+        </div>
+        <select style="display:inline;width: 150px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
             <option value="60">1小时耗时最高</option>
             <option value="30">30分钟耗时最高</option>
@@ -59,7 +69,7 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-2">
-                                    <span>请求时间</span>
+                                    <span>消费时间</span>
                                 </div>
                             </th>
                             <th data-field="Type">
@@ -67,13 +77,28 @@
                                     <span>耗时</span>
                                 </div>
                             </th>
-                            <th data-field="ID">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>地址</span>
+                                    <span>类型</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-5">
+                                    <span>服务端</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-6">
+                                    <span>队列名称</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-7">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-8">
                                     <span>操作</span>
                                 </div>
                             </th>
@@ -117,12 +142,31 @@
                                         }
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="laytable-cell-14-0-4"> @info.GrpcUrl</div>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-4">
+                                        @info.Method
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-5">
+                                        @info.Domain
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-left laytable-cell-14-0-6">
+                                        <a href="/link_track/link/info/@(info.ContextId)">
+                                            <strong class="layui-badge layui-bg-green">@info.Path</strong>
+                                        </a>
+                                    </div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-7">
-                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看报文</button>
+                                        @info.RequestIp
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-8">
+                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看消息</button>
                                     </div>
                                 </td>
                             </tr>
@@ -131,7 +175,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/grpc/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/link/consumer/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -140,10 +184,11 @@
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 500px; }
-    .laytable-cell-14-0-5{ width: 160px; }
-    .laytable-cell-14-0-6{ width: 500px; }
-    .laytable-cell-14-0-7{ width: 150px; }
+    .laytable-cell-14-0-4{ width: 200px; }
+    .laytable-cell-14-0-5{ width: 180px; }
+    .laytable-cell-14-0-6{ width: 300px; }
+    .laytable-cell-14-0-7{ width: 180px; }
+    .laytable-cell-14-0-8{ width: 140px; }
     select { width: 150px; }
 </style>
 
@@ -155,13 +200,15 @@
     [Parameter]
     public int PageIndex { get; set; }
     private bool _isFirst;
-    private List<SlowQueryPO> _lst = new();
+    private List<LinkTrackContextPO> _lst = new();
     private List<ProjectVO> _lstAppId = new();
     private string _curAppId = "";
     private string _curSort = "0";
 
-    private string searchMethod;
-    private long searchUseTs;
+    private string _searchQueueName;
+    private string _searchIp;
+    private string method;
+    private string _searchUseTs;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -174,6 +221,7 @@
         _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
         GetList();
     }
+
     private void GroupChange(ChangeEventArgs args)
     {
         _curAppId = args.Value.ToString();
@@ -184,25 +232,34 @@
         _curSort = args.Value.ToString();
         GetList();
     }
+
     public void GetList()
     {
-        searchMethod = searchMethod?.Trim();
-        var indexSet = LinkTrackEsContext.Data.SlowQuery
-                                         .Where(o => o.CallType == EumCallType.GrpcClient)
-                                         .Where(o => o.AppId == _curAppId)
-                                         .Where(o => o.GrpcUrl.Contains(searchMethod))
-                                         .Where(o => o.UseTs >= searchUseTs);
-        
+        _searchQueueName = _searchQueueName?.Trim();
+        _searchIp = _searchIp?.Trim();
+        if (string.IsNullOrWhiteSpace(method)) method = null;
+        var indexSet = LinkTrackEsContext.Data.LinkTrackContext
+                                         .Where(t => t.LinkType == EumLinkType.Consumer)
+                                         .Where(t => t.ParentAppId == "")
+                                         .Where(t => t.AppId == _curAppId)
+                                         .Where(t => t.RequestIp == _searchIp)
+                                         .Where(t => t.Method == method)
+                                         .Where(t => t.UseTs >= _searchUseTs.ConvertType(0))
+                                         .Where(o => o.Path.Contains(_searchQueueName));
+
+
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
         {
-            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps())
+                    .Desc(d => d.UseTs);
         }
+
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 
     // 显示报文详情
-    private async Task ShowBody(SlowQueryPO info)
+    private async Task ShowBody(LinkTrackContext info)
     {
         var lstContent = new List<string>();
         var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
@@ -215,7 +272,11 @@
             useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
         }
 
-        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>Grpc =></strong> {info.GrpcUrl} {useTsHtml}</pre>");
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Domain}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> {info.Path} {useTsHtml}</pre>");
+        if (!string.IsNullOrWhiteSpace(info.RequestBody))
+        {
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>消息：</strong>{info.RequestBody}</pre>");
+        }
 
         await js.InvokeVoidAsync("layer.open", new
         {

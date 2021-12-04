@@ -255,18 +255,15 @@
                     }
                     break;
                 case EumCallType.Database:
-                    if (linkTrackDetail.DbLinkTrackDetail != null)
+                    if (linkTrackDetail.Data.ContainsKey("Sql"))
                     {
-                        if (!string.IsNullOrWhiteSpace(linkTrackDetail.DbLinkTrackDetail.Sql))
-                        {
-                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.Sql} ";
-                            linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.DbLinkTrackDetail.DataBaseName} {linkTrackDetail.DbLinkTrackDetail.TableName}.{linkTrackDetail.CallMethod} ";
-                        }
-                        else
-                        {
-                            linkTrackVO.Desc = $"{linkTrackDetail.DbLinkTrackDetail.ConnectionString} ";
-                            linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod} ";
-                        }
+                        linkTrackVO.Desc = $"{linkTrackDetail.Data["Sql"]} ";
+                        linkTrackVO.Caption = $"执行数据库 => {linkTrackDetail.Data["DataBaseName"]} {linkTrackDetail.Data["TableName"]}.{linkTrackDetail.CallMethod} ";
+                    }
+                    else if(linkTrackDetail.Data.ContainsKey("ConnectionString"))
+                    {
+                        linkTrackVO.Desc = $"{linkTrackDetail.Data["ConnectionString"]} ";
+                        linkTrackVO.Caption = $"数据库操作 => {linkTrackDetail.CallMethod} ";
                     }
                     else
                     {
@@ -342,7 +339,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/link_track/link/list");
+        nav.NavigateTo("/link_track/link/apiserver");
     }
 
     private async Task Request()

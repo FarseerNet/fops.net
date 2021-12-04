@@ -1,18 +1,12 @@
-@page "/link_track/link/list"
-@page "/link_track/link/list/{pageIndex:int}"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
-@using FOPS.Abstract.K8S.Enum
+@page "/link_track/slow/es"
+@page "/link_track/slow/es/{pageIndex:int}"
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.Docker.Entity
-@using FOPS.Abstract.Docker.Server
-@using FOPS.Abstract.K8S.Server
 @using FS.Core.LinkTrack
 @using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
-@using Newtonsoft.Json
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -27,20 +21,13 @@
                 <option value="@projectVO.AppId">@projectVO.AppId</option>
             }
         </select>
-        <div class="layui-input-inline w150">
-            <input type="text" class="layui-input" placeholder="请求地址" style="height: 30px;width:400px;" @bind="searchUrl">
-        </div>
-        <div class="layui-input-inline w80">
-            <input type="text" class="layui-input" placeholder="Method" style="height: 30px;width:150px;" @bind="method">
-        </div>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="客户端IP" style="height: 30px;width:120px;" @bind="searchIp">
+            <input type="text" class="layui-input" placeholder="方法" style="height: 30px;width:200px;" @bind="searchMethod">
         </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
         </div>
-        排序
-        <select style="display:inline;width: 200px;" @onchange="SortChange">
+        <select style="display:inline;width: 150px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
             <option value="60">1小时耗时最高</option>
             <option value="30">30分钟耗时最高</option>
@@ -79,23 +66,13 @@
                                     <span>耗时</span>
                                 </div>
                             </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-5">
-                                    <span>类型</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-6">
-                                    <span>路径</span>
+                            <th data-field="ID">
+                                <div class="layui-table-cell laytable-cell-14-0-4">
+                                    <span>方法</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-7">
-                                    <span>客户端IP</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-8">
                                     <span>操作</span>
                                 </div>
                             </th>
@@ -139,25 +116,11 @@
                                         }
                                     </div>
                                 </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-5">
-                                        @info.ContentType
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-left laytable-cell-14-0-6">
-                                        <a href="/link_track/link/info/@(info.ContextId)">
-                                            <strong class="layui-badge layui-bg-green">@info.Method</strong> @info.Path
-                                        </a>
-                                    </div>
+                                <td>
+                                    <div class="laytable-cell-14-0-4"> @info.EsMethod</div>
                                 </td>
                                 <td data-field="Title">
                                     <div class="layui-table-cell laytable-cell-14-0-7">
-                                        @info.RequestIp
-                                    </div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-8">
                                         <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看报文</button>
                                     </div>
                                 </td>
@@ -167,7 +130,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/link/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/slow/es/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -176,11 +139,10 @@
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 180px; }
-    .laytable-cell-14-0-5{ width: 180px; }
+    .laytable-cell-14-0-4{ width: 500px; }
+    .laytable-cell-14-0-5{ width: 160px; }
     .laytable-cell-14-0-6{ width: 500px; }
-    .laytable-cell-14-0-7{ width: 180px; }
-    .laytable-cell-14-0-8{ width: 150px; }
+    .laytable-cell-14-0-7{ width: 150px; }
     select { width: 150px; }
 </style>
 
@@ -192,15 +154,13 @@
     [Parameter]
     public int PageIndex { get; set; }
     private bool _isFirst;
-    private List<LinkTrackContextPO> _lst = new();
+    private List<SlowQueryPO> _lst = new();
     private List<ProjectVO> _lstAppId = new();
     private string _curAppId = "";
     private string _curSort = "0";
 
-    private string searchUrl;
-    private string searchIp;
-    private string method;
-    private long searchUseTs;
+    private string searchMethod;
+    private string searchUseTs;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -213,7 +173,6 @@
         _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
         GetList();
     }
-
     private void GroupChange(ChangeEventArgs args)
     {
         _curAppId = args.Value.ToString();
@@ -224,31 +183,25 @@
         _curSort = args.Value.ToString();
         GetList();
     }
-
     public void GetList()
     {
-        searchUrl = searchUrl?.Trim();
-        searchIp = searchIp?.Trim();
-        var indexSet = LinkTrackEsContext.Data.LinkTrackContext
-                                         .Where(t => t.AppId == _curAppId)
-                                         .Where(t => t.RequestIp == searchIp)
-                                         .Where(t => t.UseTs >= searchUseTs)
-                                         .Where(t => t.Method == method)
-                                         .Where(o => o.Path.Contains(searchUrl));
-
-
+        searchMethod = searchMethod?.Trim();
+        var indexSet = LinkTrackEsContext.Data.SlowQuery
+                                         .Where(o => o.CallType == EumCallType.Elasticsearch)
+                                         .Where(o => o.AppId == _curAppId)
+                                         .Where(o => o.EsMethod.Contains(searchMethod))
+                                         .Where(o => o.UseTs >= searchUseTs.ConvertType(0));
+        
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
         {
-            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps())
-                    .Desc(d => d.UseTs);
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
         }
-
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 
     // 显示报文详情
-    private async Task ShowBody(LinkTrackContext info)
+    private async Task ShowBody(SlowQueryPO info)
     {
         var lstContent = new List<string>();
         var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
@@ -261,18 +214,10 @@
             useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
         }
 
-        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.ContentType}</strong> <strong class='layui-badge layui-bg-blue'>{info.RequestIp}</strong> <strong class='layui-badge layui-bg-green'>{info.Method} =></strong> {info.Path} {useTsHtml}</pre>");
-        if (info.Headers.Count > 0)
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} {useTsHtml}</pre>");
+        if (!string.IsNullOrWhiteSpace(info.DbSql))
         {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Header：</strong>{JsonConvert.SerializeObject(info.Headers)}</pre>");
-        }
-        if (!string.IsNullOrWhiteSpace(info.RequestBody))
-        {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>入参：</strong>{info.RequestBody}</pre>");
-        }
-        if (!string.IsNullOrWhiteSpace(info.ResponseBody))
-        {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{info.ResponseBody}</pre>");
+            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>方法：</strong>{info.EsMethod}</pre>");
         }
 
         await js.InvokeVoidAsync("layer.open", new
@@ -287,5 +232,4 @@
             content = string.Join("", lstContent)
         });
     }
-
 }

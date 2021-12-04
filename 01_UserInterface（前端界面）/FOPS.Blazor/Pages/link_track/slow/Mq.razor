@@ -1,5 +1,5 @@
-@page "/link_track/db/list"
-@page "/link_track/db/list/{pageIndex:int}"
+@page "/link_track/slow/mq"
+@page "/link_track/slow/mq/{pageIndex:int}"
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
 @using FS.Extends
@@ -22,16 +22,12 @@
             }
         </select>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="数据库" style="height: 30px;width:200px;" @bind="searchDbName">
-        </div>
-        <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="表" style="height: 30px;width:200px;" @bind="searchTableName">
+            <input type="text" class="layui-input" placeholder="Topic" style="height: 30px;width:200px;" @bind="searchMethod">
         </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
         </div>
-        排序
-        <select style="display:inline;width: 200px;" @onchange="SortChange">
+        <select style="display:inline;width: 150px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
             <option value="60">1小时耗时最高</option>
             <option value="30">30分钟耗时最高</option>
@@ -72,22 +68,7 @@
                             </th>
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>数据库</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-5">
-                                    <span>表</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-6">
-                                    <span>Sql</span>
-                                </div>
-                            </th>
-                            <th data-field="Type">
-                                <div class="layui-table-cell laytable-cell-14-0-7">
-                                    <span>操作</span>
+                                    <span>Topic</span>
                                 </div>
                             </th>
                         </tr>
@@ -131,18 +112,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.DbName</div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-5"> @info.DbTableName</div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-6"> @info.DbSql</div>
-                                </td>
-                                <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-14-0-7">
-                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">详情</button>
-                                    </div>
+                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.MqTopic</div>
                                 </td>
                             </tr>
                         }
@@ -150,7 +120,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/db/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/slow/mq/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -159,7 +129,7 @@
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 160px; }
+    .laytable-cell-14-0-4{ width: 500px; }
     .laytable-cell-14-0-5{ width: 160px; }
     .laytable-cell-14-0-6{ width: 500px; }
     .laytable-cell-14-0-7{ width: 150px; }
@@ -179,9 +149,8 @@
     private string _curAppId = "";
     private string _curSort = "0";
 
-    private string searchDbName;
-    private string searchTableName;
-    private long searchUseTs;
+    private string searchMethod;
+    private string searchUseTs;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -204,61 +173,20 @@
         _curSort = args.Value.ToString();
         GetList();
     }
-
     public void GetList()
     {
-        searchDbName = searchDbName?.Trim();
-        searchTableName = searchTableName?.Trim();
+        searchMethod = searchMethod?.Trim();
         var indexSet = LinkTrackEsContext.Data.SlowQuery
-                                         .Where(o => o.CallType == EumCallType.Database)
+                                         .Where(o => o.CallType == EumCallType.Mq)
                                          .Where(o => o.AppId == _curAppId)
-                                         .Where(o => o.DbTableName == searchTableName)
-                                         .Where(o => o.DbName.Contains(searchDbName))
-                                         .Where(o => o.UseTs >= searchUseTs);
-
-
+                                         .Where(o => o.MqTopic.Contains(searchMethod))
+                                         .Where(o => o.UseTs >= searchUseTs.ConvertType(0));
+        
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
         {
             indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
         }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
-    }
-
-    // 显示详情
-    private async Task ShowBody(SlowQueryPO info)
-    {
-        var lstContent = new List<string>();
-        string useTsHtml;
-        if (info.UseTs >= 100)
-        {
-            useTsHtml = $"<span>执行耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
-        }
-        else if (info.UseTs >= 50)
-        {
-            useTsHtml = $"<span>执行耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
-        }
-        else
-        {
-            useTsHtml = $"<span>执行耗时：{info.UseTs} ms</span>";
-        }
-
-        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>{info.DbName}</strong> <strong class='layui-badge layui-bg-blue'>{info.DbTableName}</strong> {useTsHtml}</pre>");
-        if (!string.IsNullOrWhiteSpace(info.DbSql))
-        {
-            lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>Sql</strong> {info.DbSql}</pre>");
-        }
-
-        await js.InvokeVoidAsync("layer.open", new
-        {
-            type = 1,
-            skin = "layui-layer-molv",
-            closeBtn = false,
-            area = "1500px",
-            anim = 10,
-            shadeClose = true,
-            title = $"{info.AppId} {info.ContextId}",
-            content = string.Join("", lstContent)
-        });
     }
 }

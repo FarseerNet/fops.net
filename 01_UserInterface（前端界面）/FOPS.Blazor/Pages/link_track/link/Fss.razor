@@ -1,12 +1,12 @@
-@page "/link_track/mq/list"
-@page "/link_track/mq/list/{pageIndex:int}"
+@page "/link_track/link/fss"
+@page "/link_track/link/fss/{pageIndex:int}"
+@using FOPS.Abstract.MetaInfo.Entity
+@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
 @using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -21,14 +21,20 @@
                 <option value="@projectVO.AppId">@projectVO.AppId</option>
             }
         </select>
+        <div class="layui-input-inline w80">
+            <input type="text" class="layui-input" placeholder="任务组名称" style="height: 30px;width:200px;" @bind="_taskGroupName">
+        </div>
+        
+        <div class="layui-input-inline w120">
+            <input type="text" class="layui-input" placeholder="任务组ID" style="height: 30px;width:80px;" @bind="_taskGroupId">
+        </div>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="Topic" style="height: 30px;width:200px;" @bind="searchMethod">
+            <input type="text" class="layui-input" placeholder="客户端IP" style="height: 30px;width:120px;" @bind="_searchIp">
         </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
         </div>
-        排序
-        <select style="display:inline;width: 200px;" @onchange="SortChange">
+        <select style="display:inline;width: 150px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
             <option value="60">1小时耗时最高</option>
             <option value="30">30分钟耗时最高</option>
@@ -67,9 +73,24 @@
                                     <span>耗时</span>
                                 </div>
                             </th>
-                            <th data-field="ID">
+                            <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>Topic</span>
+                                    <span>任务组名称</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-5">
+                                    <span>任务组ID</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-6">
+                                    <span>客户端IP</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-7">
+                                    <span>数据</span>
                                 </div>
                             </th>
                         </tr>
@@ -112,8 +133,27 @@
                                         }
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.MqTopic</div>
+                                <td data-field="Title">
+                                    <div class="layui-table-left laytable-cell-14-0-4">
+                                        @info.Method 
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-5">
+                                        <a href="/link_track/link/info/@(info.ContextId)">
+                                            @info.Path
+                                        </a>
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-6">
+                                        @info.RequestIp
+                                    </div>
+                                </td>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-7">
+                                        @info.RequestBody
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -121,7 +161,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/mq/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/link/fss/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -130,10 +170,10 @@
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 500px; }
-    .laytable-cell-14-0-5{ width: 160px; }
-    .laytable-cell-14-0-6{ width: 500px; }
-    .laytable-cell-14-0-7{ width: 150px; }
+    .laytable-cell-14-0-4{ width: 200px; }
+    .laytable-cell-14-0-5{ width: 100px; }
+    .laytable-cell-14-0-6{ width: 180px; }
+    .laytable-cell-14-0-7{ width: 500px; }
     select { width: 150px; }
 </style>
 
@@ -145,13 +185,15 @@
     [Parameter]
     public int PageIndex { get; set; }
     private bool _isFirst;
-    private List<SlowQueryPO> _lst = new();
+    private List<LinkTrackContextPO> _lst = new();
     private List<ProjectVO> _lstAppId = new();
     private string _curAppId = "";
     private string _curSort = "0";
 
-    private string searchMethod;
-    private long searchUseTs;
+    private string _taskGroupId;
+    private string _searchIp;
+    private string _taskGroupName;
+    private string searchUseTs;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -164,6 +206,7 @@
         _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
         GetList();
     }
+
     private void GroupChange(ChangeEventArgs args)
     {
         _curAppId = args.Value.ToString();
@@ -174,20 +217,28 @@
         _curSort = args.Value.ToString();
         GetList();
     }
+
     public void GetList()
     {
-        searchMethod = searchMethod?.Trim();
-        var indexSet = LinkTrackEsContext.Data.SlowQuery
-                                         .Where(o => o.CallType == EumCallType.Mq)
-                                         .Where(o => o.AppId == _curAppId)
-                                         .Where(o => o.MqTopic.Contains(searchMethod))
-                                         .Where(o => o.UseTs >= searchUseTs);
-        
+        _taskGroupId = _taskGroupId?.Trim();
+        _searchIp = _searchIp?.Trim();
+        var indexSet = LinkTrackEsContext.Data.LinkTrackContext
+                                         .Where(t => t.LinkType == EumLinkType.Fss)
+                                         .Where(t => t.ParentAppId == "")
+                                         .Where(t => t.AppId == _curAppId)
+                                         .Where(t => t.RequestIp == _searchIp)
+                                         .Where(t => t.UseTs >= searchUseTs.ConvertType(0))
+                                         .Where(t => t.Method == _taskGroupName)
+                                         .Where(o => o.Path.Contains(_taskGroupId));
+
+
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
         {
-            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
+            indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps())
+                    .Desc(d => d.UseTs);
         }
+
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
     }
 }

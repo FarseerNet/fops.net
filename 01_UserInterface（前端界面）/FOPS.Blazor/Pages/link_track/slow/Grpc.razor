@@ -1,5 +1,5 @@
-@page "/link_track/redis/list"
-@page "/link_track/redis/list/{pageIndex:int}"
+@page "/link_track/slow/grpc"
+@page "/link_track/slow/grpc/{pageIndex:int}"
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
 @using FS.Extends
@@ -22,13 +22,12 @@
             }
         </select>
         <div class="layui-input-inline w100">
-            <input type="text" class="layui-input" placeholder="Topic" style="height: 30px;width:200px;" @bind="searchMethod">
+            <input type="text" class="layui-input" placeholder="地址" style="height: 30px;width:400px;" @bind="searchMethod">
         </div>
         <div class="layui-input-inline w100">
             <input type="text" class="layui-input" placeholder="耗时" style="height: 30px;width:60px;" @bind="searchUseTs">
         </div>
-        排序
-        <select style="display:inline;width: 200px;" @onchange="SortChange">
+        <select style="display:inline;width: 150px;" @onchange="SortChange">
             <option value="0">按最新时间</option>
             <option value="60">1小时耗时最高</option>
             <option value="30">30分钟耗时最高</option>
@@ -69,12 +68,12 @@
                             </th>
                             <th data-field="ID">
                                 <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>Key</span>
+                                    <span>地址</span>
                                 </div>
                             </th>
-                            <th data-field="ID">
-                                <div class="layui-table-cell laytable-cell-14-0-4">
-                                    <span>Hash Field</span>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-14-0-7">
+                                    <span>操作</span>
                                 </div>
                             </th>
                         </tr>
@@ -118,10 +117,12 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.RedisKey</div>
+                                    <div class="laytable-cell-14-0-4"> @info.GrpcUrl</div>
                                 </td>
-                                <td>
-                                    <div class="layui-table-cell laytable-cell-14-0-4"> @info.RedisHashFields</div>
+                                <td data-field="Title">
+                                    <div class="layui-table-cell laytable-cell-14-0-7">
+                                        <button class="layui-btn layui-btn-sm" @onclick="o => ShowBody(info)">查看报文</button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -129,7 +130,7 @@
                     </table>
                 </div>
             </div>
-            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/redis/list/{index}"></PageSplit>
+            <PageSplit PageIndex="@PageIndex" PageSize="@_pageSize" TotalCount="@_totalCount" PageUrl="/link_track/slow/grpc/{index}"></PageSplit>
         </div>
     </div>
 </div>
@@ -138,7 +139,10 @@
     .laytable-cell-14-0-1{ width: 160px; }
     .laytable-cell-14-0-2{ width: 150px; }
     .laytable-cell-14-0-3{ width: 100px; }
-    .laytable-cell-14-0-4{ width: 250px; }
+    .laytable-cell-14-0-4{ width: 500px; }
+    .laytable-cell-14-0-5{ width: 160px; }
+    .laytable-cell-14-0-6{ width: 500px; }
+    .laytable-cell-14-0-7{ width: 150px; }
     select { width: 150px; }
 </style>
 
@@ -156,7 +160,7 @@
     private string _curSort = "0";
 
     private string searchMethod;
-    private long searchUseTs;
+    private string searchUseTs;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -183,10 +187,10 @@
     {
         searchMethod = searchMethod?.Trim();
         var indexSet = LinkTrackEsContext.Data.SlowQuery
-                                         .Where(o => o.CallType == EumCallType.Redis)
+                                         .Where(o => o.CallType == EumCallType.GrpcClient)
                                          .Where(o => o.AppId == _curAppId)
-                                         .Where(o => o.RedisKey.Contains(searchMethod))
-                                         .Where(o => o.UseTs >= searchUseTs);
+                                         .Where(o => o.GrpcUrl.Contains(searchMethod))
+                                         .Where(o => o.UseTs >= searchUseTs.ConvertType(0));
         
         if (_curSort == "0") indexSet.Desc(d => d.StartTs);
         else
@@ -194,5 +198,34 @@
             indexSet.Where(o => o.StartTs >= DateTime.Now.AddMinutes(-_curSort.ConvertType(0)).ToTimestamps()).Desc(d => d.UseTs);
         }
         _lst = indexSet.ToList(_pageSize, PageIndex, out _totalCount);
+    }
+
+    // 显示报文详情
+    private async Task ShowBody(SlowQueryPO info)
+    {
+        var lstContent = new List<string>();
+        var useTsHtml = $"<span>整体耗时：{info.UseTs} ms</span>";
+        if (info.UseTs >= 100)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-red'>{info.UseTs} ms</strong></span>";
+        }
+        else if (info.UseTs >= 50)
+        {
+            useTsHtml = $"<span>整体耗时：<strong class='layui-badge layui-bg-blue'>{info.UseTs} ms</strong></span>";
+        }
+
+        lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'>{info.StartTs.ToTimestamps():yyyy-MM-dd HH:mm:ss} <strong class='layui-badge layui-bg-green'>Grpc =></strong> {info.GrpcUrl} {useTsHtml}</pre>");
+
+        await js.InvokeVoidAsync("layer.open", new
+        {
+            type = 1,
+            skin = "layui-layer-molv",
+            closeBtn = false,
+            area = "1500px",
+            anim = 10,
+            shadeClose = true,
+            title = $"{info.AppId} {info.ContextId}",
+            content = string.Join("", lstContent)
+        });
     }
 }
