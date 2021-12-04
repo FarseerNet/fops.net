@@ -11,7 +11,7 @@
 
 1、`持续集成`，从git仓库拉取代码、`编译`、`打包`成`docker`镜像，并发布到`K8s`。
 
-2、`链路跟踪`，查看整个链路的完整生命周期的耗时调用。（包括：`WebApi`、`Consumer`、`FssJob`、`BackgroundService`）
+2、`链路跟踪`，查看整个链路的完整生命周期的耗时调用。（包括：`WebApi`、`Consumer`、`FssJob`、`BackgroundService`），WebApi也可作为我们的网关日志查看。
 
 3、`慢查询`，支持`db`、`Redis`、`http`、`es`、`mq` 耗时高的语句。
 
