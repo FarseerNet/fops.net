@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
@@ -10,8 +10,8 @@
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Core\Farseer.Net.Core.csproj" />
         <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
         <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
-        <PackageReference Include="Grpc.Core.Api" Version="2.37.1" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Grpc.Core.Api" Version="2.42.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

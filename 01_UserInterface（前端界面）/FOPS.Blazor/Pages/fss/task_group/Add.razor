@@ -56,7 +56,7 @@
             <div class="layui-card-header">传给客户端的参数</div>
             <div class="layui-card-body layui-row layui-col-space10">
                 <div class="layui-form-item">
-                    <textarea @bind="_info.Data" placeholder="Json格式" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
+                    <textarea @bind="_info.DataString" placeholder="Json格式" class="layui-textarea" style="margin-top: 0; margin-bottom: 0; height: 400px;"></textarea>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
     {
         IsEnable = true,
         StartAt = DateTime.Now,
-        Data = "{}"
+        Data = new()
     };
 
     private async Task AddInfo()

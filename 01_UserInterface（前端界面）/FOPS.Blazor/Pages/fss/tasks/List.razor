@@ -181,7 +181,7 @@
     public int PageIndex { get; set; } = 1;
     [Parameter]
     public int GroupId { get; set; }
-    private int _totalCount;
+    private long _totalCount;
     private int _pageSize = 20;
     private string PageUrl => "/fss/tasks/list/" + GroupId + "/{index}";
     private List<TaskVO> _lst = new();
