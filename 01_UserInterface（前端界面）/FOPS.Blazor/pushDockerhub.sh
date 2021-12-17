@@ -1,6 +1,6 @@
 ver='1.1.0'
 dotnet publish -c release
-cd bin/release/net5.0/publish
+cd bin/release/net6.0/publish
 docker build -t farseernet/fops:${ver} --network=host .
 docker push farseernet/fops:${ver}
 

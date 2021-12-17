@@ -188,7 +188,7 @@ namespace FOPS.Com.FssServer
             var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetRunLogList", JsonConvert.SerializeObject(new { JobName = jobName, LogLevel = logLevel, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<RunLogVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new List<RunLogVO>(), 0);
         }
-        
+
         /// <summary>
         /// 获取fssServer
         /// </summary>

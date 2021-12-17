@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FS.Core;
 using Newtonsoft.Json;
 
 namespace FOPS.Abstract.Fss.Entity
@@ -32,8 +33,8 @@ namespace FOPS.Abstract.Fss.Entity
 
         public string DataString
         {
-            get => JsonConvert.SerializeObject(Data);
-            set => Data = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
+            get => Data != null ? JsonConvert.SerializeObject(Data) : string.Empty;
+            set => Data = Jsons.ToObject(value,new Dictionary<string, string>());
         }
 
         /// <summary>
