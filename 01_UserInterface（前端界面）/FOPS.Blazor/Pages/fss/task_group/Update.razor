@@ -132,19 +132,12 @@
         }
         try
         {
-    // 是否为数字
-            if (IsType.IsInt(_info.Cron))
+            // 是否为数字
+            if (!IsType.IsInt(_info.Cron) && new Cron().Parse(_info.Cron))
             {
-                _info.IntervalMs = _info.Cron.ConvertType(0L);
-                _info.Cron = "";
-            }
-            else if (new Cron().Parse(_info.Cron))
-            {
-                _info.IntervalMs = 0;
-            }
-            else
                 throw new Exception("Cron格式错误");
-
+            }
+            _info.IntervalMs = 0;
             await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,_info); 
             
             await js.InvokeVoidAsync("layer.msg", "修改成功", new

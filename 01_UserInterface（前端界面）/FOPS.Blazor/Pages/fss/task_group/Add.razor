@@ -1,6 +1,8 @@
 @page "/fss/task_group/add"
 @using FOPS.Abstract.Fss.Server
 @using FOPS.Abstract.Fss.Entity
+@using FS.Utils.Common
+@using FS.Utils.Component
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -80,6 +82,12 @@
     {
         try
         {
+            // 是否为数字
+            if (!IsType.IsInt(_info.Cron) && new Cron().Parse(_info.Cron))
+            {
+                throw new Exception("Cron格式错误");
+            }
+            
             var result = await _iocManager.Resolve<IFssApi>().AddTaskGroupAsync(storage,_info);
             if (result.Status)
             {
