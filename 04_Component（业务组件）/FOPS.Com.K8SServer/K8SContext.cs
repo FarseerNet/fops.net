@@ -18,10 +18,10 @@ namespace FOPS.Com.K8SServer
         
         public TableSet<ClusterPO> Cluster { get; set; }
 
-        protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
+        protected override void CreateModelInit()
         {
-            map["YamlTpl"].SetName("k8s_yaml_tpl");
-            map["Cluster"].SetName("k8s_cluster");
+            YamlTpl.SetName("k8s_yaml_tpl");
+            Cluster.SetName("k8s_cluster");
         }
     }
 }

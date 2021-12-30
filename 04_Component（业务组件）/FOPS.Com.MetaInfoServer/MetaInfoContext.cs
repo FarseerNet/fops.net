@@ -22,12 +22,12 @@ namespace FOPS.Com.MetaInfoServer
         public TableSet<GitPO>          Git          { get; set; }
         public TableSet<AdminPO>        Admin      { get; set; }
 
-        protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
+        protected override void CreateModelInit()
         {
-            map["ProjectGroup"].SetName("basic_project_group");
-            map["Project"].SetName("basic_project");
-            map["Git"].SetName("basic_git");
-            map["Admin"].SetName("admin");
+            ProjectGroup.SetName("basic_project_group");
+            Project.SetName("basic_project");
+            Git.SetName("basic_git");
+            Admin.SetName("admin");
         }
     }
 }

@@ -14,9 +14,9 @@ namespace FOPS.Com.BuilderServer
         {
         }
 
-        protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
+        protected override void CreateModelInit()
         {
-            map["Build"].SetName("build");
+            Build.SetName("build");
         }
         
         public TableSet<BuildPO> Build { get; set; }

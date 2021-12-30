@@ -17,10 +17,10 @@ namespace FOPS.Com.DockerServer
         public TableSet<DockerHubPO>     DockerHub     { get; set; }
         public TableSet<DockerfileTplPO> DockerfileTpl { get; set; }
 
-        protected override void CreateModelInit(Dictionary<string, SetDataMap> map)
+        protected override void CreateModelInit()
         {
-            map["DockerHub"].SetName("docker_hub");
-            map["DockerfileTpl"].SetName("docker_file_tpl");
+            DockerHub.SetName("docker_hub");
+            DockerfileTpl.SetName("docker_file_tpl");
         }
     }
 }
