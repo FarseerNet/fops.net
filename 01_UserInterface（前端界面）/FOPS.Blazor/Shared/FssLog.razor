@@ -113,7 +113,7 @@
 
     private async Task GetList()
     {
-        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, null, null, PageSize, 1) ?? new DataSplitList<RunLogVO>(new(), 0);
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, null, null, PageSize, 1) ?? new PageList<RunLogVO>(new(), 0);
         _lst = data.List;
     }
 

@@ -153,9 +153,9 @@
     {
         if (PageIndex < 1) PageIndex = 1;
 
-        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new DataSplitList<RunLogVO>(new(), 0);
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogVO>(new(), 0);
         _lst = data.List;
-        _totalCount = data.TotalCount;
+        _totalCount = data.RecordCount;
     }
 
     private Task JobChange(ChangeEventArgs args)

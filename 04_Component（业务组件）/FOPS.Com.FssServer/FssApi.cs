@@ -143,30 +143,30 @@ namespace FOPS.Com.FssServer
         /// <summary>
         /// 获取在用的任务
         /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex)
+        public async Task<PageList<TaskVO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex)
         {
             var fssServer = await GetFssServer(localStorageService: localStorageService);
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetEnableTaskList", JsonConvert.SerializeObject(new { Status = status, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetEnableTaskList", JsonConvert.SerializeObject(new { Status = status, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<PageList<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new(), 0);
         }
 
         /// <summary>
         /// 获取指定任务组的任务列表
         /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex)
+        public async Task<PageList<TaskVO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex)
         {
             var fssServer = await GetFssServer(localStorageService: localStorageService);
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskList", JsonConvert.SerializeObject(new { GroupId = groupId, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskList", JsonConvert.SerializeObject(new { GroupId = groupId, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<PageList<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
         }
 
         /// <summary>
         /// 获取已完成的任务列表
         /// </summary>
-        public async Task<DataSplitList<TaskVO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
+        public async Task<PageList<TaskVO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex)
         {
             var fssServer = await GetFssServer(localStorageService: localStorageService);
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskFinishList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<TaskVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetTaskFinishList", JsonConvert.SerializeObject(new { PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<PageList<TaskVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new List<TaskVO>(), 0);
         }
 
@@ -182,10 +182,10 @@ namespace FOPS.Com.FssServer
         /// <summary>
         /// 获取日志
         /// </summary>
-        public async Task<DataSplitList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex)
+        public async Task<PageList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex)
         {
             var fssServer = await GetFssServer(localStorageService: localStorageService);
-            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetRunLogList", JsonConvert.SerializeObject(new { JobName = jobName, LogLevel = logLevel, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<DataSplitList<RunLogVO>>.Error("出错了"), 2000);
+            var result    = await HttpPostJson.TryPostAsync($"{fssServer}/meta/GetRunLogList", JsonConvert.SerializeObject(new { JobName = jobName, LogLevel = logLevel, PageSize = pageSize, PageIndex = pageIndex }), ApiResponseJson<PageList<RunLogVO>>.Error("出错了"), 2000);
             return result is { Status: true } ? result.Data : new(new List<RunLogVO>(), 0);
         }
 

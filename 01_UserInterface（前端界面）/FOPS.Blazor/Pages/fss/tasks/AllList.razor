@@ -231,7 +231,7 @@
     {
         var page = await _iocManager.Resolve<IFssApi>().GetEnableTaskListAsync(storage, _taskType, _pageSize, PageIndex);
         _lst = page.List;
-        _totalCount = page.TotalCount;
+        _totalCount = page.RecordCount;
     }
 
     private void GotoList()

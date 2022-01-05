@@ -168,7 +168,7 @@
         
         var page = await _iocManager.Resolve<IFssApi>().GetTaskFinishListAsync(storage,_pageSize, PageIndex);
         _lst = page?.List;
-        _totalCount = page.TotalCount;
+        _totalCount = page.RecordCount;
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -182,7 +182,7 @@
                 {
                     var page = await _iocManager.Resolve<IFssApi>().GetTaskFinishListAsync(storage,_pageSize, PageIndex);
                     _lst = page?.List;
-                    _totalCount = page.TotalCount;
+                    _totalCount = page.RecordCount;
     // 刷新页面
                     await InvokeAsync(StateHasChanged);
                 }
