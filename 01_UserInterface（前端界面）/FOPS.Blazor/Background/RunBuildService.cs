@@ -34,7 +34,7 @@ namespace FOPS.Blazor.Background
 
             for (int i = 0; i < threadCount; i++)
             {
-                Task.Factory.StartNew(async () =>
+                _ = Task.Factory.StartNew(async () =>
                 {
                     while (true)
                     {

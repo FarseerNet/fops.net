@@ -152,10 +152,11 @@
     private Timer _timer;
     private bool _isFirst;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
-        if (_isFirst) return;
+        if (_isFirst) return Task.CompletedTask;
         _isFirst = true;
+        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
