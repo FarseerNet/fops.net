@@ -1,30 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using FS;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-namespace FOPS.Blazor
+namespace FOPS.Blazor;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            FarseerApplication.Run<Startup>("FOPS.Blazor").Initialize();
-            CreateHostBuilder(args).Build().Run();
-        }
+        FarseerApplication.Run<Startup>("FOPS.Blazor").Initialize();
+        CreateHostBuilder(args).Build().Run();
+    }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args).UseWindsorContainerServiceProvider().ConfigureWebHostDefaults(webBuilder =>
         {
-            return Host.CreateDefaultBuilder(args).UseWindsorContainerServiceProvider().ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseKestrel().UseStartup<Startup>();
-            });
-        }
+            webBuilder.UseKestrel().UseStartup<Startup>();
+        });
     }
 }
