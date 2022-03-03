@@ -77,7 +77,7 @@
                             }
                             else if ((DateTime.Now - info.StartAt).TotalSeconds > 1)
                             {
-                                <strong class='layui-badge'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong>
+                                <span lay-tips="@info.StartAt.ToString("yyyy-MM-dd HH:mm:ss")"><strong class='layui-badge'>@($"超时 {(DateTime.Now - info.StartAt).GetDateDesc()}")</strong></span>
                             }
                             else
                             {
