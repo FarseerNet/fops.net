@@ -41,7 +41,7 @@
             </th>
             <th data-field="Type">
                 <div class="layui-table-cell laytable-cell-task-5">
-                    <span>客户端ID</span>
+                    <span>客户端IP</span>
                 </div>
             </th>
             <th data-field="Type">
@@ -115,7 +115,9 @@
                     </div>
                 </td>
                 <td>
-                    <div class="layui-table-cell laytable-cell-task-5">@info.ClientId</div>
+                    <div class="layui-table-cell laytable-cell-task-5">
+                        <span lay-tips="@info.ClientId">@info.ClientIp</span>
+                    </div>
                 </td>
                 <td>
                     <div class="layui-table-cell laytable-cell-task-6">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
@@ -140,7 +142,7 @@
 .laytable-cell-task-2 {width: 150px;}
 .laytable-cell-task-3 {width: 60px;}
 .laytable-cell-task-4 {width: 80px;}
-.laytable-cell-task-5 {width: 160px;}
+.laytable-cell-task-5 {width: 120px;}
 .laytable-cell-task-6 {width: 150px;}
 .laytable-cell-task-7 {width: 80px;}
 </style>

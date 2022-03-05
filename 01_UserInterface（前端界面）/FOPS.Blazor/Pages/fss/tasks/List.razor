@@ -67,11 +67,16 @@
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-8">
-                                    <span>创建时间</span>
+                                    <span>客户端ID</span>
                                 </div>
                             </th>
                             <th data-field="Type">
                                 <div class="layui-table-cell laytable-cell-task-9">
+                                    <span>创建时间</span>
+                                </div>
+                            </th>
+                            <th data-field="Type">
+                                <div class="layui-table-cell laytable-cell-task-10">
                                     <span>操作</span>
                                 </div>
                             </th>
@@ -139,10 +144,13 @@
                                     <div class="layui-table-cell laytable-cell-task-7">@info.ClientIp</div>
                                 </td>
                                 <td>
-                                    <div class="layui-table-cell laytable-cell-task-8">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                                    <div class="layui-table-cell laytable-cell-task-8">@info.ClientId</div>
+                                </td>
+                                <td>
+                                    <div class="layui-table-cell laytable-cell-task-9">@info.CreateAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
                                 </td>
                                 <td data-field="Title">
-                                    <div class="layui-table-cell laytable-cell-task-9">
+                                    <div class="layui-table-cell laytable-cell-task-10">
                                         @if (info.Status is EumTaskType.Scheduler or EumTaskType.Working)
                                         {
                                             <button class="layui-btn layui-btn-radius layui-btn-xs" @onclick="() => Cancel(info)">
@@ -170,8 +178,9 @@
 .laytable-cell-task-5 {width: 100px;}
 .laytable-cell-task-6 {width: 80px;}
 .laytable-cell-task-7 {width: 120px;}
-.laytable-cell-task-8 {width: 150px;}
-.laytable-cell-task-9 {width: 80px;}
+.laytable-cell-task-8 {width: 160px;}
+.laytable-cell-task-9 {width: 150px;}
+.laytable-cell-task-10 {width: 80px;}
 </style>
 
 @code{

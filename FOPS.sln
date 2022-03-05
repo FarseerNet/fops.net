@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer.Net.MQ.Rabbit", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer.Net.Job", "..\Farseer.Net\Framework\Farseer.Net.Job\Farseer.Net.Job.csproj", "{53FE1407-723A-42BB-BAC4-00D175CAE1BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOPS.Agent", "01_UserInterface（前端界面）\FOPS.Agent\FOPS.Agent.csproj", "{C2FEA912-916B-4F81-8824-E4D5D27917BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,7 @@ Global
 		{3829BA23-79EF-4661-ADEE-B290AD4264E8} = {EEEE309A-3C36-48C6-8396-FD7E1F9603F5}
 		{4BA41ECF-50B5-4712-8131-4CF2DE14AD29} = {1684AFF4-C227-4EAD-A272-CE78CFB8AB8A}
 		{53FE1407-723A-42BB-BAC4-00D175CAE1BB} = {1684AFF4-C227-4EAD-A272-CE78CFB8AB8A}
+		{C2FEA912-916B-4F81-8824-E4D5D27917BB} = {006D1F16-0D6D-47C1-90B6-10B934ABB579}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4831230E-2AA0-426D-A7A6-13BC59345ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -194,5 +197,9 @@ Global
 		{53FE1407-723A-42BB-BAC4-00D175CAE1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53FE1407-723A-42BB-BAC4-00D175CAE1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53FE1407-723A-42BB-BAC4-00D175CAE1BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2FEA912-916B-4F81-8824-E4D5D27917BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2FEA912-916B-4F81-8824-E4D5D27917BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2FEA912-916B-4F81-8824-E4D5D27917BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2FEA912-916B-4F81-8824-E4D5D27917BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
