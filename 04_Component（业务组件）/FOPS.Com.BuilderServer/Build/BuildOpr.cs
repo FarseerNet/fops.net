@@ -16,6 +16,7 @@ using FOPS.Com.BuilderServer.Git;
 using FOPS.Com.BuilderServer.Kubectl;
 using FOPS.Com.BuilderServer.Shell;
 using FOPS.Com.BuilderServer.UnBuild;
+using FS;
 using FS.DI;
 using FS.Extends;
 using FS.Utils.Component;
@@ -40,7 +41,7 @@ namespace FOPS.Com.BuilderServer.Build
         public async Task Build()
         {
             // 取出未开始的任务
-            var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None).Asc(o => o.Id).ToEntityAsync();
+            var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None && o.BuildServerId == FarseerApplication.AppId).Asc(o => o.Id).ToEntityAsync();
             if (po == null) return;
             var build = po.Map<BuildVO>();
 

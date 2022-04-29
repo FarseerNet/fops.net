@@ -7,6 +7,7 @@ using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
+using FS;
 using FS.Extends;
 
 namespace FOPS.Com.BuilderServer.Build
@@ -28,13 +29,14 @@ namespace FOPS.Com.BuilderServer.Build
             var buildNumber = await BuilderContext.Data.Build.Where(o => o.ProjectId == projectId).Desc(o => o.Id).GetValueAsync(o => o.BuildNumber.GetValueOrDefault());
             var po = new BuildPO
             {
-                ProjectId   = projectId,
-                ClusterId   = clusterId,
-                BuildNumber = ++buildNumber,
-                Status      = EumBuildStatus.None,
-                IsSuccess   = false,
-                CreateAt    = DateTime.Now,
-                FinishAt    = DateTime.Now,
+                ProjectId     = projectId,
+                ClusterId     = clusterId,
+                BuildNumber   = ++buildNumber,
+                Status        = EumBuildStatus.None,
+                IsSuccess     = false,
+                CreateAt      = DateTime.Now,
+                FinishAt      = DateTime.Now,
+                BuildServerId = FarseerApplication.AppId
             };
 
             await BuilderContext.Data.Build.InsertAsync(po, true);
