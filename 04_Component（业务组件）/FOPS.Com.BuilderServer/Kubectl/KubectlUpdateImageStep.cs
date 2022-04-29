@@ -6,6 +6,7 @@ using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FS.Core.Entity;
+using FS.Extends;
 using FS.Utils.Component;
 using Nest;
 
@@ -29,7 +30,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
             KubectlOpr.CreateConfigFile(env, cluster);
 
             // 取得dockerHub
-            var result = await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env, null, cancellationToken);
+            var result = await ShellTools.Run("kubectl", $"set image {project.K8sControllersType.GetName()}/{project.Name} {project.Name}={env.DockerImage} --kubeconfig={configFile}", actReceiveOutput, env, null, cancellationToken);
             return result.IsError switch
             {
                 false => new RunShellResult(false, "更新镜像版本完成。"),
