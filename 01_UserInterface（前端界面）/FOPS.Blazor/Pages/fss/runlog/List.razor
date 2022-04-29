@@ -23,9 +23,9 @@
 
         <select style="display:inline;width: 200px;" @onchange="LevelChange">
             <option value="">全部</option>
-            @foreach (var logLevel in typeof(LogLevel).ToList())
+            @foreach (var logLevel in typeof(LogLevel).ToList<LogLevel>())
             {
-                <option value="@logLevel">@(((LogLevel)logLevel).ToString())</option>
+                <option value="@logLevel">@logLevel.ToString()</option>
             }
         </select>
     </div>

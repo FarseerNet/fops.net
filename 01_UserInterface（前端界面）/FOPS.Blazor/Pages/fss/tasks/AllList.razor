@@ -16,9 +16,9 @@
         当前任务
         <select style="display:inline;width: 200px;" @onchange="StatusChange">
             <option value="">全部</option>
-            @foreach (var taskType in typeof(EumTaskType).ToList())
+            @foreach (var taskType in typeof(EumTaskType).ToList<EumTaskType>())
             {
-                <option value="@taskType">@(((EumTaskType)taskType).GetName())</option>
+                <option value="@taskType">@taskType.GetName()</option>
             }
         </select>
         <div class="layui-right">
