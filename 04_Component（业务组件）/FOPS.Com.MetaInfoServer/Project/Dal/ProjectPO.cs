@@ -52,7 +52,7 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// <summary>
         /// 依赖的GIT库（会同时拉取依赖的GIT库）
         /// </summary>
-        [Field(Name = "git_id",StorageType = EumStorageType.Array)]
+        [Field(Name = "dependent_git_ids",StorageType = EumStorageType.Array)]
         public List<int> DependentGitIds { get; set; }
         /// <summary>
         /// DockerHub模板

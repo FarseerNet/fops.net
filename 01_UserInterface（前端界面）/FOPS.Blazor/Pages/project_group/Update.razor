@@ -127,12 +127,9 @@
             }
 
             _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync() ?? new();
-            _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
+            _selectCluster = _lstCluster.ToDictionary(o => o.Id, _ => false);
 
-            foreach (var infoClusterId in _info.ClusterIds)
-            {
-                _selectCluster[infoClusterId] = true;
-            }
+            _info.ClusterIds.ForEach(o=>_selectCluster[o] = true);
         }
     }
 
