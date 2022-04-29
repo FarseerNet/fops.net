@@ -39,6 +39,10 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// </summary>
         public int GitId { get; set; }
         /// <summary>
+        /// 依赖的GIT库（会同时拉取依赖的GIT库）
+        /// </summary>
+        public List<int> DependentGitIds { get; set; }
+        /// <summary>
         /// 拉取时间
         /// </summary>
         public DateTime GitPullAt { get; set; }

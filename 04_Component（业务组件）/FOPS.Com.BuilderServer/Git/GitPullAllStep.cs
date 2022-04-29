@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
@@ -23,7 +25,14 @@ namespace FOPS.Com.BuilderServer.Git
         /// </summary>
         public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
-            var lstGit = await GitService.ToListAsync();
+            var lstGitIds = new List<int>
+            {
+                project.GitId
+            };
+            lstGitIds.AddRange(project.DependentGitIds);
+            lstGitIds.Remove(0);
+            
+            var lstGit = await GitService.ToListAsync(lstGitIds);
             foreach (var gitVO in lstGit)
             {
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");

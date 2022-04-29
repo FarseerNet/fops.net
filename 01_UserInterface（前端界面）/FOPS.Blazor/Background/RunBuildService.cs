@@ -30,7 +30,7 @@ namespace FOPS.Blazor.Background
             //var threadCount                  = Environment.ProcessorCount - 1;
             //if (threadCount < 1) threadCount = 1;
             var threadCount = 1;
-            _logger.LogInformation($"开始执行构建队列，共{threadCount}个线程");
+            _logger.LogInformation($"开启构建队列，{threadCount}个线程");
 
             for (int i = 0; i < threadCount; i++)
             {

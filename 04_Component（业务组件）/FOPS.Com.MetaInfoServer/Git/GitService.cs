@@ -14,6 +14,10 @@ namespace FOPS.Com.MetaInfoServer.Git
         /// Git列表
         /// </summary>
         public Task<List<GitVO>> ToListAsync() => MetaInfoContext.Data.Git.ToListAsync().MapAsync<GitVO, GitPO>();
+        /// <summary>
+        /// Git列表
+        /// </summary>
+        public Task<List<GitVO>> ToListAsync(List<int> ids) => MetaInfoContext.Data.Git.Where(o => ids.Contains(o.Id)).ToListAsync().MapAsync<GitVO, GitPO>();
 
         /// <summary>
         /// Git信息

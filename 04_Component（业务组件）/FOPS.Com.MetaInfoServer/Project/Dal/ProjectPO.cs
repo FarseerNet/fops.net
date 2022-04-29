@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Enum;
 using FS.Core.Mapping.Attribute;
@@ -48,6 +49,11 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// </summary>
         [Field(Name = "git_id")]
         public int? GitId { get; set; }
+        /// <summary>
+        /// 依赖的GIT库（会同时拉取依赖的GIT库）
+        /// </summary>
+        [Field(Name = "git_id",StorageType = EumStorageType.Array)]
+        public List<int> DependentGitIds { get; set; }
         /// <summary>
         /// DockerHub模板
         /// </summary>

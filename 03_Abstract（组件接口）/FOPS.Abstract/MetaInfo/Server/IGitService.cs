@@ -42,5 +42,9 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 修改GIT的拉取时间
         /// </summary>
         Task UpdateAsync(int id, DateTime pullAt);
+        /// <summary>
+        /// Git列表
+        /// </summary>
+        Task<List<GitVO>> ToListAsync(List<int> ids);
     }
 }
