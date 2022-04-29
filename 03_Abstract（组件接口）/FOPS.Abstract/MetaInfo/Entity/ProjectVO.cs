@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FOPS.Abstract.K8S.Enum;
 using FOPS.Abstract.MetaInfo.Enum;
 
 namespace FOPS.Abstract.MetaInfo.Entity
@@ -94,5 +95,9 @@ namespace FOPS.Abstract.MetaInfo.Entity
         /// 集群版本
         /// </summary>
         public Dictionary<int,ClusterVer> DicClusterVer { get; set; }
+        /// <summary>
+        /// K8S负载类型
+        /// </summary>
+        public EumK8sControllers K8sControllersType { get; set; }
     }
 }

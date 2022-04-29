@@ -95,7 +95,7 @@
                                     <div class="layui-table-cell laytable-cell-14-0-2">
                                         <select @bind="info.K8STplDeployment" style="display:block;">
                                             <option value="0">不需要</option>
-                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Deployment))
+                                            @foreach (var yamlTplVO in _lstTpl.FindAll(O => O.K8SKindType == EumK8SKind.Controllers))
                                             {
                                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                                             }

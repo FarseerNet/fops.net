@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FOPS.Abstract.K8S.Enum;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Enum;
 using FS.Core.Mapping.Attribute;
@@ -114,5 +115,10 @@ namespace FOPS.Com.MetaInfoServer.Project.Dal
         /// </summary>
         [Field(Name = "shell_script")]
         public string ShellScript { get; set; }
+        /// <summary>
+        /// K8S负载类型
+        /// </summary>
+        [Field(Name = "k8s_controllers_type")]
+        public EumK8sControllers? K8sControllersType { get; set; }
     }
 }

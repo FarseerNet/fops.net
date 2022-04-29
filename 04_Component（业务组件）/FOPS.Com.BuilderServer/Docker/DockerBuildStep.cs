@@ -42,7 +42,7 @@ namespace FOPS.Com.BuilderServer.Docker
                 }
                 // 替换模板
                 var tpl = TplTools.ReplaceTpl(project, dockerfileTpl.Template);
-                System.IO.File.AppendAllText(env.DockerFilePath, tpl);
+                await System.IO.File.AppendAllTextAsync(env.DockerFilePath, tpl, cancellationToken);
             }
             else
             {

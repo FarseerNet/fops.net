@@ -87,15 +87,15 @@
 </div>
 <div class="layui-col-md6">
     <div class="layui-card">
-        <div class="layui-card-header">K8S模板</div>
+        <div class="layui-card-header">K8S</div>
         <div class="layui-card-body layui-row layui-col-space10">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">Deployment模板</label>
+                    <label class="layui-form-label">Controllers模板</label>
                     <div class="layui-input-inline">
                         <select name="modules" @bind="_info.K8STplDeployment">
                             <option value="0">不需要</option>
-                            @foreach (var yamlTplVO in _lstTpl.FindAll(o => o.K8SKindType == EumK8SKind.Deployment))
+                            @foreach (var yamlTplVO in _lstTpl.FindAll(o => o.K8SKindType == EumK8SKind.Controllers))
                             {
                                 <option value="@yamlTplVO.Id">@yamlTplVO.Name</option>
                             }
@@ -142,10 +142,19 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">部署类型</label>
+                <div class="layui-input-block">
+                    <select @bind="_info.K8sControllersType">
+                        <option value="">全部</option>
+                        @foreach (var eumK8SControllers in typeof(EumK8sControllers).ToList<EumK8sControllers>())
+                        {
+                            <option value="@eumK8SControllers">@(eumK8SControllers.ToString())</option>
+                        }
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-
     <div class="layui-card">
         <div class="layui-card-header">
             仓库
@@ -153,7 +162,7 @@
         <div class="layui-card-body layui-row layui-col-space10">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">镜像仓库</label>
+                    <label class="layui-form-label">Docker仓库</label>
                     <div class="layui-input-inline">
                         <select @bind="_info.DockerHub">
                             @foreach (var dockerHubVO in _lstDockerHub)
@@ -236,11 +245,11 @@
         </div>
     </div>
 </div>
-</div>
 
 <div class="layui-footer" style="left: 0;">
     <button class="layui-btn" @onclick="UpdateInfo">保存</button>
     <button class="layui-btn layui-btn-danger" @onclick="Delete">删除</button>
+</div>
 </div>
 <style>
 .layui-form-label {
@@ -260,6 +269,7 @@
     private List<DockerfileTplVO> _lstDockerfileTpl = new();
     private List<DockerHubVO> _lstDockerHub = new();
     private Dictionary<int, bool> _selectGits = new();
+    private EumK8sControllers _selectK8sControllers;
     private bool _isFirst;
 
     protected override async Task OnInitializedAsync()
@@ -385,5 +395,4 @@
                       "</div>"
         });
     }
-
 }

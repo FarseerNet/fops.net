@@ -5,7 +5,7 @@ namespace FOPS.Abstract.K8S.Enum
     /// </summary>
     public enum EumK8SKind
     {
-        Deployment,
+        Controllers,
         Ingress,
         Service,
         Config,

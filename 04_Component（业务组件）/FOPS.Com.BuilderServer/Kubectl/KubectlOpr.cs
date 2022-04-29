@@ -7,6 +7,7 @@ using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FS.Core.Entity;
+using FS.Extends;
 using FS.Utils.Component;
 
 namespace FOPS.Com.BuilderServer.Kubectl
@@ -36,7 +37,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
 
             // 取得dockerHub
             var dockerName = DockerOpr.GetDockerImage(docker, project, buildNumber);
-            return await ShellTools.Run("kubectl", $"set image deployment/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, null);
+            return await ShellTools.Run("kubectl", $"set image {project.K8sControllersType.GetName()}/{project.Name} {project.Name}={dockerName} --kubeconfig={configFile}", actReceiveOutput, null);
         }
 
         /// <summary>
