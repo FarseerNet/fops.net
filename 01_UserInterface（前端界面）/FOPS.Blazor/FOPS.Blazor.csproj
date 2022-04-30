@@ -53,4 +53,8 @@
       <PackageReference Include="MySqlConnector" Version="2.1.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\log\history" />
+    </ItemGroup>
+
 </Project>

@@ -139,6 +139,24 @@
             </li>
         }
     }
+    <li data-name="log" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="日志" lay-direction="2">
+            <i class="layui-icon layui-icon-component"></i>
+            <cite>日志</cite>
+        </a>
+        <dl class="layui-nav-child">
+            <dd data-name="grid">
+                <NavLink class="nav-link" href="/log/realtime/list" Match="NavLinkMatch.All">
+                    实时监控
+                </NavLink>
+            </dd>
+            <dd data-name="grid">
+                <NavLink class="nav-link" href="/log/history/list" Match="NavLinkMatch.All">
+                    历史查询
+                </NavLink>
+            </dd>
+        </dl>
+    </li>
     <li data-name="deploy" class="layui-nav-item">
         <a href="javascript:;" lay-tips="构建" lay-direction="2">
             <i class="layui-icon layui-icon-app"></i>
