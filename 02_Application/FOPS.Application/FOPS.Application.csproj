@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Com.BuilderServer\FOPS.Com.BuilderServer.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Com.DockerServer\FOPS.Com.DockerServer.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Com.FssServer\FOPS.Com.FssServer.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Com.K8SServer\FOPS.Com.K8SServer.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Com.MetaInfoServer\FOPS.Com.MetaInfoServer.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Cache\Farseer.Net.Cache.csproj" />
+        <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Core\Farseer.Net.Core.csproj" />
+        <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+        <PackageReference Include="Grpc.Core.Api" Version="2.45.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Docker\Enum" />
+      <Folder Include="Tmp\Entity" />
+      <Folder Include="Tmp\Enum" />
+      <Folder Include="Tmp\Server" />
+    </ItemGroup>
+
+</Project>

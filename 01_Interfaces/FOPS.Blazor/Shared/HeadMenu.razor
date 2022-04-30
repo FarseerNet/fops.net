@@ -1,0 +1,122 @@
+@* @using Microsoft.Extensions.Configuration *@
+@* @inject IIocManager _iocManager; *@
+@* @inject Blazored.LocalStorage.ILocalStorageService storage; *@
+@* *@
+@* <div class="layui-header"> *@
+@*     <ul class="layui-nav layui-layout-left"> *@
+@*         <li class="layui-nav-item layadmin-flexible" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩"> *@
+@*                 <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <a href="https://github.com/FarseerNet/FOPS" target="_blank" title="前台"> *@
+@*                 <i class="layui-icon layui-icon-website"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item" lay-unselect> *@
+@*             <a href="javascript:location.reload();" layadmin-event="refresh" title="刷新"> *@
+@*                 <i class="layui-icon layui-icon-refresh-3"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <select @bind="FssServer"> *@
+@*                 <option value="">FSS环境</option> *@
+@*                 @foreach (var fssServer in _dicFssServer) *@
+@*                 { *@
+@*                     <option value="@fssServer.Value">@fssServer.Key</option> *@
+@*                 } *@
+@*             </select> *@
+@*         </li> *@
+@*     </ul> *@
+@*     <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right"> *@
+@* *@
+@*         <li class="layui-nav-item" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="message" lay-text="消息中心"> *@
+@*                 <i class="layui-icon layui-icon-notice"></i> *@
+@*                 <!-- 如果有新消息，则显示小圆点 --> *@
+@*                 <span class="layui-badge-dot"></span> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="theme"> *@
+@*                 <i class="layui-icon layui-icon-theme"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="note"> *@
+@*                 <i class="layui-icon layui-icon-note"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="fullscreen"> *@
+@*                 <i class="layui-icon layui-icon-screen-full"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item" lay-unselect> *@
+@*             <a href="javascript:;"> *@
+@*                 <cite>管理员</cite> *@
+@*             </a> *@
+@*             <dl class="layui-nav-child"> *@
+@*                 <dd layadmin-event="logout" style="text-align: center;"> *@
+@*                     <a>退出</a> *@
+@*                 </dd> *@
+@*             </dl> *@
+@*         </li> *@
+@* *@
+@*         <li class="layui-nav-item layui-hide-xs" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="about"> *@
+@*                 <i class="layui-icon layui-icon-more-vertical"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*         <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect> *@
+@*             <a href="javascript:;" layadmin-event="more"> *@
+@*                 <i class="layui-icon layui-icon-more-vertical"></i> *@
+@*             </a> *@
+@*         </li> *@
+@*     </ul> *@
+@* </div> *@
+@* *@
+@* @code{ *@
+@*     private bool _isFirst; *@
+@*     private string _fssServer; *@
+@* *@
+@*     public string FssServer *@
+@*     { *@
+@*         get => _fssServer; *@
+@*         set *@
+@*         { *@
+@*             _fssServer = value; *@
+@*             storage.SetItemAsStringAsync("FssServer", _fssServer); *@
+@*         } *@
+@*     } *@
+@* *@
+@*     private Dictionary<string, string> _dicFssServer = new(); *@
+@* *@
+@*     protected override void OnInitialized() *@
+@*     { *@
+@*         if (_isFirst) return; *@
+@*         _isFirst = true; *@
+@* *@
+@*         var fssServers = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren(); *@
+@*         foreach (var configurationSection in fssServers) *@
+@*         { *@
+@*             _dicFssServer[configurationSection.Key] = configurationSection.Value; *@
+@*         } *@
+@*     } *@
+@* *@
+@*     protected override async Task OnAfterRenderAsync(bool firstRender) *@
+@*     { *@
+@*         if (!firstRender) return; *@
+@* *@
+@*         var selValue = await storage.GetItemAsStringAsync("FssServer"); *@
+@*         if (!string.IsNullOrWhiteSpace(selValue)) *@
+@*         { *@
+@*             FssServer = selValue; *@
+@*         } *@
+@*         else if (_dicFssServer.Count > 0) *@
+@*         { *@
+@*             FssServer = _dicFssServer.First().Value; *@
+@*         } *@
+@*     } *@
+@* } *@
