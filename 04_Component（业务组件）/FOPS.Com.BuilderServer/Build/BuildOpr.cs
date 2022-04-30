@@ -75,6 +75,7 @@ namespace FOPS.Com.BuilderServer.Build
 
             // 执行命令时需要记录日志到文件
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
+            
             // 定义环境变量
             var env = new BuildEnvironment
             {
@@ -95,10 +96,10 @@ namespace FOPS.Com.BuilderServer.Build
 
             try
             {
-                CancellationTokenSource cts = new CancellationTokenSource();
+                var cts = new CancellationTokenSource();
                 // 打印环境变量
                 BuildLogService.Write(build.Id, "---------------------------------------------------------");
-                BuildLogService.Write(build.Id, $"打印环境变量。");
+                BuildLogService.Write(build.Id, $"环境变量：");
                 foreach (var dirEnv in (Dictionary<string, string>)env)
                 {
                     BuildLogService.Write(build.Id, $"{dirEnv.Key}={dirEnv.Value}");
@@ -110,15 +111,18 @@ namespace FOPS.Com.BuilderServer.Build
                 if (docker != null) lstStep.Add(IocManager.Resolve<DockerLoginStep>()); // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
 
                 // 根据项目的构建方式，选择对应的构建组件
-                if (project.BuildType == EumBuildType.DotnetPublish) // .net 编译
+                switch (project.BuildType)
                 {
-                    lstStep.Add(IocManager.Resolve<DotnetBuildStep>());
+                    case EumBuildType.DotnetPublish: // .net 编译
+                        lstStep.Add(IocManager.Resolve<DotnetBuildStep>());
+                        break;
+                    case EumBuildType.Shell: // shell 编译
+                        lstStep.Add(IocManager.Resolve<ShellStep>());
+                        break;
+                    default:
+                        lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录 
+                        break;
                 }
-                else if (project.BuildType == EumBuildType.Shell) // shell 编译
-                {
-                    lstStep.Add(IocManager.Resolve<ShellStep>());
-                }
-                else lstStep.Add(IocManager.Resolve<CopyToDistStep>()); // 不编译，将源文件复制到编译目录 
 
                 lstStep.Add(IocManager.Resolve<DockerBuildStep>()); // docker打包
 
