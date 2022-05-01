@@ -1,6 +1,6 @@
 using System;
 using FOPS.Abstract.Builder.Entity;
-using FOPS.Abstract.Builder.Enum;
+using FOPS.Domain.Build.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 

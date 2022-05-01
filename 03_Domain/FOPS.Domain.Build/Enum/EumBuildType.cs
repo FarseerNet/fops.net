@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FOPS.Abstract.MetaInfo.Enum
+namespace FOPS.Domain.Build.Enum
 {
     /// <summary>
     /// 构建方式

@@ -1,4 +1,4 @@
-namespace FOPS.Abstract.Builder.Enum
+namespace FOPS.Domain.Build.Enum
 {
     public enum EumBuildStatus
     {

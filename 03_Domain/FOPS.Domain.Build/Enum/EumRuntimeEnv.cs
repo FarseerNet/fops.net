@@ -1,6 +1,4 @@
-using System.Configuration;
-
-namespace FOPS.Abstract.MetaInfo.Enum
+namespace FOPS.Domain.Build.Enum
 {
     /// <summary>
     /// 运行环境

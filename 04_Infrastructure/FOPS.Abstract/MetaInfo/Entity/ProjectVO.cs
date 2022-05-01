@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using FOPS.Abstract.K8S.Enum;
-using FOPS.Abstract.MetaInfo.Enum;
+using FOPS.Domain.Build.Enum;
 
 namespace FOPS.Abstract.MetaInfo.Entity
 {

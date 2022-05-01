@@ -12,26 +12,6 @@ namespace FOPS.Com.MetaInfoServer.Admin
     public class AdminService : IAdminService
     {
         /// <summary>
-        /// Admin列表
-        /// </summary>
-        public Task<List<AdminVO>> ToListAsync() => MetaInfoContext.Data.Admin.ToListAsync().MapAsync<AdminVO, AdminPO>();
-
-        /// <summary>
-        /// Admin信息
-        /// </summary>
-        public async Task<AdminVO> ToInfoAsync(int id)
-        {
-            var info                       = await MetaInfoContext.Data.Admin.Where(o => o.Id == id).ToEntityAsync().MapAsync<AdminVO, AdminPO>();
-            if (info != null) info.UserPwd = null;
-            return info;
-        }
-
-        /// <summary>
-        /// Admin数量
-        /// </summary>
-        public Task<int> CountAsync() => MetaInfoContext.Data.Admin.CountAsync();
-
-        /// <summary>
         /// 添加管理员
         /// </summary>
         public async Task<int> AddAsync(AdminVO vo)
@@ -65,12 +45,6 @@ namespace FOPS.Com.MetaInfoServer.Admin
                 IsEnable = vo.IsEnable
             });
         }
-
-        /// <summary>
-        /// 删除管理员
-        /// </summary>
-        public Task DeleteAsync(int id) => MetaInfoContext.Data.Admin.Where(o => o.Id == id).DeleteAsync();
-
         /// <summary>
         /// 登陆
         /// </summary>

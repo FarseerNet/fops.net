@@ -1,5 +1,5 @@
 using System;
-using FOPS.Abstract.Builder.Enum;
+using FOPS.Domain.Build.Enum;
 
 namespace FOPS.Abstract.Builder.Entity
 {

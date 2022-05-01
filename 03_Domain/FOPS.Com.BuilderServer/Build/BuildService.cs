@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
-using FOPS.Abstract.Builder.Enum;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Abstract.MetaInfo.Entity;
 using FOPS.Abstract.MetaInfo.Server;
 using FOPS.Com.BuilderServer.Build.Dal;
+using FOPS.Domain.Build.Enum;
 using FS;
 using FS.Extends;
 

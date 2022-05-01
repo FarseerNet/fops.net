@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using FOPS.Abstract.K8S.Enum;
 using FOPS.Abstract.MetaInfo.Entity;
-using FOPS.Abstract.MetaInfo.Enum;
+using FOPS.Domain.Build.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 

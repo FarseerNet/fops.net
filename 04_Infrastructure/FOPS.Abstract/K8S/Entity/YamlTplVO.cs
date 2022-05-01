@@ -1,4 +1,4 @@
-using FOPS.Abstract.K8S.Enum;
+using FOPS.Domain.Build.Enum;
 
 namespace FOPS.Abstract.K8S.Entity
 {

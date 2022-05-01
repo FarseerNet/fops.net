@@ -1,7 +1,6 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace FOPS.Abstract.K8S.Enum;
+namespace FOPS.Domain.Build.Enum;
 
 /// <summary>
 /// K8S负载类型

@@ -1,4 +1,4 @@
-namespace FOPS.Abstract.K8S.Enum
+namespace FOPS.Domain.Build.Enum
 {
     /// <summary>
     /// K8S中的类型

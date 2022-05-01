@@ -1,5 +1,5 @@
 using FOPS.Abstract.K8S.Entity;
-using FOPS.Abstract.K8S.Enum;
+using FOPS.Domain.Build.Enum;
 using FS.Core.Mapping.Attribute;
 using FS.Mapper;
 

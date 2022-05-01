@@ -12,10 +12,14 @@
         <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
         <PackageReference Include="Grpc.Core.Api" Version="2.45.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Build\FOPS.Domain.Build.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Builder\Enum" />
       <Folder Include="Docker\Enum" />
+      <Folder Include="K8S\Enum" />
+      <Folder Include="MetaInfo\Enum" />
       <Folder Include="Tmp\Entity" />
       <Folder Include="Tmp\Enum" />
       <Folder Include="Tmp\Server" />

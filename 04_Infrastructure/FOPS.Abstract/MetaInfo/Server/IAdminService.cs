@@ -8,21 +8,6 @@ namespace FOPS.Abstract.MetaInfo.Server
     public interface IAdminService : ISingletonDependency
     {
         /// <summary>
-        /// Admin列表
-        /// </summary>
-        Task<List<AdminVO>> ToListAsync();
-
-        /// <summary>
-        /// Admin信息
-        /// </summary>
-        Task<AdminVO> ToInfoAsync(int id);
-
-        /// <summary>
-        /// Admin数量
-        /// </summary>
-        Task<int> CountAsync();
-
-        /// <summary>
         /// 添加管理员
         /// </summary>
         Task<int> AddAsync(AdminVO vo);
@@ -31,11 +16,6 @@ namespace FOPS.Abstract.MetaInfo.Server
         /// 修改管理员
         /// </summary>
         Task UpdateAsync(int id, AdminVO vo);
-
-        /// <summary>
-        /// 删除管理员
-        /// </summary>
-        Task DeleteAsync(int id);
 
         /// <summary>
         /// 登陆

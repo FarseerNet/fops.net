@@ -14,6 +14,11 @@
       <ProjectReference Include="..\..\03_Domain\FOPS.Com.FssServer\FOPS.Com.FssServer.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Com.K8SServer\FOPS.Com.K8SServer.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Com.MetaInfoServer\FOPS.Com.MetaInfoServer.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.AppLog\FOPS.Domain.AppLog.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Build\FOPS.Domain.Build.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.LinkTrack\FOPS.Domain.LinkTrack.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Fss\FOPS.Domain.Fss.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.K8s\FOPS.Domain.K8s.csproj" />
     </ItemGroup>
 
 </Project>

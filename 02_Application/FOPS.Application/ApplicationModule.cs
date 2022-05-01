@@ -3,11 +3,19 @@ using FOPS.Com.DockerServer;
 using FOPS.Com.FssServer;
 using FOPS.Com.K8SServer;
 using FOPS.Com.MetaInfoServer;
+using FOPS.Domain.AppLog;
+using FOPS.Domain.Build;
+using FOPS.Domain.LinkTrack;
+using FOPS.Domain.Fss;
 using FS.Modules;
 
 namespace FOPS.Application;
 
 [DependsOn(
+              typeof(AppLogModule),
+              typeof(BuildModule),
+              typeof(Fss2Module),
+              typeof(LinkTrackModule),
               typeof(FssModule),
               typeof(K8SModule),
               typeof(BuilderModule),
