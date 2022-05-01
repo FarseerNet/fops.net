@@ -1,8 +1,7 @@
-using FS.DI;
+using FOPS.Domain.Build.Cluster.Repository;
 
 namespace FOPS.Infrastructure.Repository;
 
-public class ClusterRepository: ISingletonDependency
+public class ClusterRepository : IClusterRepository
 {
-    
 }

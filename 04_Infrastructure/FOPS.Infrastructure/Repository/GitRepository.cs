@@ -1,8 +1,7 @@
-using FS.DI;
+using FOPS.Domain.Build.Git.Repository;
 
 namespace FOPS.Infrastructure.Repository;
 
-public class GitRepository: ISingletonDependency
+public class GitRepository : IGitRepository
 {
-    
 }

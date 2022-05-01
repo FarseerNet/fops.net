@@ -1,8 +1,7 @@
-using FS.DI;
+using FOPS.Domain.Build.YamlTpl.Repository;
 
 namespace FOPS.Infrastructure.Repository;
 
-public class YamlTplRepository: ISingletonDependency
+public class YamlTplRepository : IYamlTplRepository
 {
-    
 }

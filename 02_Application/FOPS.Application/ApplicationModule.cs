@@ -7,6 +7,7 @@ using FOPS.Domain.AppLog;
 using FOPS.Domain.Build;
 using FOPS.Domain.LinkTrack;
 using FOPS.Domain.Fss;
+using FOPS.Domain.Sys;
 using FS.Modules;
 
 namespace FOPS.Application;
@@ -16,6 +17,8 @@ namespace FOPS.Application;
               typeof(BuildModule),
               typeof(Fss2Module),
               typeof(LinkTrackModule),
+              typeof(SysModule),
+              
               typeof(FssModule),
               typeof(K8SModule),
               typeof(BuilderModule),

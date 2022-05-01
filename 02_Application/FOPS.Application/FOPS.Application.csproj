@@ -19,6 +19,7 @@
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.LinkTrack\FOPS.Domain.LinkTrack.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Fss\FOPS.Domain.Fss.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.K8s\FOPS.Domain.K8s.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Sys\FOPS.Domain.Sys.csproj" />
     </ItemGroup>
 
 </Project>

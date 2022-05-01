@@ -1,8 +1,7 @@
-using FS.DI;
+using FOPS.Domain.Build.ProjectGroup.Repository;
 
 namespace FOPS.Infrastructure.Repository;
 
-public class ProjectGroupRepository: ISingletonDependency
+public class ProjectGroupRepository : IProjectGroupRepository
 {
-    
 }

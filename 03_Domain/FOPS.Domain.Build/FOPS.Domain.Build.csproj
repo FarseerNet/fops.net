@@ -10,14 +10,4 @@
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Cluster" />
-      <Folder Include="Docker" />
-      <Folder Include="DockerfileTpl" />
-      <Folder Include="Git" />
-      <Folder Include="Project" />
-      <Folder Include="ProjectGroup" />
-      <Folder Include="YamlTpl" />
-    </ItemGroup>
-
 </Project>

@@ -14,6 +14,7 @@
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Mapper\Farseer.Net.Mapper.csproj" />
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.MQ.RedisStream\Farseer.Net.MQ.RedisStream.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Build\FOPS.Domain.Build.csproj" />
+      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Sys\FOPS.Domain.Sys.csproj" />
     </ItemGroup>
 
 </Project>
