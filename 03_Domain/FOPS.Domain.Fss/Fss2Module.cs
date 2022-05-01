@@ -16,6 +16,5 @@ public class Fss2Module : FarseerModule
     /// </summary>
     public override void Initialize()
     {
-        IocManager.RegisterAssemblyByConvention(type: GetType());
     }
 }

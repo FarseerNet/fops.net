@@ -1,9 +1,10 @@
 @page "/admin/list"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Application.Sys.Admin
+@using FOPS.Application.Sys.Admin.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
+@inject AdminApp adminApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -125,16 +126,15 @@
     private int _totalCount;
     private int _pageSize = 999;
 
-    private List<AdminVO> _lst = new();
+    private List<AdminDTO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
     {
         if (_isFirst) return;
         _isFirst = true;
-        
-        _lst = await _iocManager.Resolve<IAdminService>().ToListAsync()??new();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        var a = adminApp;
+        _lst = await _iocManager.Resolve<AdminApp>().ToListAsync() ?? new();
         _totalCount = _lst.Count;
     }
 

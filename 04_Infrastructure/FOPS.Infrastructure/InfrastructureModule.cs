@@ -23,9 +23,7 @@ public class InfrastructureModule : FarseerModule
     {
     }
 
-    /// <summary>
-    ///     初始化
-    /// </summary>
+
     public override void Initialize()
     {
         IocManager.RegisterAssemblyByConvention(type: GetType());

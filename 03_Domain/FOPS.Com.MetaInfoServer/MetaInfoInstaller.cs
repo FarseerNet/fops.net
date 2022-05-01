@@ -26,7 +26,6 @@ namespace FOPS.Com.MetaInfoServer
         /// </summary>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

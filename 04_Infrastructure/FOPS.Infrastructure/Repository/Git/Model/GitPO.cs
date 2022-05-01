@@ -1,4 +1,6 @@
+using FOPS.Domain.Build.Git;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.Git.Model;
 
@@ -39,4 +41,6 @@ public class GitPO
     /// </summary>
     [Field(Name = "pull_at")]
     public DateTime? PullAt { get; set; }
+
+    public static implicit operator GitPO(GitDO git) => git.Adapt<GitPO>();
 }

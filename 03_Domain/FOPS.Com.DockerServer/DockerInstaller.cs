@@ -26,7 +26,6 @@ namespace FOPS.Com.DockerServer
         /// </summary>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

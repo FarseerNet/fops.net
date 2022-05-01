@@ -1,5 +1,7 @@
 using FOPS.Domain.Build.Enum;
+using FOPS.Domain.Build.YamlTpl;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.YamlTpl.Model;
 
@@ -28,4 +30,6 @@ public class YamlTplPO
     /// </summary>
     [Field(Name = "template")]
     public string Template { get; set; }
+    
+    public static implicit operator YamlTplPO(YamlTplDO yamlTpl) => yamlTpl.Adapt<YamlTplPO>();
 }

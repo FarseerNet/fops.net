@@ -16,6 +16,5 @@ public class LinkTrackModule : FarseerModule
     /// </summary>
     public override void Initialize()
     {
-        IocManager.RegisterAssemblyByConvention(type: GetType());
     }
 }

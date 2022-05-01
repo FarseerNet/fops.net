@@ -1,5 +1,7 @@
 using FOPS.Domain.Build.Enum;
+using FOPS.Domain.Build.Project;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.Project.Model;
 
@@ -115,4 +117,6 @@ public class ProjectPO
     /// </summary>
     [Field(Name = "k8s_controllers_type")]
     public EumK8sControllers? K8sControllersType { get; set; }
+
+    public static implicit operator ProjectPO(ProjectDO project) => project.Adapt<ProjectPO>();
 }

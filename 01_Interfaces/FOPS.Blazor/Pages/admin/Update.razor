@@ -1,7 +1,8 @@
 @page "/admin/update/{id:int}"
 @using Microsoft.AspNetCore.Components
 @using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Application.Sys.Admin
+@using FOPS.Application.Sys.Admin.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -80,32 +81,29 @@
 
 @code{
 
-    [Parameter] public int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
-    private AdminVO _info = new() {};
+    private AdminDTO _info = new();
 
     private async Task UpdateInfo()
     {
-        if (Id < 1 || _info == null)
-        {
-            await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
-            GotoList();
-            return;
-        }
         try
         {
-            if (string.IsNullOrWhiteSpace(_info.UserName))
+            await _iocManager.Resolve<AdminApp>().UpdateAsync(_info);
+            await js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
-                throw new Exception("管理员名称必须填写。");
-            }
-
-            await _iocManager.Resolve<IAdminService>().UpdateAsync(Id, _info);
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
+                icon = 1
+            });
             GotoList();
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
     }
 
@@ -113,7 +111,11 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", "管理员不存在", new
+            {
+                icon = 2,
+                title = "出错了"
+            });
             GotoList();
         }
     }
@@ -122,10 +124,14 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IAdminService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<AdminApp>().ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "管理员不存在", new {icon = 2, title = "出错了"});
+                await js.InvokeVoidAsync("layer.alert", "管理员不存在", new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
                 GotoList();
             }
         }

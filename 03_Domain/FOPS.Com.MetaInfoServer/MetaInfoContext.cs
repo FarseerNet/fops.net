@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using FOPS.Com.MetaInfoServer.Admin.Dal;
-using FOPS.Com.MetaInfoServer.Git.Dal;
+﻿using FOPS.Com.MetaInfoServer.Git.Dal;
 using FOPS.Com.MetaInfoServer.Project.Dal;
 using FOPS.Com.MetaInfoServer.ProjectGroup.Dal;
 using FS.Data;
-using FS.Data.Map;
 
 namespace FOPS.Com.MetaInfoServer
 {
@@ -20,14 +17,12 @@ namespace FOPS.Com.MetaInfoServer
         public TableSet<ProjectPO>      Project      { get; set; }
         public TableSet<ProjectGroupPO> ProjectGroup { get; set; }
         public TableSet<GitPO>          Git          { get; set; }
-        public TableSet<AdminPO>        Admin      { get; set; }
 
         protected override void CreateModelInit()
         {
             ProjectGroup.SetName("basic_project_group");
             Project.SetName("basic_project");
             Git.SetName("basic_git");
-            Admin.SetName("admin");
         }
     }
 }

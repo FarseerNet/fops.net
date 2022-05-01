@@ -32,10 +32,7 @@ public class ApplicationModule : FarseerModule
     public override void PreInitialize()
     {
     }
-
-    /// <summary>
-    ///     初始化
-    /// </summary>
+    
     public override void Initialize()
     {
         IocManager.RegisterAssemblyByConvention(type: GetType());

@@ -16,6 +16,5 @@ public class BuildModule : FarseerModule
     /// </summary>
     public override void Initialize()
     {
-        IocManager.RegisterAssemblyByConvention(type: GetType());
     }
 }

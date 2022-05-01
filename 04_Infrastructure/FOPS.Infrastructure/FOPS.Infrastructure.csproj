@@ -17,4 +17,8 @@
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Sys\FOPS.Domain.Sys.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Mapster" Version="7.3.0" />
+    </ItemGroup>
+
 </Project>

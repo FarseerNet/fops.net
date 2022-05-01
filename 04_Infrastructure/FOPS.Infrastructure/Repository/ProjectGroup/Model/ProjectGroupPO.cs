@@ -1,4 +1,6 @@
+using FOPS.Domain.Build.ProjectGroup;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.ProjectGroup.Model;
 
@@ -19,4 +21,6 @@ public class ProjectGroupPO
     /// </summary>
     [Field(Name = "name")]
     public string Name { get; set; }
+    
+    public static implicit operator ProjectGroupPO(ProjectGroupDO projectGroup) => projectGroup.Adapt<ProjectGroupPO>();
 }

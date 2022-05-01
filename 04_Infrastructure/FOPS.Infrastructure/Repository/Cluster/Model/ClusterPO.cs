@@ -1,5 +1,7 @@
+using FOPS.Domain.Build.Cluster;
 using FOPS.Domain.Build.Enum;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.Cluster.Model;
 
@@ -33,4 +35,7 @@ public class ClusterPO
     /// </summary>
     [Field(Name = "runtime_env_type")]
     public EumRuntimeEnv? RuntimeEnvType { get; set; }
+    
+
+    public static implicit operator ClusterPO(ClusterDO cluster) => cluster.Adapt<ClusterPO>();
 }

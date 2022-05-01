@@ -1,4 +1,6 @@
+using FOPS.Domain.Build.DockerHub;
 using FS.Core.Mapping.Attribute;
+using Mapster;
 
 namespace FOPS.Infrastructure.Repository.DockerHub.Model;
 
@@ -29,4 +31,7 @@ public class DockerHubPO
     /// </summary>
     [Field(Name = "user_pwd")]
     public string UserPwd { get; set; }
+    
+
+    public static implicit operator DockerHubPO(DockerHubDO dockerHub) => dockerHub.Adapt<DockerHubPO>();
 }

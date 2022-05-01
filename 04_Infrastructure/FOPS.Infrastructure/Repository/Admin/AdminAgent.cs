@@ -8,7 +8,7 @@ public class AdminAgent : ISingletonDependency
     /// <summary>
     ///     Admin列表
     /// </summary>
-    public Task<List<AdminPO>> ToListAsync() => MysqlContext.Data.Admin.ToListAsync();
+    public Task<List<AdminPO>> ToListAsync() => MysqlContext.Data.Admin.Desc(o => o.Id).ToListAsync();
 
     /// <summary>
     ///     Admin信息
@@ -43,6 +43,7 @@ public class AdminAgent : ISingletonDependency
     /// </summary>
     public async Task<int> AddAsync(AdminPO po)
     {
+        po.LastLoginAt = null;
         await MysqlContext.Data.Admin.InsertAsync(entity: po, isReturnLastId: true);
         return po.Id.GetValueOrDefault();
     }

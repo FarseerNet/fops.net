@@ -34,7 +34,6 @@ namespace FOPS.Com.BuilderServer
         /// </summary>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
             container.Register(Component.For<IBuildStep, DockerBuildStep>().LifestyleSingleton());
             container.Register(Component.For<IBuildStep, DockerLoginStep>().LifestyleSingleton());
             container.Register(Component.For<IBuildStep, DockerUploadStep>().LifestyleSingleton());
