@@ -1,3 +1,4 @@
+using FOPS.Domain.Build.Cluster.Repository;
 using FOPS.Domain.Build.Enum;
 
 namespace FOPS.Domain.Build.Cluster;
@@ -24,4 +25,22 @@ public class ClusterDO
     ///     集群环境类型
     /// </summary>
     public EumRuntimeEnv RuntimeEnvType { get; set; }
+
+    /// <summary>
+    /// 添加集群
+    /// </summary>
+    public Task<int> AddAsync()
+    {
+        var repository = IocManager.GetService<IClusterRepository>();
+        return repository.AddAsync(this);
+    }
+
+    /// <summary>
+    /// 修改集群
+    /// </summary>
+    public Task UpdateAsync()
+    {
+        var repository = IocManager.GetService<IClusterRepository>();
+        return repository.UpdateAsync(Id, this);
+    }
 }

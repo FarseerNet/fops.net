@@ -16,4 +16,8 @@
         <ProjectReference Include="..\..\04_Infrastructure\FOPS.Infrastructure.Common\FOPS.Infrastructure.Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Build\Dal" />
+    </ItemGroup>
+
 </Project>

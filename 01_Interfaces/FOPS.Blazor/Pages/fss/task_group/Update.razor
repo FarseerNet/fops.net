@@ -1,8 +1,6 @@
 @page "/fss/task_group/update/{id:int}"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
-@using FOPS.Abstract.MetaInfo.Server
-@using FS.Extends
+@using FOPS.Application.Fss.Entity
 @using FS.Utils.Common
 @using FS.Utils.Component
 @inject IIocManager _iocManager;
@@ -113,7 +111,7 @@
     [Parameter]
     public int Id { get; set; }
 
-    private TaskGroupVO _info = new()
+    private TaskGroupDTO _info = new()
     {
         IsEnable = true,
         Cron = "1000"

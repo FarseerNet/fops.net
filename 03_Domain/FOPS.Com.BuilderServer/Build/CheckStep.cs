@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Build.Entity;
+using FOPS.Application.Build.Git.Entity;
+using FOPS.Application.Build.Project.Entity;
 using FS.Core.Entity;
 
 namespace FOPS.Com.BuilderServer.Build
@@ -12,7 +14,7 @@ namespace FOPS.Com.BuilderServer.Build
     {
         public IBuildLogService BuildLogService { get; set; }
 
-        public Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
+        public Task<RunShellResult> Build(BuildEnvironment env, BuildDTO build, ProjectDTO project, GitDTO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"前置检查。");

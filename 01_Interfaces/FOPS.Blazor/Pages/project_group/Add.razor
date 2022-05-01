@@ -1,8 +1,9 @@
 @page "/project_group/add"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
+@using FOPS.Application.Build.ProjectGroup.Entity
+@using FOPS.Application.Build.Cluster.Entity
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.Cluster
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -45,8 +46,8 @@
 
 @code{
 
-    private readonly ProjectGroupVO _info = new() {ClusterIds =new()};
-    private List<ClusterVO> _lstCluster = new();
+    private readonly ProjectGroupDTO _info = new() {ClusterIds =new()};
+    private List<ClusterDTO> _lstCluster = new();
     private Dictionary<int, bool> _selectCluster = new();
     private bool _isFirst;
 
@@ -55,7 +56,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync()??new();
         _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
     }
 
@@ -70,7 +71,7 @@
                 await js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
             }
 
-            await _iocManager.Resolve<IProjectGroupService>().AddAsync(_info);
+            await _iocManager.Resolve<ProjectGroupApp>().AddAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/project_group/list");
         }

@@ -1,4 +1,6 @@
 using FOPS.Domain.Build.Enum;
+using FOPS.Domain.Build.Project.Repository;
+using Newtonsoft.Json;
 
 namespace FOPS.Domain.Build.Project;
 
@@ -92,4 +94,48 @@ public class ProjectDO
     ///     K8S负载类型
     /// </summary>
     public EumK8sControllers K8sControllersType { get; set; }
+    /// <summary>
+    /// 集群版本
+    /// </summary>
+    public Dictionary<int, ClusterVer> DicClusterVer { get; set; }
+    /// <summary>
+    /// 拉取时间
+    /// </summary>
+    public DateTime GitPullAt { get; set; }
+
+    /// <summary>
+    /// 添加项目
+    /// </summary>
+    public Task<int> AddAsync()
+    {
+        var repository = IocManager.GetService<IProjectRepository>();
+
+        if (string.IsNullOrWhiteSpace(Path)) Path = "/";
+        else if (!Path.StartsWith("/")) Path      = "/" + Path;
+
+        if (string.IsNullOrWhiteSpace(ShellScript)) ShellScript = "";
+        Domain = string.IsNullOrWhiteSpace(Domain) ? "" : Domain.ToLower().Replace("http://", "").Replace("https://", "");
+
+        ClusterVer = DicClusterVer != null ? JsonConvert.SerializeObject(DicClusterVer) : "{}";
+
+        return repository.AddAsync(this);
+    }
+
+    /// <summary>
+    /// 修改项目
+    /// </summary>
+    public Task UpdateAsync()
+    {
+        var repository = IocManager.GetService<IProjectRepository>();
+
+        if (string.IsNullOrWhiteSpace(Path)) Path = "/";
+        else if (!Path.StartsWith("/")) Path      = "/" + Path;
+
+        if (string.IsNullOrWhiteSpace(ShellScript)) ShellScript = "";
+        Domain = string.IsNullOrWhiteSpace(Domain) ? "" : Domain.ToLower().Replace("http://", "").Replace("https://", "");
+
+        ClusterVer = DicClusterVer != null ? JsonConvert.SerializeObject(DicClusterVer) : "{}";
+
+        return repository.UpdateAsync(Id, this);
+    }
 }

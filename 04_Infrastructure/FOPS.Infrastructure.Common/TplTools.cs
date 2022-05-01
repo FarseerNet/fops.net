@@ -1,4 +1,4 @@
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Project.Entity;
 
 namespace FOPS.Infrastructure.Common
 {
@@ -7,7 +7,7 @@ namespace FOPS.Infrastructure.Common
         /// <summary>
         /// 替换模板
         /// </summary>
-        public static string ReplaceTpl(ProjectVO project, string tpl)
+        public static string ReplaceTpl(ProjectDTO project, string tpl)
         {
             // 替换项目名称
             tpl = tpl.Replace("${project_name}", project.Name)

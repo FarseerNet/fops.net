@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
-using FOPS.Abstract.Docker.Entity;
-using FOPS.Abstract.MetaInfo.Entity;
-using FS.Core.Entity;
+using FOPS.Application.Build.DockerHub.Entity;
+using FOPS.Application.Build.Project.Entity;
 using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server
@@ -14,11 +9,11 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 取得dockerHub
         /// </summary>
-        string GetDockerHub(DockerHubVO docker);
+        string GetDockerHub(DockerHubDTO docker);
 
         /// <summary>
         /// 生成镜像名称
         /// </summary>
-        string GetDockerImage(DockerHubVO docker, ProjectVO project, int buildNumber);
+        string GetDockerImage(DockerHubDTO docker, ProjectDTO project, int buildNumber);
     }
 }

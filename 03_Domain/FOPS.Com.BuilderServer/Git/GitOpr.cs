@@ -19,7 +19,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 获取Git存放的路径
         /// </summary>
-        public string GetGitPath(BuildEnvironment env, GitVO info)
+        public string GetGitPath(BuildEnvironment env, GitDTO info)
         {
             var gitName                           = info.Hub.Substring(info.Hub.LastIndexOf('/') + 1);
             if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
@@ -29,7 +29,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 根据判断是否存在Git目录，来决定返回Clone or pull
         /// </summary>
-        public async Task<RunShellResult> CloneOrPull(GitVO git)
+        public async Task<RunShellResult> CloneOrPull(GitDTO git)
         {
             var env        = new BuildEnvironment();
             var gitDirRoot = GetGitPath(env, git);

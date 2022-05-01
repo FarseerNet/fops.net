@@ -11,11 +11,11 @@ namespace FOPS.Com.BuilderServer.Dotnet
         /// <summary>
         /// 获取项目源地址
         /// </summary>
-        public string GetSourceDirRoot(BuildEnvironment env, ProjectVO project, GitVO git) => GitOpr.GetGitPath(env, git) + (project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path);
+        public string GetSourceDirRoot(BuildEnvironment env, ProjectDTO project, GitDTO git) => GitOpr.GetGitPath(env, git) + (project.Path.StartsWith("/") ? project.Path.Substring(1) : project.Path);
 
         /// <summary>
         /// 获取编译保存的目录地址
         /// </summary>
-        public string GetReleasePath(BuildEnvironment env, ProjectVO project) => env.ReleaseDirRoot + project.Name;
+        public string GetReleasePath(BuildEnvironment env, ProjectDTO project) => env.ReleaseDirRoot + project.Name;
     }
 }

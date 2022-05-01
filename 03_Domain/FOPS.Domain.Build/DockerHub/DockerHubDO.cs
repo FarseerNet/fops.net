@@ -1,3 +1,5 @@
+using FOPS.Domain.Build.DockerHub.Repository;
+
 namespace FOPS.Domain.Build.DockerHub;
 
 public class DockerHubDO
@@ -22,4 +24,22 @@ public class DockerHubDO
     ///     账户密码
     /// </summary>
     public string UserPwd { get; set; }
+
+    /// <summary>
+    /// 添加
+    /// </summary>
+    public Task AddAsync()
+    {
+        var repository = IocManager.GetService<IDockerHubRepository>();
+        return repository.AddAsync(this);
+    }
+
+    /// <summary>
+    /// 修改
+    /// </summary>
+    public Task UpdateAsync()
+    {
+        var repository = IocManager.GetService<IDockerHubRepository>();
+        return repository.UpdateAsync(Id, this);
+    }
 }

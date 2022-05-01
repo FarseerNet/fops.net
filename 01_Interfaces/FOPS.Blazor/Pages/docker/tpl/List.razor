@@ -1,6 +1,6 @@
 @page "/docker/tpl/list"
-@using FOPS.Abstract.Docker.Entity
-@using FOPS.Abstract.Docker.Server
+@using FOPS.Application.Build.DockerfileTpl.Entity
+@using FOPS.Application.Build.DockerfileTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -67,7 +67,7 @@
     private int _totalCount;
     private int _pageSize = 999;
 
-    private List<DockerfileTplVO> _lst = new();
+    private List<DockerfileTplDTO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
@@ -75,7 +75,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync()??new();
+        _lst = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }

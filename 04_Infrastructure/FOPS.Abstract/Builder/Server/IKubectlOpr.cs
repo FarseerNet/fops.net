@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
-using FOPS.Abstract.K8S.Entity;
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Cluster.Entity;
+using FOPS.Application.Build.Project.Entity;
 using FS.Core.Entity;
 using FS.DI;
 
@@ -13,12 +13,12 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 更新k8s版本
         /// </summary>
-        Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput);
+        Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectDTO project, Action<string> actReceiveOutput);
 
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        void CreateConfigFile(BuildEnvironment env, ClusterVO cluster);
+        void CreateConfigFile(BuildEnvironment env, ClusterDTO cluster);
 
         /// <summary>
         /// 获取存储k8s Config的路径

@@ -1,8 +1,8 @@
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
 @using FS.Core
 @using Microsoft.Extensions.Logging
 @using System.Timers
+@using FOPS.Application.Fss.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -84,7 +84,7 @@
 @code{
     [Parameter]
     public int PageSize { get; set; } = 25;
-    private List<RunLogVO> _lst = new();
+    private List<RunLogDTO> _lst = new();
     private Timer _timer;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -113,7 +113,7 @@
 
     private async Task GetList()
     {
-        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, null, null, PageSize, 1) ?? new PageList<RunLogVO>(new(), 0);
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, null, null, PageSize, 1) ?? new PageList<RunLogDTO>(new(), 0);
         _lst = data.List;
     }
 

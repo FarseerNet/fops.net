@@ -1,7 +1,7 @@
 @page "/docker/hub/add"
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.Docker.Server
-@using FOPS.Abstract.Docker.Entity
+@using FOPS.Application.Build.DockerHub.Entity
+@using FOPS.Application.Build.DockerHub
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -52,7 +52,7 @@
 
 @code{
 
-    private readonly DockerHubVO _info = new() {};
+    private readonly DockerHubDTO _info = new() {};
 
     private async Task AddInfo()
     {
@@ -62,7 +62,7 @@
             {
                 throw new Exception("Git名称、托管地址必须填写。");
             }
-            await _iocManager.Resolve<IDockerHubService>().AddAsync(_info);
+            await _iocManager.Resolve<DockerHubApp>().AddAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             GotoList();
         }

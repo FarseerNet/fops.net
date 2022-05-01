@@ -1,6 +1,4 @@
 using FOPS.Domain.Sys.Admin;
-using FOPS.Domain.Sys.Admin.Repository;
-using FS.Utils.Common;
 using Mapster;
 
 namespace FOPS.Application.Sys.Admin.Entity;

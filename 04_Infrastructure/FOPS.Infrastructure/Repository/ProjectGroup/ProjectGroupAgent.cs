@@ -8,7 +8,7 @@ public class ProjectGroupAgent : ISingletonDependency
     /// <summary>
     ///     项目组列表
     /// </summary>
-    public Task<List<ProjectGroupPO>> ToListAsync() => MysqlContext.Data.ProjectGroup.ToListAsync();
+    public Task<List<ProjectGroupPO>> ToListAsync() => MysqlContext.Data.ProjectGroup.Desc(o => o.Id).ToListAsync();
 
     /// <summary>
     ///     项目组信息

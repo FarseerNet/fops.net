@@ -1,10 +1,16 @@
 @page "/k8s/deploy/list"
-@using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Server
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Application.Build.Cluster
+@using FOPS.Application.Build.Cluster.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.Project.Entity
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.ProjectGroup.Entity
+@using FOPS.Application.Build.YamlTpl
+@using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Domain.Build.Enum
 @using FS.Extends
+@using Microsoft.AspNetCore.Components
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -19,7 +25,7 @@
                 <option value="@clusterVO.Id">@clusterVO.Name</option>
             }
         </select>
-        
+
         <select style="display:inline;width: 200px;" @onchange="ClusterChange">
             @foreach (var clusterVO in _lstCluster)
             {
@@ -166,10 +172,10 @@
     private int _groupId;
 
     private int _clusterId;
-    private List<ProjectGroupVO> _lstGroup = new();
-    private List<ProjectVO> _lst = new();
-    private List<YamlTplVO> _lstTpl = new();
-    private List<ClusterVO> _lstCluster = new();
+    private List<ProjectGroupDTO> _lstGroup = new();
+    private List<ProjectDTO> _lst = new();
+    private List<YamlTplDTO> _lstTpl = new();
+    private List<ClusterDTO> _lstCluster = new();
     private bool _isFirst;
 
     protected override async Task OnInitializedAsync()
@@ -177,23 +183,25 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
-        // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
-        _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
+        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+    // 模板
+        _lstTpl = await _iocManager.Resolve<YamlTplApp>().ToListAsync() ?? new();
 
-        // 集群
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+    // 集群
+        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
         if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
-        
+
         await GetList();
     }
 
     private async Task Save(int id)
     {
         var projectVO = _lst.Find(o => o.Id == id);
-        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.msg", "保存成功", new {icon = 1});
+        await _iocManager.Resolve<ProjectApp>().UpdateAsync(projectVO);
+        await js.InvokeVoidAsync("layer.msg", "保存成功", new
+        {
+            icon = 1
+        });
     }
 
     private async Task GroupChange(ChangeEventArgs args)
@@ -208,7 +216,10 @@
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
+            {
+                icon = 0
+            });
             return;
         }
 
@@ -216,12 +227,26 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError)
+                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
+            else
+                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new
+                {
+                    icon = 1,
+                    title = "执行结果"
+                });
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
         await js.InvokeVoidAsync("layer.close", load);
     }
@@ -233,7 +258,10 @@
         if (clusterVO == null)
         {
             await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
+            {
+                icon = 0
+            });
             return;
         }
 
@@ -241,7 +269,10 @@
         if (projectVO == null)
         {
             await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "项目不存在", new {icon = 0});
+            await js.InvokeVoidAsync("layer.alert", "项目不存在", new
+            {
+                icon = 0
+            });
             return;
         }
 
@@ -249,12 +280,26 @@
         try
         {
             var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            if (runShellResult.IsError)
+                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
+            else
+                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new
+                {
+                    icon = 1,
+                    title = "执行结果"
+                });
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
         await js.InvokeVoidAsync("layer.close", load);
     }
@@ -267,28 +312,28 @@
 
     private async Task GetList()
     {
-        // 重新读取所有项目列表
-        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync()??new();
-    
-        // 如果项目组不包含当前选中的组，则移除项目
+    // 重新读取所有项目列表
+        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync() ?? new();
+
+    // 如果项目组不包含当前选中的组，则移除项目
         if (_groupId > 0)
         {
             _lst.RemoveAll(o => o.GroupId != _groupId);
         }
-        
-        // 遍历项目组ID
-        var projectGroupIds = _lst.Select(o => o.GroupId).ToList()??new();
+
+    // 遍历项目组ID
+        var projectGroupIds = _lst.Select(o => o.GroupId).ToList() ?? new();
         for (var i = 0; i < projectGroupIds.Count; i++)
         {
             var projectGroupId = projectGroupIds[i];
-            var info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(projectGroupId);
-            
-            // 如果项目组不包含当前选中的集群，则移除项目
+            var info = await _iocManager.Resolve<ProjectGroupApp>().ToInfoAsync(projectGroupId);
+
+    // 如果项目组不包含当前选中的集群，则移除项目
             if (!info.ClusterIds.Contains(_clusterId))
                 _lst.RemoveAll(o => o.GroupId == projectGroupId);
         }
 
-        _lst        = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }
 

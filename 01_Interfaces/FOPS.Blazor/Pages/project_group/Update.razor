@@ -1,7 +1,10 @@
 @page "/project_group/update/{id:int}"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
-@using FOPS.Abstract.K8S.Entity
+@using Microsoft.AspNetCore.Components
+@using FOPS.Application.Build.ProjectGroup.Entity
+@using FOPS.Application.Build.Cluster.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.Cluster
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -54,10 +57,10 @@
     [Parameter]
     public int Id { get; set; }
 
-    private ProjectGroupVO _info = new()
+    private ProjectGroupDTO _info = new()
     {
     };
-    private List<ClusterVO> _lstCluster = new();
+    private List<ClusterDTO> _lstCluster = new();
     private Dictionary<int, bool> _selectCluster = new();
 
     private async Task UpdateInfo()
@@ -81,7 +84,7 @@
             {
                 throw new Exception("项目组、集群必须填写.");
             }
-            await _iocManager.Resolve<IProjectGroupService>().UpdateAsync(Id, _info);
+            await _iocManager.Resolve<ProjectGroupApp>().UpdateAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
                 icon = 1
@@ -115,7 +118,7 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IProjectGroupService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<ProjectGroupApp>().ToInfoAsync(Id);
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "项目组不存在", new
@@ -126,7 +129,7 @@
                 GotoList();
             }
 
-            _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync() ?? new();
+            _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
             _selectCluster = _lstCluster.ToDictionary(o => o.Id, _ => false);
 
             _info.ClusterIds.ForEach(o=>_selectCluster[o] = true);
@@ -140,7 +143,7 @@
 
     private async Task Delete()
     {
-        var count = await _iocManager.Resolve<IProjectService>().GroupCountAsync(Id);
+        var count = await _iocManager.Resolve<ProjectApp>().GroupCountAsync(Id);
         if (count > 0)
         {
             await js.InvokeVoidAsync("layer.alert", $"删除项目组前，需先删除该组的{count}个项目", new
@@ -151,7 +154,7 @@
             nav.NavigateTo("/project/list");
             return;
         }
-        await _iocManager.Resolve<IProjectGroupService>().DeleteAsync(Id);
+        await _iocManager.Resolve<ProjectGroupApp>().DeleteAsync(Id);
         GotoList();
     }
 }

@@ -1,11 +1,8 @@
-@using FOPS.Abstract.MetaInfo.Server
 @using FOPS.Abstract.Builder.Server
-@using FOPS.Abstract.MetaInfo.Entity
 @using FOPS.Abstract.Builder.Entity
 @using System.Timers
-@using FOPS.Abstract.Fss.Entity
-@using FOPS.Abstract.Fss.Enum
 @using FOPS.Abstract.Fss.Server
+@using FOPS.Application.Fss.Entity
 @using FS.Extends
 
 @inject IIocManager _iocManager;
@@ -149,7 +146,7 @@
 @code{
     [Parameter]
     public int PageSize { get; set; } = 20;
-    private List<TaskVO> _lst = new();
+    private List<TaskDTO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
 
@@ -188,7 +185,7 @@
         _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, PageSize);
     }
 
-    private async Task Cancel(TaskVO info)
+    private async Task Cancel(TaskDTO info)
     {
         await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.TaskGroupId);
     }

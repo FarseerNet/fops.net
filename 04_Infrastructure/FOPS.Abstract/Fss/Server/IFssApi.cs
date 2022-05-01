@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
-using FOPS.Abstract.Fss.Entity;
-using FOPS.Abstract.Fss.Enum;
+using FOPS.Application.Fss.Entity;
 using FS.Core;
 using FS.Core.Net;
 using FS.DI;
@@ -15,7 +14,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 取出全局客户端列表
         /// </summary>
-        Task<List<ClientVO>> GetClientListAsync(ILocalStorageService localStorageService);
+        Task<List<ClientDTO>> GetClientListAsync(ILocalStorageService localStorageService);
         /// <summary>
         /// 取出全局客户端数量
         /// </summary>
@@ -23,7 +22,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 添加任务组信息
         /// </summary>
-        Task<ApiResponseJson<int>> AddTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo);
+        Task<ApiResponseJson<int>> AddTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupDTO dto);
         /// <summary>
         /// 复制任务组信息
         /// </summary>
@@ -35,7 +34,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取任务组信息
         /// </summary>
-        Task<TaskGroupVO> GetTaskGroupInfoAsync(ILocalStorageService localStorageService, int taskGroupId);
+        Task<TaskGroupDTO> GetTaskGroupInfoAsync(ILocalStorageService localStorageService, int taskGroupId);
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
@@ -43,7 +42,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务组列表
         /// </summary>
-        Task<List<TaskGroupVO>> GetTaskGroupListAsync(ILocalStorageService localStorageService);
+        Task<List<TaskGroupDTO>> GetTaskGroupListAsync(ILocalStorageService localStorageService);
         /// <summary>
         /// 获取任务组数量
         /// </summary>
@@ -55,7 +54,7 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 保存TaskGroup
         /// </summary>
-        Task SaveTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupVO vo);
+        Task SaveTaskGroupAsync(ILocalStorageService localStorageService, TaskGroupDTO dto);
         /// <summary>
         /// 今日执行失败数量
         /// </summary>
@@ -63,15 +62,15 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取全部任务列表
         /// </summary>
-        Task<List<TaskVO>> GetTaskUnFinishListAsync(ILocalStorageService localStorageService, int top);
+        Task<List<TaskDTO>> GetTaskUnFinishListAsync(ILocalStorageService localStorageService, int top);
         /// <summary>
         /// 获取指定任务组的任务列表
         /// </summary>
-        Task<PageList<TaskVO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex);
+        Task<PageList<TaskDTO>> GetTaskListAsync(ILocalStorageService localStorageService, int groupId, int pageSize, int pageIndex);
         /// <summary>
         /// 获取已完成的任务列表
         /// </summary>
-        Task<PageList<TaskVO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
+        Task<PageList<TaskDTO>> GetTaskFinishListAsync(ILocalStorageService localStorageService, int pageSize, int pageIndex);
         /// <summary>
         /// 取消任务
         /// </summary>
@@ -79,10 +78,10 @@ namespace FOPS.Abstract.Fss.Server
         /// <summary>
         /// 获取日志
         /// </summary>
-        Task<PageList<RunLogVO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex);
+        Task<PageList<RunLogDTO>> GetRunLogListAsync(ILocalStorageService localStorageService, string jobName, LogLevel? logLevel, int pageSize, int pageIndex);
         /// <summary>
         /// 获取在用的任务
         /// </summary>
-        Task<PageList<TaskVO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex);
+        Task<PageList<TaskDTO>> GetEnableTaskListAsync(ILocalStorageService localStorageService, EumTaskType? status, int pageSize, int pageIndex);
     }
 }

@@ -4,10 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
-using FOPS.Abstract.K8S.Entity;
 using FOPS.Abstract.K8S.Server;
-using FOPS.Abstract.MetaInfo.Entity;
-using FOPS.Abstract.MetaInfo.Server;
+using FOPS.Application.Build.Cluster.Entity;
+using FOPS.Application.Build.Project.Entity;
+using FOPS.Application.Build.YamlTpl.Entity;
 using FOPS.Infrastructure.Common;
 using FS.Core.Entity;
 using FS.Utils.Component;
@@ -22,7 +22,7 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 发布
         /// </summary>
-        public Task<RunShellResult> DeployAsync(List<ProjectVO> lstProject, ClusterVO clusterVO, List<YamlTplVO> lstTpl)
+        public Task<RunShellResult> DeployAsync(List<ProjectDTO> lstProject, ClusterDTO clusterVO, List<YamlTplDTO> lstTpl)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
             var lstYaml = new List<string>();
@@ -39,7 +39,7 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 发布
         /// </summary>
-        public async Task<RunShellResult> DeployAsync(ProjectVO projectVO, ClusterVO clusterVO, List<YamlTplVO> lstTpl)
+        public async Task<RunShellResult> DeployAsync(ProjectDTO projectVO, ClusterDTO clusterVO, List<YamlTplDTO> lstTpl)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
             if (projectVO == null) throw new Exception("项目不存在");
@@ -56,7 +56,7 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 发布
         /// </summary>
-        public async Task<RunShellResult> DeployAsync(string projectName, string yaml, ClusterVO clusterVO)
+        public async Task<RunShellResult> DeployAsync(string projectName, string yaml, ClusterDTO clusterVO)
         {
             if (clusterVO == null) throw new Exception("请先选择集群环境");
 
@@ -78,7 +78,7 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 替换模板内容
         /// </summary>
-        private List<string> ReplaceTemplate(ProjectVO projectVO, List<YamlTplVO> lstTpl)
+        private List<string> ReplaceTemplate(ProjectDTO projectVO, List<YamlTplDTO> lstTpl)
         {
             var lstYaml = new List<string>();
 
@@ -100,10 +100,6 @@ namespace FOPS.Com.K8SServer.Deploy
         /// <summary>
         /// 生成yaml文件，并执行kubectl apply命令
         /// </summary>
-        /// <param name="projectName"></param>
-        /// <param name="yamlContent"></param>
-        /// <param name="clusterConfig"></param>
-        /// <exception cref="Exception"></exception>
         private Task<RunShellResult> RunApplyCmd(string projectName, string yamlContent, string clusterConfig)
         {
             // 将yaml文件写入临时文件

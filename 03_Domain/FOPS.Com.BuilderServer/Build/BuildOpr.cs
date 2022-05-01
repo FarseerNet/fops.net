@@ -4,10 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
-using FOPS.Abstract.Docker.Server;
-using FOPS.Abstract.MetaInfo.Entity;
-using FOPS.Abstract.MetaInfo.Server;
-using FOPS.Com.BuilderServer.Build.Dal;
+using FOPS.Application.Build.Build.Entity;
+using FOPS.Application.Build.Project.Entity;
 using FOPS.Com.BuilderServer.Docker;
 using FOPS.Com.BuilderServer.Dotnet;
 using FOPS.Com.BuilderServer.Git;
@@ -17,8 +15,6 @@ using FOPS.Com.BuilderServer.UnBuild;
 using FOPS.Domain.Build.Enum;
 using FS;
 using FS.DI;
-using FS.Extends;
-using FS.Utils.Component;
 
 namespace FOPS.Com.BuilderServer.Build
 {
@@ -42,7 +38,7 @@ namespace FOPS.Com.BuilderServer.Build
             // 取出未开始的任务
             var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None && o.BuildServerId == FarseerApplication.AppId).Asc(o => o.Id).ToEntityAsync();
             if (po == null) return;
-            var build = po.Map<BuildVO>();
+            var build = po.Map<BuildDTO>();
 
             // 设置为构建中
             var isUpdate = await BuilderContext.Data.Build.Where(o => o.Id == build.Id && o.Status == EumBuildStatus.None).UpdateAsync(new BuildPO
@@ -160,7 +156,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务失败
         /// </summary>
-        private async Task Fail(BuildVO build, ProjectVO project)
+        private async Task Fail(BuildDTO build, ProjectDTO project)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, "执行失败，提前退出。");
@@ -188,7 +184,7 @@ namespace FOPS.Com.BuilderServer.Build
         /// <summary>
         /// 设置任务成功
         /// </summary>
-        private async Task Success(BuildVO build, ProjectVO project)
+        private async Task Success(BuildDTO build, ProjectDTO project)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, "成功执行。");

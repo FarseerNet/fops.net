@@ -1,7 +1,7 @@
 @page "/fss/runlog/list/{pageIndex:int}"
 @page "/fss/runlog/list"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
+@using FOPS.Application.Fss.Entity
 @using FS.Core
 @using FS.Extends
 @using Microsoft.Extensions.Logging
@@ -131,7 +131,7 @@
     private long _totalCount;
     private int _pageSize = 20;
     private string PageUrl => "/fss/runlog/list/{index}";
-    private List<RunLogVO> _lst = new();
+    private List<RunLogDTO> _lst = new();
     private List<string> lstJobName = new();
     private string jobName;
     private LogLevel? logLevel;
@@ -153,7 +153,7 @@
     {
         if (PageIndex < 1) PageIndex = 1;
 
-        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogVO>(new(), 0);
+        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogDTO>(new(), 0);
         _lst = data.List;
         _totalCount = data.RecordCount;
     }

@@ -23,7 +23,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取全部
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildDTO build, ProjectDTO project, GitDTO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             var lstGitIds = new List<int>
             {

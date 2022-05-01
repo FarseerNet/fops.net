@@ -24,24 +24,16 @@ public class BuildAgent : ISingletonDependency
     }
 
     /// <summary>
-    ///     主动取消任务
+    ///     修改任务
     /// </summary>
-    public Task CancelAsync(int id)
-    {
-        return MysqlContext.Data.Build.Where(where: o => o.Id == id).UpdateAsync(entity: new BuildPO
-        {
-            Status    = EumBuildStatus.Finish,
-            IsSuccess = false,
-            FinishAt  = DateTime.Now
-        });
-    }
+    public Task UpdateAsync(int id, BuildPO po) => MysqlContext.Data.Build.Where(where: o => o.Id == id).UpdateAsync(po);
 
     /// <summary>
     ///     获取构建任务的主键
     /// </summary>
-    public int GetBuildId(int projectId, int buildNumber)
+    public Task<int> GetBuildIdAsync(int projectId, int buildNumber)
     {
-        return MysqlContext.Data.Build.Where(where: o => o.BuildNumber == buildNumber && o.ProjectId == projectId).GetValue(fieldName: o => o.Id.GetValueOrDefault());
+        return MysqlContext.Data.Build.Where(where: o => o.BuildNumber == buildNumber && o.ProjectId == projectId).GetValueAsync(fieldName: o => o.Id.GetValueOrDefault());
     }
 
     /// <summary>

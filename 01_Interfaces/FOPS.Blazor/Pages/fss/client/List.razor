@@ -1,7 +1,7 @@
 @page "/fss/client/list"
 @page "/fss/client/list/{pageIndex:int}"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
+@using FOPS.Application.Fss.Entity
 @using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
@@ -94,7 +94,7 @@
     private int _totalCount;
     private int _pageSize = 9999;
 
-    private List<ClientVO> _lst = new();
+    private List<ClientDTO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()

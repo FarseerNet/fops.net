@@ -26,7 +26,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 更新k8s版本
         /// </summary>
-        public async Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectVO project, Action<string> actReceiveOutput)
+        public async Task<RunShellResult> SetImages(int clusterId, int buildNumber, ProjectDTO project, Action<string> actReceiveOutput)
         {
             var cluster    = await ClusterService.ToInfoAsync(clusterId);
             var env        = new BuildEnvironment();
@@ -43,7 +43,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         /// <summary>
         /// 创建K8S集群的配置
         /// </summary>
-        public void CreateConfigFile(BuildEnvironment env, ClusterVO cluster)
+        public void CreateConfigFile(BuildEnvironment env, ClusterDTO cluster)
         {
             var configFile = GetConfigFile(env, cluster.Name);
             // 文件不存在，则创建

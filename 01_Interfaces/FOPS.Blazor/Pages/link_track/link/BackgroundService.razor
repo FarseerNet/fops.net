@@ -1,14 +1,13 @@
 @page "/link_track/link/BackgroundService"
 @page "/link_track/link/BackgroundService/{pageIndex:int}"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using FS.Core
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
 @using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
-@using Newtonsoft.Json
+@using FOPS.Application.Build.Project.Entity
+@using FOPS.Application.Build.Project
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -161,7 +160,7 @@
     public int PageIndex { get; set; }
     private bool _isFirst;
     private PageList<LinkTrackContextPO> _lst = new();
-    private List<ProjectVO> _lstAppId = new();
+    private List<ProjectDTO> _lstAppId = new();
     private string _curAppId = "";
     private string _curSort = "0";
 
@@ -177,7 +176,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
+        _lstAppId = await _iocManager.Resolve<ProjectApp>().ToAppListAsync() ?? new();
         GetList();
     }
 

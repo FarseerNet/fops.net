@@ -1,3 +1,5 @@
+using FOPS.Domain.Build.Git.Repository;
+
 namespace FOPS.Domain.Build.Git;
 
 public class GitDO
@@ -30,4 +32,23 @@ public class GitDO
     ///     拉取时间
     /// </summary>
     public DateTime PullAt { get; set; }
+    /// <summary>
+    /// 添加GIT
+    /// </summary>
+    public Task<int> AddAsync()
+    {
+        PullAt = new DateTime(2000, 1, 1);
+
+        var repository = IocManager.GetService<IGitRepository>();
+        return repository.AddAsync(this);
+    }
+
+    /// <summary>
+    /// 修改GIT
+    /// </summary>
+    public Task UpdateAsync()
+    {
+        var repository = IocManager.GetService<IGitRepository>();
+        return repository.UpdateAsync(Id, this);
+    }
 }

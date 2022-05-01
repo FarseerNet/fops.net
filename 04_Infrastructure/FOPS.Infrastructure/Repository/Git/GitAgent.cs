@@ -9,7 +9,7 @@ public class GitAgent : ISingletonDependency
     /// <summary>
     ///     Git列表
     /// </summary>
-    public Task<List<GitPO>> ToListAsync() => MysqlContext.Data.Git.ToListAsync();
+    public Task<List<GitPO>> ToListAsync() => MysqlContext.Data.Git.Desc(o => o.Id).ToListAsync();
     /// <summary>
     ///     Git列表
     /// </summary>

@@ -1,9 +1,10 @@
 @page "/log/realtime/"
 @using FOPS.Abstract.Builder.Server
-@using FOPS.Abstract.Builder.Entity
 @using System.Timers
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Application.Build.Build
+@using FOPS.Application.Build.Build.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.Project.Entity
 @using FOPS.Domain.Build.Enum
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
@@ -71,10 +72,11 @@
 </div>
 
 @code {
-    [Parameter] public int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
-    private BuildVO _info = new();
-    private ProjectVO _projectInfo = new();
+    private BuildDTO _info = new();
+    private ProjectDTO _projectInfo = new();
     private string[] _lstLog = Array.Empty<string>();
     private Timer _timer;
     private bool _isFirst;
@@ -88,15 +90,19 @@
         {
             try
             {
-                _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                _info = await _iocManager.Resolve<BuildApp>().ToInfoAsync(Id);
                 if (_info == null)
                 {
-                    await js.InvokeVoidAsync("layer.alert", "构建队列不存在", new { icon = 2, title = "出错了" });
+                    await js.InvokeVoidAsync("layer.alert", "构建队列不存在", new
+                    {
+                        icon = 2,
+                        title = "出错了"
+                    });
                     GotoList();
                     return;
                 }
 
-                _projectInfo = await _iocManager.Resolve<IProjectService>().ToInfoAsync(_info.ProjectId) ?? new();
+                _projectInfo = await _iocManager.Resolve<ProjectApp>().ToInfoAsync(_info.ProjectId) ?? new();
                 _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
                 if (_info.Status != EumBuildStatus.Finish)
                 {
@@ -106,7 +112,7 @@
                         try
                         {
                             var oldLineCount = _lstLog.Length;
-                            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+                            _info = await _iocManager.Resolve<BuildApp>().ToInfoAsync(Id);
                             _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
     // 刷新页面
                             await InvokeAsync(StateHasChanged);
@@ -131,8 +137,8 @@
 
     private async Task CancelBuild()
     {
-        await _iocManager.Resolve<IBuildService>().Cancel(Id);
-        _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
+        await _iocManager.Resolve<BuildApp>().Cancel(Id);
+        _info = await _iocManager.Resolve<BuildApp>().ToInfoAsync(Id);
     }
 
     private void GotoList()
@@ -158,13 +164,21 @@
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
-            Id = await _iocManager.Resolve<IBuildService>().Add(_info.ProjectId, _info.ClusterId);
-            _info = await _iocManager.Resolve<IBuildService>().ToInfoAsync(Id);
-            await js.InvokeVoidAsync("layer.msg", "已加入到队列", new { icon = 1, title = "执行结果" });
+            Id = await _iocManager.Resolve<BuildApp>().AddAsync(_info.ProjectId, _info.ClusterId);
+            _info = await _iocManager.Resolve<BuildApp>().ToInfoAsync(Id);
+            await js.InvokeVoidAsync("layer.msg", "已加入到队列", new
+            {
+                icon = 1,
+                title = "执行结果"
+            });
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new { icon = 2, title = "加入失败" });
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "加入失败"
+            });
         }
         await js.InvokeVoidAsync("layer.close", load);
         nav.NavigateTo($"/builder/log/{Id}", true);

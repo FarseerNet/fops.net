@@ -1,4 +1,6 @@
+using FOPS.Domain.Build.Build.Repository;
 using FOPS.Domain.Build.Enum;
+using FS;
 
 namespace FOPS.Domain.Build.Build;
 
@@ -48,4 +50,25 @@ public class BuildDO
     ///     构建的服务端id
     /// </summary>
     public string BuildServerId { get; set; }
+
+    /// <summary>
+    /// 添加构建任务
+    /// </summary>
+    public async Task<int> AddAsync(int projectId, int clusterId)
+    {
+        var repository = IocManager.GetService<IBuildRepository>();
+        // 获取数据库中最后一个编译版本号
+        var buildNumber = await repository.GetBuildNumberAsync(projectId);
+
+        ProjectId     = projectId;
+        ClusterId     = clusterId;
+        BuildNumber   = ++buildNumber;
+        Status        = EumBuildStatus.None;
+        IsSuccess     = false;
+        CreateAt      = DateTime.Now;
+        FinishAt      = DateTime.Now;
+        BuildServerId = FarseerApplication.AppId;
+
+        return await repository.AddAsync(this);
+    }
 }

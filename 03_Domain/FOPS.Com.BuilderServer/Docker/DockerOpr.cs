@@ -9,7 +9,7 @@ namespace FOPS.Com.BuilderServer.Docker
         /// <summary>
         /// 取得dockerHub
         /// </summary>
-        public string GetDockerHub(DockerHubVO docker)
+        public string GetDockerHub(DockerHubDTO docker)
         {
             var dockerHub = "localhost";
             if (docker != null)
@@ -24,6 +24,6 @@ namespace FOPS.Com.BuilderServer.Docker
         /// <summary>
         /// 生成镜像名称
         /// </summary>
-        public string GetDockerImage(DockerHubVO docker, ProjectVO project, int buildNumber) => $"{GetDockerHub(docker)}:{project.Name}-{buildNumber}";
+        public string GetDockerImage(DockerHubDTO docker, ProjectDTO project, int buildNumber) => $"{GetDockerHub(docker)}:{project.Name}-{buildNumber}";
     }
 }

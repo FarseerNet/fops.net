@@ -1,9 +1,9 @@
 @page "/fss/task_group/list"
 @page "/fss/task_group/list/{pageIndex:int}"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
 @using FS.Extends
 @using System.Timers;
+@using FOPS.Application.Fss.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -158,7 +158,7 @@
     private int _totalCount;
     private int _pageSize = 20;
 
-    private List<TaskGroupVO> _lst = new();
+    private List<TaskGroupDTO> _lst = new();
     private bool _isFirst;
     private Timer _timer;
     private int enable = -1;
@@ -215,7 +215,7 @@
         _lst = _lst.ToList(_pageSize, PageIndex);
     }
 
-    private string GetTimeSetting(TaskGroupVO group)
+    private string GetTimeSetting(TaskGroupDTO group)
     {
         return !string.IsNullOrWhiteSpace(group.Cron) ? group.Cron : $"{group.IntervalMs} ms";
     }
@@ -243,7 +243,7 @@
     }
 
     /// 复制项目
-    private async Task Copy(TaskGroupVO info)
+    private async Task Copy(TaskGroupDTO info)
     {
         var id = await _iocManager.Resolve<IFssApi>().CopyTaskGroupAsync(storage,info.Id);
         nav.NavigateTo($"/fss/task_group/update/{id.Data}");
@@ -262,7 +262,7 @@
         return GetList();
     }
 
-    private async Task SetEnable(TaskGroupVO info)
+    private async Task SetEnable(TaskGroupDTO info)
     {
         info.IsEnable = !info.IsEnable;
         await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,info);

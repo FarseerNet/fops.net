@@ -1,9 +1,8 @@
 @page "/k8s/cluster/update/{id:int}"
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.K8S.Server
-@using FOPS.Abstract.MetaInfo.Server
 @using FOPS.Domain.Build.Enum
+@using FOPS.Application.Build.Cluster.Entity
+@using FOPS.Application.Build.Cluster
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -71,7 +70,7 @@
 
     [Parameter] public int Id { get; set; }
 
-    private ClusterVO _info = new() {};
+    private ClusterDTO _info = new() {};
 
     private async Task UpdateInfo()
     {
@@ -82,7 +81,7 @@
         }
         try
         {
-            await _iocManager.Resolve<IClusterService>().UpdateAsync(Id, _info);
+            await _iocManager.Resolve<ClusterApp>().UpdateAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
@@ -105,7 +104,7 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IClusterService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<ClusterApp>().ToInfoAsync(Id);
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});

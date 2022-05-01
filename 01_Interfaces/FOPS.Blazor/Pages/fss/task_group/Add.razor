@@ -1,6 +1,6 @@
 @page "/fss/task_group/add"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
+@using FOPS.Application.Fss.Entity
 @using FS.Utils.Common
 @using FS.Utils.Component
 @inject IIocManager _iocManager;
@@ -71,7 +71,7 @@
 
 @code{
 
-    private readonly TaskGroupVO _info = new()
+    private readonly TaskGroupDTO _info = new()
     {
         IsEnable = true,
         StartAt = DateTime.Now,

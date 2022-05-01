@@ -1,9 +1,8 @@
 @page "/k8s/tpl/add"
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.K8S.Server
 @using FOPS.Domain.Build.Enum
-@using FS.Extends
+@using FOPS.Application.Build.YamlTpl.Entity
+@using FOPS.Application.Build.YamlTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -62,7 +61,7 @@
 
 @code{
 
-    private readonly YamlTplVO _info = new() { }; // K8SKindType = EumK8SKind.Deployment
+    private readonly YamlTplDTO _info = new() { }; // K8SKindType = EumK8SKind.Deployment
 
     private async Task AddInfo()
     {
@@ -73,7 +72,7 @@
                 throw new Exception("Yaml模板名称。");
             }
                 
-            await _iocManager.Resolve<IYamlTplService>().AddAsync(_info);
+            await _iocManager.Resolve<YamlTplApp>().AddAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
             nav.NavigateTo("/k8s/tpl/list");
         }

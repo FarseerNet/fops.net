@@ -1,8 +1,8 @@
-@using FOPS.Abstract.MetaInfo.Server
-@using FOPS.Abstract.Builder.Server
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.Builder.Entity
 @using System.Timers
+@using FOPS.Application.Build.Build
+@using FOPS.Application.Build.Build.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.Project.Entity
 @using FOPS.Domain.Build.Enum
 @using FS.Extends
 
@@ -52,10 +52,10 @@
                 <td>
                     <div class="laytable-cell-build-1">
                         @{
-                            var projectVO = _lst.Find(o => o.Id == info.ProjectId);
-                            if (projectVO == null) projectVO = _iocManager.Resolve<IProjectService>().ToInfo(info.ProjectId) ?? new ProjectVO();
+                            var projectDTO = _lst.Find(o => o.Id == info.ProjectId);
+                            if (projectDTO == null) projectDTO = _iocManager.Resolve<ProjectApp>().ToInfo(info.ProjectId) ?? new ProjectDTO();
                         }
-                        <a href="/builder/log/@info.Id">@projectVO.Name</a>
+                        <a href="/builder/log/@info.Id">@projectDTO.Name</a>
                     </div>
                 </td>
                 <td>
@@ -116,14 +116,14 @@
 </style>
 
 @code{
-    private List<BuildVO> _lstBuild = new();
-    private List<ProjectVO> _lst = new();
+    private List<BuildDTO> _lstBuild = new();
+    private List<ProjectDTO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
 
-    private async Task CancelBuild(BuildVO info)
+    private async Task CancelBuild(BuildDTO info)
     {
-        await _iocManager.Resolve<IBuildService>().Cancel(info.Id);
+        await _iocManager.Resolve<BuildApp>().Cancel(info.Id);
         await GetList();
     }
 
@@ -132,7 +132,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync();
+        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync();
         await GetList();
     }
 
@@ -140,13 +140,13 @@
     {
         var pageIndex = 1;
     // 重新读取所有列表
-        _lstBuild = await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex);
+        _lstBuild = await _iocManager.Resolve<BuildApp>().ToBuildingListAsync(20, pageIndex);
 
     // 说明本次构建的队列大于20条，需要都读出来
         while (_lstBuild.Count > 0 && _lstBuild.All(o => o.Status == EumBuildStatus.None))
         {
             pageIndex++;
-            _lstBuild.AddRange(await _iocManager.Resolve<IBuildService>().ToBuildingList(20, pageIndex));
+            _lstBuild.AddRange(await _iocManager.Resolve<BuildApp>().ToBuildingListAsync(20, pageIndex));
         }
     }
 

@@ -20,7 +20,7 @@ namespace FOPS.Com.BuilderServer.Git
         /// <summary>
         /// 拉取最新代码
         /// </summary>
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildDTO build, ProjectDTO project, GitDTO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             build = await BuildService.ToInfoAsync(build.Id);
             if (build.Status == EumBuildStatus.Finish) return new RunShellResult(true, "手动取消");

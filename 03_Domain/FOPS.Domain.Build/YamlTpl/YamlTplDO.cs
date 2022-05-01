@@ -1,4 +1,5 @@
 using FOPS.Domain.Build.Enum;
+using FOPS.Domain.Build.YamlTpl.Repository;
 
 namespace FOPS.Domain.Build.YamlTpl;
 
@@ -23,4 +24,22 @@ public class YamlTplDO
     ///     模板内容
     /// </summary>
     public string Template { get; set; }
+
+    /// <summary>
+    /// 添加Yaml模板
+    /// </summary>
+    public Task<int> AddAsync()
+    {
+        var repository = IocManager.GetService<IYamlTplRepository>();
+        return repository.AddAsync(this);
+    }
+
+    /// <summary>
+    /// 修改Yaml模板
+    /// </summary>
+    public Task UpdateAsync()
+    {
+        var repository = IocManager.GetService<IYamlTplRepository>();
+        return repository.UpdateAsync(Id, this);
+    }
 }

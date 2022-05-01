@@ -1,10 +1,9 @@
 @page "/fss/tasks/finishlist/{pageIndex:int}"
 @page "/fss/tasks/finishlist"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
-@using FOPS.Abstract.Fss.Enum
 @using FS.Extends
 @using System.Timers
+@using FOPS.Application.Fss.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -154,7 +153,7 @@
     [Parameter] public int PageIndex { get; set; } = 1;
     private long _totalCount;
     private int _pageSize = 20;
-    private List<TaskVO> _lst = new();
+    private List<TaskDTO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
 

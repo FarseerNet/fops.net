@@ -8,7 +8,7 @@ public class DockerHubAgent : ISingletonDependency
     /// <summary>
     ///     DockerHub列表
     /// </summary>
-    public Task<List<DockerHubPO>> ToListAsync() => MysqlContext.Data.DockerHub.ToListAsync();
+    public Task<List<DockerHubPO>> ToListAsync() => MysqlContext.Data.DockerHub.Desc(o => o.Id).ToListAsync();
 
     /// <summary>
     ///     DockerHub信息

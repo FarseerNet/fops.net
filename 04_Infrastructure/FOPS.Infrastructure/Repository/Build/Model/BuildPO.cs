@@ -60,7 +60,6 @@ public class BuildPO
     /// </summary>
     [Field(Name = "build_server_id")]
     public string BuildServerId { get; set; }
-    
 
     public static implicit operator BuildPO(BuildDO build) => build.Adapt<BuildPO>();
 }

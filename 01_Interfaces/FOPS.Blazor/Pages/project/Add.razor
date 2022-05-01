@@ -1,13 +1,19 @@
 @page "/project/add"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.Docker.Entity
-@using FOPS.Abstract.Docker.Server
-@using FOPS.Abstract.K8S.Server
 @using FOPS.Domain.Build.Enum
 @using FS.Extends
+@using FOPS.Application.Build.Project.Entity
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.ProjectGroup.Entity
+@using FOPS.Application.Build.YamlTpl
+@using FOPS.Application.Build.YamlTpl.Entity
+@using FOPS.Application.Build.Git.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.DockerfileTpl.Entity
+@using FOPS.Application.Build.DockerHub
+@using FOPS.Application.Build.DockerHub.Entity
+@using FOPS.Application.Build.Git
+@using FOPS.Application.Build.DockerfileTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager _nav;
 @inject IJSRuntime _js;
@@ -252,15 +258,15 @@
 
 @code{
 
-    private readonly ProjectVO _info = new()
+    private readonly ProjectDTO _info = new()
     {
         EntryPort = 80
     };
-    private List<YamlTplVO> _lstTpl = new();
-    private List<GitVO> _lstGit = new();
-    private List<ProjectGroupVO> _lstGroup = new();
-    private List<DockerfileTplVO> _lstDockerfileTpl = new();
-    private List<DockerHubVO> _lstDockerHub = new();
+    private List<YamlTplDTO> _lstTpl = new();
+    private List<GitDTO> _lstGit = new();
+    private List<ProjectGroupDTO> _lstGroup = new();
+    private List<DockerfileTplDTO> _lstDockerfileTpl = new();
+    private List<DockerHubDTO> _lstDockerHub = new();
     private Dictionary<int, bool> _selectGits = new();
     private bool _isFirst;
 
@@ -269,14 +275,14 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync() ?? new();
-        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync() ?? new();
+        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+        _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
         _selectGits = _lstGit.ToDictionary(o => o.Id, _ => false);
-        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync() ?? new();
-        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync() ?? new();
+        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
+        _lstDockerHub = await _iocManager.Resolve<DockerHubApp>().ToListAsync() ?? new();
 
     // 模板
-        _lstTpl = await _iocManager.Resolve<IYamlTplService>().ToListAsync() ?? new();
+        _lstTpl = await _iocManager.Resolve<YamlTplApp>().ToListAsync() ?? new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
 
         _info.GroupId = (_lstGroup.FirstOrDefault()?.Id).GetValueOrDefault();
@@ -295,7 +301,7 @@
             }
 
             _info.DependentGitIds = _selectGits.Where(o => o.Value).Select(o => o.Key).ToList();
-            await _iocManager.Resolve<IProjectService>().AddAsync(_info);
+            await _iocManager.Resolve<ProjectApp>().AddAsync(_info);
             await _js.InvokeVoidAsync("layer.msg", "添加成功", new
             {
                 icon = 1

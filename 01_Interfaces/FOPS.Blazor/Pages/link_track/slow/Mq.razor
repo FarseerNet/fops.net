@@ -5,9 +5,9 @@
 @using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using FS.Core
+@using FOPS.Application.Build.Project.Entity
+@using FOPS.Application.Build.Project
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -145,7 +145,7 @@
     public int PageIndex { get; set; }
     private bool _isFirst;
     private PageList<SlowQueryPO> _lst = new();
-    private List<ProjectVO> _lstAppId = new();
+    private List<ProjectDTO> _lstAppId = new();
     private string _curAppId = "";
     private string _curSort = "0";
 
@@ -160,7 +160,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lstAppId = await _iocManager.Resolve<IProjectService>().ToAppListAsync() ?? new();
+        _lstAppId = await _iocManager.Resolve<ProjectApp>().ToAppListAsync() ?? new();
         GetList();
     }
     private void GroupChange(ChangeEventArgs args)

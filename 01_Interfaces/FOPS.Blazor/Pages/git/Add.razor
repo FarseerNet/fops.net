@@ -1,7 +1,7 @@
 @page "/git/add"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
+@using FOPS.Application.Build.Git.Entity
+@using FOPS.Application.Build.Git
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -58,7 +58,10 @@
 
 @code{
 
-    private readonly GitVO _info = new() {Branch = "main"};
+    private readonly GitDTO _info = new()
+    {
+        Branch = "main"
+    };
 
     private async Task AddInfo()
     {
@@ -68,13 +71,20 @@
             {
                 throw new Exception("Git名称、托管地址、分支必须填写。");
             }
-            await _iocManager.Resolve<IGitService>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
+            await _iocManager.Resolve<GitApp>().AddAsync(_info);
+            await js.InvokeVoidAsync("layer.msg", "添加成功", new
+            {
+                icon = 1
+            });
             nav.NavigateTo("/git/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
     }
 

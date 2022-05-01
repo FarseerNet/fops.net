@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FOPS.Abstract.Builder.Entity;
-using FOPS.Abstract.K8S.Entity;
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Git.Entity;
 using FS.Core.Entity;
 using FS.DI;
 
@@ -19,7 +16,7 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 获取Git存放的路径
         /// </summary>
-        string GetGitPath(BuildEnvironment env, GitVO info);
+        string GetGitPath(BuildEnvironment env, GitDTO info);
         
         /// <summary>
         /// 根据判断是否存在Git目录，来决定返回Clone or pull
@@ -29,6 +26,6 @@ namespace FOPS.Abstract.Builder.Server
         /// <summary>
         /// 根据判断是否存在Git目录，来决定返回Clone or pull
         /// </summary>
-        Task<RunShellResult> CloneOrPull(GitVO git);
+        Task<RunShellResult> CloneOrPull(GitDTO git);
     }
 }

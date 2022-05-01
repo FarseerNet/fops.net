@@ -1,6 +1,6 @@
 @page "/k8s/tpl/list"
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.K8S.Server
+@using FOPS.Application.Build.YamlTpl.Entity
+@using FOPS.Application.Build.YamlTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 
@@ -78,7 +78,7 @@
     private int _totalCount;
     private int _pageSize = 999;
 
-    private List<YamlTplVO> _lst = new();
+    private List<YamlTplDTO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
@@ -86,7 +86,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IYamlTplService>().ToListAsync()??new();
+        _lst = await _iocManager.Resolve<YamlTplApp>().ToListAsync()??new();
         _lst = _lst.OrderBy(o => o.K8SKindType).ToList();
         _totalCount = _lst.Count;
     }

@@ -1,8 +1,9 @@
 @page "/git/update/{id:int}"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
 @using FOPS.Abstract.Builder.Server
+@using FOPS.Application.Build.Git
+@using FOPS.Application.Build.Git.Entity
+@using FOPS.Application.Build.Project
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -68,7 +69,7 @@
 
     [Parameter] public int Id { get; set; }
 
-    private GitVO _info = new() {};
+    private GitDTO _info = new() {};
 
     private async Task UpdateInfo()
     {
@@ -86,7 +87,7 @@
                 throw new Exception("Git名称、托管地址、分支必须填写。");
             }
             
-            await _iocManager.Resolve<IGitService>().UpdateAsync(Id, _info);
+            await _iocManager.Resolve<GitApp>().UpdateAsync(_info);
             await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
@@ -109,7 +110,7 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IGitService>().ToInfoAsync(Id);
+            _info = await _iocManager.Resolve<GitApp>().ToInfoAsync(Id);
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
@@ -125,7 +126,7 @@
 
     private async Task Delete()
     {
-        var count = await _iocManager.Resolve<IProjectService>().GitCountAsync(Id);
+        var count = await _iocManager.Resolve<ProjectApp>().GitCountAsync(Id);
         if (count > 0)
         {
             await js.InvokeVoidAsync("layer.alert", $"删除Git前，需先删除Git的{count}个项目", new
@@ -143,7 +144,7 @@
             return;
         }
         
-        await _iocManager.Resolve<IGitService>().DeleteAsync(Id);
+        await _iocManager.Resolve<GitApp>().DeleteAsync(Id);
         GotoList();
     }
 

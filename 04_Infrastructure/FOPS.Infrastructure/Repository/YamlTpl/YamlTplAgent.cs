@@ -8,7 +8,7 @@ public class YamlTplAgent : ISingletonDependency
     /// <summary>
     ///     Yaml模板列表
     /// </summary>
-    public Task<List<YamlTplPO>> ToListAsync() => MysqlContext.Data.YamlTpl.ToListAsync();
+    public Task<List<YamlTplPO>> ToListAsync() => MysqlContext.Data.YamlTpl.Desc(o => o.Id).ToListAsync();
 
     /// <summary>
     ///     Yaml模板信息

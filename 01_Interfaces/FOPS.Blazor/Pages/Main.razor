@@ -2,10 +2,14 @@
 @page "/"
 @inject IJSRuntime js;
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.MetaInfo.Server
-@using FOPS.Abstract.Docker.Server
-@using FOPS.Abstract.K8S.Server
-@using FOPS.Abstract.Builder.Server
+@using FOPS.Application.Build.Build
+@using FOPS.Application.Build.Cluster
+@using FOPS.Application.Build.DockerfileTpl
+@using FOPS.Application.Build.DockerHub
+@using FOPS.Application.Build.Git
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.YamlTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
@@ -306,18 +310,18 @@
     // FSS 今日失败数
             _todayFailCount = await _iocManager.Resolve<IFssApi>().TodayTaskFailCountAsync(storage);
     // 项目数量
-            _projectCount = await _iocManager.Resolve<IProjectService>().CountAsync();
-            _projectGroupCount = await _iocManager.Resolve<IProjectGroupService>().CountAsync();
+            _projectCount = await _iocManager.Resolve<ProjectApp>().CountAsync();
+            _projectGroupCount = await _iocManager.Resolve<ProjectGroupApp>().CountAsync();
     // Git数量
-            _gitCount = await _iocManager.Resolve<IGitService>().CountAsync();
+            _gitCount = await _iocManager.Resolve<GitApp>().CountAsync();
 
-            _dockerHubCount = await _iocManager.Resolve<IDockerHubService>().CountAsync();
-            _dockerfileTplCount = await _iocManager.Resolve<IDockerfileTplService>().CountAsync();
+            _dockerHubCount = await _iocManager.Resolve<DockerHubApp>().CountAsync();
+            _dockerfileTplCount = await _iocManager.Resolve<DockerfileTplApp>().CountAsync();
 
-            _clusterCount = await _iocManager.Resolve<IClusterService>().CountAsync();
-            _yamlTplCount = await _iocManager.Resolve<IYamlTplService>().CountAsync();
+            _clusterCount = await _iocManager.Resolve<ClusterApp>().CountAsync();
+            _yamlTplCount = await _iocManager.Resolve<YamlTplApp>().CountAsync();
 
-            _buildCount = await _iocManager.Resolve<IBuildService>().CountAsync();
+            _buildCount = await _iocManager.Resolve<BuildApp>().CountAsync();
             await InvokeAsync(StateHasChanged);
         }
     }

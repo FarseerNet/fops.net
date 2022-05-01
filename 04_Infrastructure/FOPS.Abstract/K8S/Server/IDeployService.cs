@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FOPS.Abstract.K8S.Entity;
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Cluster.Entity;
+using FOPS.Application.Build.Project.Entity;
+using FOPS.Application.Build.YamlTpl.Entity;
 using FS.Core.Entity;
 using FS.DI;
 
@@ -12,16 +13,16 @@ namespace FOPS.Abstract.K8S.Server
         /// <summary>
         /// 发布
         /// </summary>
-        Task<RunShellResult> DeployAsync(ProjectVO projectVO, ClusterVO clusterVO, List<YamlTplVO> lstTpl);
+        Task<RunShellResult> DeployAsync(ProjectDTO projectVO, ClusterDTO clusterVO, List<YamlTplDTO> lstTpl);
 
         /// <summary>
         /// 发布
         /// </summary>
-        Task<RunShellResult> DeployAsync(List<ProjectVO> lstProject, ClusterVO clusterVO, List<YamlTplVO> lstTpl);
+        Task<RunShellResult> DeployAsync(List<ProjectDTO> lstProject, ClusterDTO clusterVO, List<YamlTplDTO> lstTpl);
 
         /// <summary>
         /// 发布
         /// </summary>
-        Task<RunShellResult> DeployAsync(string projectName, string yaml, ClusterVO clusterVO);
+        Task<RunShellResult> DeployAsync(string projectName, string yaml, ClusterDTO clusterVO);
     }
 }

@@ -1,7 +1,7 @@
 @page "/k8s/single/deploy"
-@using FOPS.Abstract.K8S.Entity
 @using FOPS.Abstract.K8S.Server
-@using FOPS.Abstract.MetaInfo.Server
+@using FOPS.Application.Build.Cluster
+@using FOPS.Application.Build.Cluster.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -43,7 +43,7 @@
 
 @code{
 
-    private List<ClusterVO> _lstCluster = new();
+    private List<ClusterDTO> _lstCluster = new();
     private int _selectClusterId;
     private string _yaml;
     private bool _isFirst;
@@ -54,7 +54,7 @@
         _isFirst = true;
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<IClusterService>().ToListAsync()??new();
+        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync()??new();
         if (_lstCluster.Count > 0 ) _selectClusterId = _lstCluster[0].Id;
     }
 

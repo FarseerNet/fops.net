@@ -21,7 +21,7 @@ namespace FOPS.Com.BuilderServer.Kubectl
         public IKubectlOpr      KubectlOpr      { get; set; }
         public IBuildLogService BuildLogService { get; set; }
 
-        public async Task<RunShellResult> Build(BuildEnvironment env, BuildVO build, ProjectVO project, GitVO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
+        public async Task<RunShellResult> Build(BuildEnvironment env, BuildDTO build, ProjectDTO project, GitDTO git, Action<string> actReceiveOutput, CancellationToken cancellationToken)
         {
             BuildLogService.Write(build.Id, "---------------------------------------------------------");
             BuildLogService.Write(build.Id, $"开始更新K8S POD的镜像版本。");

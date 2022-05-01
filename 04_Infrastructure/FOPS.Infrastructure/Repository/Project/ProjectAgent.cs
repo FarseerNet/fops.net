@@ -29,6 +29,11 @@ public class ProjectAgent : ISingletonDependency
     public Task<ProjectPO> ToInfoAsync(int id) => MysqlContext.Data.Project.Where(where: o => o.Id == id).ToEntityAsync();
 
     /// <summary>
+    ///     项目信息
+    /// </summary>
+    public ProjectPO ToInfo(int id) => MysqlContext.Data.Project.Where(where: o => o.Id == id).ToEntity();
+
+    /// <summary>
     ///     项目数量
     /// </summary>
     public Task<int> CountAsync() => MysqlContext.Data.Project.CountAsync();

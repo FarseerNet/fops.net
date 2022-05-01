@@ -1,8 +1,8 @@
 @page "/git/list"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using FS.Extends
 @using FOPS.Abstract.Builder.Server
+@using FOPS.Application.Build.Git
+@using FOPS.Application.Build.Git.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -123,7 +123,7 @@
     private int _totalCount;
     private int _pageSize = 999;
 
-    private List<GitVO> _lst = new();
+    private List<GitDTO> _lst = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
@@ -131,8 +131,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<IGitService>().ToListAsync();
-        _lst = _lst.OrderByDescending(o => o.Id).ToList();
+        _lst = await _iocManager.Resolve<GitApp>().ToListAsync();
         _totalCount = _lst.Count;
     }
 
@@ -153,7 +152,7 @@
         }
     }
 
-    private async Task PullGit(GitVO git)
+    private async Task PullGit(GitDTO git)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var gitResult = await _iocManager.Resolve<IGitOpr>().CloneOrPull(git);
@@ -163,7 +162,7 @@
         else
         {
     // 更新git拉取时间
-            await _iocManager.Resolve<IGitService>().UpdateAsync(git.Id, DateTime.Now);
+            await _iocManager.Resolve<GitApp>().UpdateAsync(git.Id, DateTime.Now);
             await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 1, title = "执行结果"});
         }
     }

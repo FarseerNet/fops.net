@@ -1,13 +1,17 @@
 @page "/project/list"
-@using FOPS.Abstract.MetaInfo.Entity
-@using FOPS.Abstract.MetaInfo.Server
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.K8S.Entity
-@using FOPS.Abstract.Docker.Entity
-@using FOPS.Abstract.Docker.Server
-@using FOPS.Abstract.K8S.Server
 @using FS.Extends
 @using Newtonsoft.Json
+@using FOPS.Application.Build.Project.Entity
+@using FOPS.Application.Build.ProjectGroup
+@using FOPS.Application.Build.ProjectGroup.Entity
+@using FOPS.Application.Build.Git.Entity
+@using FOPS.Application.Build.Project
+@using FOPS.Application.Build.DockerfileTpl.Entity
+@using FOPS.Application.Build.DockerHub
+@using FOPS.Application.Build.DockerHub.Entity
+@using FOPS.Application.Build.Git
+@using FOPS.Application.Build.DockerfileTpl
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -161,11 +165,11 @@
     private int _pageSize = 999;
 
     private int _groupId;
-    private List<ProjectVO> _lst = new();
-    private List<GitVO> _lstGit = new();
-    private List<ProjectGroupVO> _lstGroup = new();
-    private List<DockerfileTplVO> _lstDockerfileTpl = new();
-    private List<DockerHubVO> _lstDockerHub = new();
+    private List<ProjectDTO> _lst = new();
+    private List<GitDTO> _lstGit = new();
+    private List<ProjectGroupDTO> _lstGroup = new();
+    private List<DockerfileTplDTO> _lstDockerfileTpl = new();
+    private List<DockerHubDTO> _lstDockerHub = new();
     private bool _isFirst;
 
     protected override async Task OnParametersSetAsync()
@@ -173,10 +177,10 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<IProjectGroupService>().ToListAsync()??new();
-        _lstGit = await _iocManager.Resolve<IGitService>().ToListAsync()??new();
-        _lstDockerfileTpl = await _iocManager.Resolve<IDockerfileTplService>().ToListAsync()??new();
-        _lstDockerHub = await _iocManager.Resolve<IDockerHubService>().ToListAsync()??new();
+        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+        _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
+        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
+        _lstDockerHub = await _iocManager.Resolve<DockerHubApp>().ToListAsync() ?? new();
 
         await GetList();
     }
@@ -184,8 +188,11 @@
     private async Task Save(int id)
     {
         var projectVO = _lst.Find(o => o.Id == id);
-        await _iocManager.Resolve<IProjectService>().UpdateAsync(id, projectVO);
-        await js.InvokeVoidAsync("layer.msg", "保存成功", new {icon = 1});
+        await _iocManager.Resolve<ProjectApp>().UpdateAsync(projectVO);
+        await js.InvokeVoidAsync("layer.msg", "保存成功", new
+        {
+            icon = 1
+        });
     }
 
     private async Task GroupChange(ChangeEventArgs args)
@@ -202,7 +209,7 @@
     private async Task GetList()
     {
     // 重新读取所有项目列表
-        _lst = await _iocManager.Resolve<IProjectService>().ToListAsync()??new();
+        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync() ?? new();
 
     // 如果项目组不包含当前选中的组，则移除项目
         if (_groupId > 0)
@@ -215,14 +222,14 @@
     }
 
     /// 复制项目
-    private async Task Copy(ProjectVO info)
+    private async Task Copy(ProjectDTO info)
     {
-        var newInfo=JsonConvert.DeserializeObject<ProjectVO>(JsonConvert.SerializeObject(info));
+        var newInfo = JsonConvert.DeserializeObject<ProjectDTO>(JsonConvert.SerializeObject(info));
         newInfo.Name += "复制";
         newInfo.Id = 0;
         newInfo.DicClusterVer = new();
-        newInfo.GitPullAt=DateTime.MinValue;
-        var id=await _iocManager.Resolve<IProjectService>().AddAsync(newInfo);
+        newInfo.GitPullAt = DateTime.MinValue;
+        var id = await _iocManager.Resolve<ProjectApp>().AddAsync(newInfo);
         nav.NavigateTo($"/project/update/{id}");
     }
 

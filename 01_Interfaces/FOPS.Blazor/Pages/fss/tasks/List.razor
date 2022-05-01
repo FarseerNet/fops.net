@@ -1,10 +1,9 @@
 @page "/fss/tasks/list/{GroupId:int}/{pageIndex:int}"
 @page "/fss/tasks/list/{GroupId:int}"
 @using FOPS.Abstract.Fss.Server
-@using FOPS.Abstract.Fss.Entity
-@using FOPS.Abstract.Fss.Enum
 @using FS.Extends
 @using System.Timers
+@using FOPS.Application.Fss.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -193,7 +192,7 @@
     private long _totalCount;
     private int _pageSize = 20;
     private string PageUrl => "/fss/tasks/list/" + GroupId + "/{index}";
-    private List<TaskVO> _lst = new();
+    private List<TaskDTO> _lst = new();
     private Timer _timer;
     private bool _isFirst;
 
@@ -240,7 +239,7 @@
         nav.NavigateTo("/fss/task_group/list");
     }
 
-    private async Task Cancel(TaskVO info)
+    private async Task Cancel(TaskDTO info)
     {
         await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.TaskGroupId);
     }
