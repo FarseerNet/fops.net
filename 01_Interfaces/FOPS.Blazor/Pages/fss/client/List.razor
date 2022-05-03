@@ -1,10 +1,7 @@
 @page "/fss/client/list"
 @page "/fss/client/list/{pageIndex:int}"
-@using FOPS.Abstract.Fss.Server
-@using FOPS.Application.Fss.Entity
-@using FS.Extends
+
 @inject IIocManager _iocManager;
-@inject NavigationManager nav;
 @inject Blazored.LocalStorage.ILocalStorageService storage;
 
 <div class="layui-card">
@@ -105,7 +102,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lst = await _iocManager.Resolve<IFssApi>().GetClientListAsync(storage) ?? new();
+        _lst = await _iocManager.Resolve<IFssDevice>().GetClientListAsync(storage.GetFssUrl()) ?? new();
         _lst = _lst.OrderByDescending(o => o.ActivateAt).ToList();
         _totalCount = _lst.Count;
     }

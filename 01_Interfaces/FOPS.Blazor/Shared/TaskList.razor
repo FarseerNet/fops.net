@@ -180,12 +180,12 @@
     }
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<IFssApi>().GetTaskUnFinishListAsync(storage, PageSize);
+        _lst = await _iocManager.Resolve<IFssDevice>().GetTaskUnFinishListAsync(storage.GetFssUrl(), PageSize);
     }
 
     private async Task Cancel(TaskDTO info)
     {
-        await _iocManager.Resolve<IFssApi>().CancelTask(storage,info.TaskGroupId);
+        await _iocManager.Resolve<IFssDevice>().CancelTask(storage.GetFssUrl(),info.TaskGroupId);
     }
     
     public void Dispose()

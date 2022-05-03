@@ -88,7 +88,7 @@
                 throw new Exception("Cron格式错误");
             }
             
-            var result = await _iocManager.Resolve<IFssApi>().AddTaskGroupAsync(storage,_info);
+            var result = await _iocManager.Resolve<IFssDevice>().AddTaskGroupAsync(storage.GetFssUrl(),_info);
             if (result.Status)
             {
                 await js.InvokeVoidAsync("layer.msg", "添加成功", new

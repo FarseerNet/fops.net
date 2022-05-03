@@ -302,13 +302,13 @@
     // 初始化脚本
             
     // FSS 任务组数
-            _taskGroupCount = await _iocManager.Resolve<IFssApi>().GetTaskGroupCountAsync(storage);
+            _taskGroupCount = await _iocManager.Resolve<IFssDevice>().GetTaskGroupCountAsync(storage.GetFssUrl());
     // FSS 未执行数
-            _toUnRunCount = await _iocManager.Resolve<IFssApi>().GetTaskGroupUnRunCountAsync(storage);
+            _toUnRunCount = await _iocManager.Resolve<IFssDevice>().GetTaskGroupUnRunCountAsync(storage.GetFssUrl());
     // FSS 客户端数
-            _clientCount = await _iocManager.Resolve<IFssApi>().GetClientCountAsync(storage);
+            _clientCount = await _iocManager.Resolve<IFssDevice>().GetClientCountAsync(storage.GetFssUrl());
     // FSS 今日失败数
-            _todayFailCount = await _iocManager.Resolve<IFssApi>().TodayTaskFailCountAsync(storage);
+            _todayFailCount = await _iocManager.Resolve<IFssDevice>().TodayTaskFailCountAsync(storage.GetFssUrl());
     // 项目数量
             _projectCount = await _iocManager.Resolve<ProjectApp>().CountAsync();
             _projectGroupCount = await _iocManager.Resolve<ProjectGroupApp>().CountAsync();

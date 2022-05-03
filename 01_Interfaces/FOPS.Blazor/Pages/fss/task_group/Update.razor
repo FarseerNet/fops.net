@@ -136,7 +136,7 @@
                 throw new Exception("Cron格式错误");
             }
             _info.IntervalMs = 0;
-            await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,_info); 
+            await _iocManager.Resolve<IFssDevice>().SaveTaskGroupAsync(storage.GetFssUrl(),_info); 
             
             await js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
@@ -171,7 +171,7 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IFssApi>().GetTaskGroupInfoAsync(storage,Id);
+            _info = await _iocManager.Resolve<IFssDevice>().GetTaskGroupInfoAsync(storage.GetFssUrl(),Id);
             if (_info == null)
             {
                 await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
@@ -193,7 +193,7 @@
 
     private async Task Delete()
     {
-        await _iocManager.Resolve<IFssApi>().DeleteTaskGroupAsync(storage,Id);
+        await _iocManager.Resolve<IFssDevice>().DeleteTaskGroupAsync(storage.GetFssUrl(),Id);
         GotoList();
     }
 

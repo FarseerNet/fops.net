@@ -140,7 +140,7 @@
     {
         if (firstRender)
         {
-            var lstTask = await _iocManager.Resolve<IFssApi>().GetTaskGroupListAsync(storage) ?? new();
+            var lstTask = await _iocManager.Resolve<IFssDevice>().GetTaskGroupListAsync(storage.GetFssUrl()) ?? new();
     // 取出JobName
             lstJobName = lstTask.Select(o => o.JobName).Distinct().ToList();
 
@@ -153,7 +153,7 @@
     {
         if (PageIndex < 1) PageIndex = 1;
 
-        var data = await _iocManager.Resolve<IFssApi>().GetRunLogListAsync(storage, jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogDTO>(new(), 0);
+        var data = await _iocManager.Resolve<IFssDevice>().GetRunLogListAsync(storage.GetFssUrl(), jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogDTO>(new(), 0);
         _lst = data.List;
         _totalCount = data.RecordCount;
     }

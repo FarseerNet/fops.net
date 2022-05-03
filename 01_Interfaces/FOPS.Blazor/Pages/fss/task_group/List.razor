@@ -200,7 +200,7 @@
 
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<IFssApi>().GetTaskGroupListAsync(storage) ?? new();
+        _lst = await _iocManager.Resolve<IFssDevice>().GetTaskGroupListAsync(storage.GetFssUrl()) ?? new();
         _lst = _lst.OrderBy(o => o.JobName).ThenByDescending(o => o.Id).ToList();
 
     // 取出JobName
@@ -222,7 +222,7 @@
 
     private async Task RefreshCache()
     {
-        await _iocManager.Resolve<IFssApi>().SyncCacheToDbAsync(storage);
+        await _iocManager.Resolve<IFssDevice>().SyncCacheToDbAsync(storage.GetFssUrl());
         await GetList();
 
         await js.InvokeVoidAsync("layer.msg", "刷新成功", new
@@ -245,7 +245,7 @@
     /// 复制项目
     private async Task Copy(TaskGroupDTO info)
     {
-        var id = await _iocManager.Resolve<IFssApi>().CopyTaskGroupAsync(storage,info.Id);
+        var id = await _iocManager.Resolve<IFssDevice>().CopyTaskGroupAsync(storage.GetFssUrl(),info.Id);
         nav.NavigateTo($"/fss/task_group/update/{id.Data}");
     }
 
@@ -265,7 +265,7 @@
     private async Task SetEnable(TaskGroupDTO info)
     {
         info.IsEnable = !info.IsEnable;
-        await _iocManager.Resolve<IFssApi>().SaveTaskGroupAsync(storage,info);
+        await _iocManager.Resolve<IFssDevice>().SaveTaskGroupAsync(storage.GetFssUrl(),info);
         await GetList();
     }
 

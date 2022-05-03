@@ -228,7 +228,7 @@
 
     private async Task GetList()
     {
-        var page = await _iocManager.Resolve<IFssApi>().GetEnableTaskListAsync(storage, _taskType, _pageSize, PageIndex);
+        var page = await _iocManager.Resolve<IFssDevice>().GetEnableTaskListAsync(storage.GetFssUrl(), _taskType, _pageSize, PageIndex);
         _lst = page.List;
         _totalCount = page.RecordCount;
     }
@@ -247,7 +247,7 @@
 
     private async Task Cancel(TaskDTO info)
     {
-        await _iocManager.Resolve<IFssApi>().CancelTask(storage, info.TaskGroupId);
+        await _iocManager.Resolve<IFssDevice>().CancelTask(storage.GetFssUrl(), info.TaskGroupId);
     }
 
     public void Dispose()
