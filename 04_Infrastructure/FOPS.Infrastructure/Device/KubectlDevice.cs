@@ -16,7 +16,7 @@ public class KubectlDevice : IKubectlDevice
     /// <summary>
     /// 获取存储k8s Config的路径
     /// </summary>
-    public string GetConfigFile(string clusterName) => $"{BuildEnvironment.KubePath}{clusterName}";
+    public string GetConfigFile(string clusterName) => $"{BuildEnvironment.KubeRoot}{clusterName}";
 
     /// <summary>
     /// 创建用于K8S远程管理的配置文件

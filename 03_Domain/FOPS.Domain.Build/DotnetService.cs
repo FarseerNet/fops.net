@@ -12,9 +12,9 @@ public class DotnetService : ISingletonDependency
         actReceiveOutput.Report("---------------------------------------------------------");
         actReceiveOutput.Report($"开始编译。");
 
-        if (!Directory.Exists(env.ProjectSourceDirRoot))
+        if (!Directory.Exists(env.ProjectGitRoot))
         {
-            actReceiveOutput.Report($"路径：{env.ProjectSourceDirRoot}不存在，无法编译");
+            actReceiveOutput.Report($"路径：{env.ProjectGitRoot}不存在，无法编译");
             return false;
         }
 

@@ -31,4 +31,8 @@ public interface IGitDevice : ISingletonDependency
     /// 消除仓库
     /// </summary>
     Task<bool> ClearAsync(string github, IProgress<string> actReceiveOutput);
+    /// <summary>
+    /// gitName，项目文件夹名称
+    /// </summary>
+    string GetName(string gitHub);
 }

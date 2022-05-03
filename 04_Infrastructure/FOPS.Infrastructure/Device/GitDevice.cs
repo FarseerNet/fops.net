@@ -12,9 +12,19 @@ public class GitDevice : IGitDevice
     public string GetGitPath(string gitHub)
     {
         if (string.IsNullOrWhiteSpace(gitHub)) return string.Empty;
+        var gitName = GetName(gitHub);
+        return BuildEnvironment.GitRoot + gitName + "/";
+    }
+
+    /// <summary>
+    /// gitName，项目文件夹名称
+    /// </summary>
+    public string GetName(string gitHub)
+    {
+        if (string.IsNullOrWhiteSpace(gitHub)) return string.Empty;
         var gitName                           = gitHub.Substring(gitHub.LastIndexOf('/') + 1);
         if (gitName.EndsWith(".git")) gitName = gitName.Substring(0, gitName.Length - 4);
-        return BuildEnvironment.GitDirRoot + gitName + "/";
+        return gitName;
     }
 
     /// <summary>
@@ -32,7 +42,7 @@ public class GitDevice : IGitDevice
     public bool ExistsGitProject(string gitPath)
     {
         // 如果Git存放的目录不存在，则创建
-        if (!Directory.Exists(BuildEnvironment.GitDirRoot)) Directory.CreateDirectory(BuildEnvironment.GitDirRoot);
+        if (!Directory.Exists(BuildEnvironment.GitRoot)) Directory.CreateDirectory(BuildEnvironment.GitRoot);
 
         return Directory.Exists(gitPath);
     }

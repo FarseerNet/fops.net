@@ -12,20 +12,20 @@ public class CheckDirectoryService : ISingletonDependency
         progress.Report("---------------------------------------------------------");
         progress.Report($"前置检查。");
 
-        // 自动创建目录
-        progress.Report($"自动创建目录。");
-        if (!Directory.Exists(BuildEnvironment.FopsDirRoot)) Directory.CreateDirectory(BuildEnvironment.FopsDirRoot);
-        if (!Directory.Exists(BuildEnvironment.NpmModulesDirRoot)) Directory.CreateDirectory(BuildEnvironment.NpmModulesDirRoot);
-        if (!Directory.Exists(BuildEnvironment.ReleaseDirRoot)) Directory.CreateDirectory(BuildEnvironment.ReleaseDirRoot);
-        if (!Directory.Exists(BuildEnvironment.KubePath)) Directory.CreateDirectory(BuildEnvironment.KubePath);
-        if (!Directory.Exists(BuildEnvironment.ShellScriptPath)) Directory.CreateDirectory(BuildEnvironment.ShellScriptPath);
-        if (!Directory.Exists(BuildEnvironment.GitDirRoot)) Directory.CreateDirectory(BuildEnvironment.GitDirRoot);
-        if (!Directory.Exists(BuildEnvironment.DockerfileDirRoot)) Directory.CreateDirectory(BuildEnvironment.DockerfileDirRoot);
-
         // 先删除之前编译的目标文件
         progress.Report($"先删除之前编译的目标文件。");
-        if (Directory.Exists(env.ProjectReleaseDirRoot)) Directory.Delete(env.ProjectReleaseDirRoot, true);
-        Directory.CreateDirectory(env.ProjectReleaseDirRoot);
+        if (Directory.Exists(BuildEnvironment.DistRoot)) Directory.Delete(BuildEnvironment.DistRoot, true);
+        
+        // 自动创建目录
+        progress.Report($"自动创建目录。");
+        if (!Directory.Exists(BuildEnvironment.FopsRoot)) Directory.CreateDirectory(BuildEnvironment.FopsRoot);
+        if (!Directory.Exists(BuildEnvironment.NpmModulesRoot)) Directory.CreateDirectory(BuildEnvironment.NpmModulesRoot);
+        if (!Directory.Exists(BuildEnvironment.DistRoot)) Directory.CreateDirectory(BuildEnvironment.DistRoot);
+        if (!Directory.Exists(BuildEnvironment.KubeRoot)) Directory.CreateDirectory(BuildEnvironment.KubeRoot);
+        if (!Directory.Exists(BuildEnvironment.ShellRoot)) Directory.CreateDirectory(BuildEnvironment.ShellRoot);
+        if (!Directory.Exists(BuildEnvironment.GitRoot)) Directory.CreateDirectory(BuildEnvironment.GitRoot);
+
+        //Directory.CreateDirectory(env.ProjectDistRoot);
 
         progress.Report($"前置检查通过。");
     }

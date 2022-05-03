@@ -23,7 +23,7 @@ public class GitService : ISingletonDependency
 
         // 先得到项目Git存放的物理路径
         var gitPath     = GitDevice.GetGitPath(git.Hub);
-        var execSuccess = false;
+        bool execSuccess;
 
         // 存在则使用pull
         if (GitDevice.ExistsGitProject(gitPath))

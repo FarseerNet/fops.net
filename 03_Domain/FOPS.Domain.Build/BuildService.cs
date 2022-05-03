@@ -70,20 +70,21 @@ public class BuildService : ISingletonDependency
         // 定义环境变量
         var env = new BuildEnvironment
         {
-            BuildId               = build.Id,
-            BuildNumber           = build.BuildNumber,
-            ProjectId             = project.Id,
-            ProjectName           = project.Name,
-            ProjectDomain         = project.Domain,
-            ProjectEntryPoint     = project.EntryPoint,
-            ProjectEntryPort      = project.EntryPort,
-            DockerHub             = DockerDevice.GetDockerHub(docker.Hub),
-            DockerImage           = DockerDevice.GetDockerImage(docker.Hub, project.Name, build.BuildNumber),
-            GitHub                = git?.Hub,
-            ProjectReleaseDirRoot = DotnetDevice.GetReleasePath(project.Name),
-            ProjectSourceDirRoot  = DotnetDevice.GetSourceDirRoot(git?.Hub, project.Path),
-            ProjectDockerfilePath        = DockerDevice.GetDockerfilePath(project.Name),
-            ProjectGitDirRoot     = GitDevice.GetGitPath(git?.Hub),
+            BuildId           = build.Id,
+            BuildNumber       = build.BuildNumber,
+            ProjectId         = project.Id,
+            ProjectName       = project.Name,
+            ProjectDomain     = project.Domain,
+            ProjectEntryPoint = project.EntryPoint,
+            ProjectEntryPort  = project.EntryPort,
+            DockerHub         = DockerDevice.GetDockerHub(docker.Hub),
+            DockerImage       = DockerDevice.GetDockerImage(docker.Hub, project.Name, build.BuildNumber),
+            GitHub            = git?.Hub,
+            // ProjectDistRoot       = DotnetDevice.GetReleasePath(project.Name),
+            // ProjectSourceDirRoot  = DotnetDevice.GetSourceDirRoot(git?.Hub, project.Path),
+            // ProjectDockerfilePath = DockerDevice.GetDockerfilePath(project.Name),
+            ProjectGitRoot = GitDevice.GetGitPath(git?.Hub),
+            GitName        = GitDevice.GetName(git?.Hub)
         };
 
         try
@@ -103,22 +104,25 @@ public class BuildService : ISingletonDependency
             await CheckResult(GitService.CloneOrPullAndDependent(project, progress, cts.Token), build.Id);
             // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
             await CheckResult(docker.LoginAsync(env, progress, cts.Token), build.Id);
+            // 将需要打包的源代码，复制到dist目录
+            await CheckResult(CopyToDistService.Copy(project, env, progress, cts.Token), build.Id);
 
-            // 根据项目的构建方式，选择对应的构建组件
-            switch (project.BuildType)
-            {
-                case EumBuildType.DotnetPublish: // .net 编译
-                    await CheckResult(DotnetService.Build(env, progress, cts.Token), build.Id);
-                    break;
-                case EumBuildType.Shell: // shell 编译
-                    await CheckResult(ShellService.ExecShellAsync(env, project, progress, cts.Token), build.Id);
-                    break;
-                default: // 不编译，将源文件复制到编译目录 
-                    //await CheckResult(CopyToDistService.Copy(env, progress, cts.Token), build.Id);
-                    break;
-            }
+            // // 根据项目的构建方式，选择对应的构建组件
+            // switch (project.BuildType)
+            // {
+            //     case EumBuildType.DotnetPublish: // .net 编译
+            //         await CheckResult(DotnetService.Build(env, progress, cts.Token), build.Id);
+            //         break;
+            //     case EumBuildType.Shell: // shell 编译
+            //         await CheckResult(ShellService.ExecShellAsync(env, project, progress, cts.Token), build.Id);
+            //         break;
+            //     default: // 不编译，将源文件复制到编译目录 
+            //         //await CheckResult(CopyToDistService.Copy(env, progress, cts.Token), build.Id);
+            //         break;
+            // }
 
             // docker打包
+
             await CheckResult(DockerBuildService.Build(project, env, progress, cts.Token), build.Id);
             // docker上传
             if (docker != null) await CheckResult(DockerPushService.Push(env, progress, cts.Token), build.Id);

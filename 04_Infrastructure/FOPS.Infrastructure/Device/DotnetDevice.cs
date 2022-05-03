@@ -19,16 +19,16 @@ public class DotnetDevice : IDotnetDevice
     /// <summary>
     /// 获取编译保存的目录地址
     /// </summary>
-    public string GetReleasePath(string projectName) => BuildEnvironment.ReleaseDirRoot + projectName;
+    public string GetReleasePath(string projectName) => BuildEnvironment.DistRoot + projectName;
 
     /// <summary>
     /// 检查项目文件是否存在
     /// </summary>
     public bool CheckExistsSource(BuildEnvironment env, IProgress<string> receiveOutput)
     {
-        if (!Directory.Exists(env.ProjectSourceDirRoot))
+        if (!Directory.Exists(env.ProjectGitRoot))
         {
-            receiveOutput.Report($"路径：{env.ProjectSourceDirRoot}不存在，无法编译");
+            receiveOutput.Report($"路径：{env.ProjectGitRoot}不存在，无法编译");
             return false;
         }
         return true;
@@ -39,10 +39,10 @@ public class DotnetDevice : IDotnetDevice
     /// </summary>
     public async Task<bool> Publish(BuildEnvironment env, IProgress<string> actReceiveOutput, CancellationToken cancellationToken)
     {
-        var exitCode = await ShellTools.Run("dotnet", $"restore", actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
+        var exitCode = await ShellTools.Run("dotnet", $"restore", actReceiveOutput, env, env.ProjectGitRoot, cancellationToken);
         if (exitCode != 0) return false;
 
-        exitCode = await ShellTools.Run("dotnet", $"publish -c Release -o {env.ProjectReleaseDirRoot}", actReceiveOutput, env, env.ProjectSourceDirRoot, cancellationToken);
+        exitCode = await ShellTools.Run("dotnet", $"publish -c Release -o {BuildEnvironment.DistRoot}", actReceiveOutput, env, env.ProjectGitRoot, cancellationToken);
         return exitCode == 0;
     }
 

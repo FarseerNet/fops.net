@@ -39,8 +39,4 @@ public interface IDockerDevice: ISingletonDependency
     /// 上传镜像
     /// </summary>
     Task<bool> Push(BuildEnvironment env, IProgress<string> receiveOutput, CancellationToken cancellationToken);
-    /// <summary>
-    /// 生成Dockerfile路径
-    /// </summary>
-    string GetDockerfilePath(string projectName);
 }

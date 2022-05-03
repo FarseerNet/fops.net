@@ -33,7 +33,7 @@ public class DockerBuildService : ISingletonDependency
     /// </summary>
     public async Task<bool> CreateDockerfile(ProjectDO project, BuildEnvironment env, IProgress<string> progress, CancellationToken cancellationToken = default)
     {
-        var sourceDockerfilePath = $"{env.ProjectSourceDirRoot}/Dockerfile";
+        //var sourceDockerfilePath = $"{env.ProjectSourceDirRoot}/Dockerfile";
 
         // // 如果文件存在，则使用项目中的定义的文件
         // if (DockerDevice.ExistsDockerfile(sourceDockerfilePath))
@@ -43,7 +43,7 @@ public class DockerBuildService : ISingletonDependency
         //     return true;
         // }
 
-        progress.Report($"未发现Dockerfile，将按模板创建");
+        //progress.Report($"未发现Dockerfile，将按模板创建");
 
         // 根据项目中的Dockerfile模板ID，取出模板
         var dockerfileTpl = await DockerfileTplRepository.ToInfoAsync(project.DockerfileTpl);
@@ -54,7 +54,9 @@ public class DockerBuildService : ISingletonDependency
         }
 
         // 替换模板
-        var tpl = project.ReplaceTpl(dockerfileTpl.Template);
+        var tpl     = project.ReplaceTpl(dockerfileTpl.Template);
+        var gitName = env.ProjectGitRoot.Substring(BuildEnvironment.GitRoot.Length);
+        tpl = tpl.Replace("${git_name}",gitName);
         await DockerDevice.CreateDockerfileAsync(project.Name, tpl, cancellationToken);
         return true;
     }

@@ -15,7 +15,7 @@ public class ShellService : ISingletonDependency
     {
         actReceiveOutput.Report("---------------------------------------------------------");
         actReceiveOutput.Report($"开始执行Shell脚本。");
-        actReceiveOutput.Report($"请注意：脚本执行完后，请自行将打包的文件复制到：{env.ProjectReleaseDirRoot}。");
+        actReceiveOutput.Report($"请注意：脚本执行完后，请自行将打包的文件复制到：{BuildEnvironment.DistRoot}。");
 
         return ShellDevice.ExecShellAsync(env, project.ShellScript, actReceiveOutput, cancellationToken);
     }

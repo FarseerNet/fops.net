@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY . .
-WORKDIR /src/${project_path}
+WORKDIR /src/${git_name}/${project_path}
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app
 
@@ -15,7 +15,7 @@ COPY --from=build /app .
 RUN cp /usr/share/zoneinfo/GMT /etc/localtime
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai    /etc/localtime
 
-EXPOSE 80
+EXPOSE ${entry_port}
 EXPOSE 443
 
 ENTRYPOINT ["dotnet", "${entry_point}"]
