@@ -39,7 +39,6 @@
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net.Utils\Farseer.Net.Utils.csproj" />
       <ProjectReference Include="..\..\..\Farseer.Net\Framework\Farseer.Net\Farseer.Net.csproj" />
       <ProjectReference Include="..\..\02_Application\FOPS.Application\FOPS.Application.csproj" />
-      <ProjectReference Include="..\..\04_Infrastructure\FOPS.Abstract\FOPS.Abstract.csproj" />
       <ProjectReference Include="..\..\04_Infrastructure\FOPS.Infrastructure\FOPS.Infrastructure.csproj" />
     </ItemGroup>
 

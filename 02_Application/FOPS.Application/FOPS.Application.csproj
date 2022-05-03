@@ -13,7 +13,6 @@
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.AppLog\FOPS.Domain.AppLog.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Build\FOPS.Domain.Build.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.LinkTrack\FOPS.Domain.LinkTrack.csproj" />
-      <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Fss\FOPS.Domain.Fss.csproj" />
       <ProjectReference Include="..\..\03_Domain\FOPS.Domain.Sys\FOPS.Domain.Sys.csproj" />
     </ItemGroup>
 
