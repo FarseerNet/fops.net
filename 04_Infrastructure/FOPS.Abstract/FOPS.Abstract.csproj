@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Builder\Entity" />
       <Folder Include="Builder\Enum" />
     </ItemGroup>
 

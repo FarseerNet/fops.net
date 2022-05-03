@@ -1,4 +1,5 @@
 using FOPS.Domain.Build.Project;
+using FOPS.Domain.Build.Project.Entity;
 using FOPS.Domain.Build.Project.Repository;
 using FOPS.Infrastructure.Repository.Project;
 using FOPS.Infrastructure.Repository.Project.Model;
@@ -28,11 +29,11 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
-            project.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVer>>(project.ClusterVer);
+            project.DicClusterVer = JsonConvert.DeserializeObject<Dictionary<int, ClusterVerVO>>(project.ClusterVer);
         }
         catch
         {
-            project.DicClusterVer = new Dictionary<int, ClusterVer>();
+            project.DicClusterVer = new Dictionary<int, ClusterVerVO>();
         }
     }
 
@@ -116,7 +117,7 @@ public class ProjectRepository : IProjectRepository
     /// <summary>
     /// 修改集群的镜像版本
     /// </summary>
-    public Task UpdateAsync(int id, Dictionary<int, ClusterVer> dicClusterVer)
+    public Task UpdateAsync(int id, Dictionary<int, ClusterVerVO> dicClusterVer)
     {
         return ProjectAgent.UpdateAsync(id, new ProjectPO
         {

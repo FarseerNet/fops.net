@@ -33,6 +33,7 @@ public class AdminDO
     ///     创建时间
     /// </summary>
     public DateTime CreateAt { get; set; }
+    
     /// <summary>
     ///     创建人
     /// </summary>

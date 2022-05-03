@@ -1,9 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
-using FOPS.Abstract.MetaInfo.Entity;
+using FOPS.Application.Build.Build.Entity;
+using FOPS.Application.Build.Git.Entity;
+using FOPS.Application.Build.Project.Entity;
+using FOPS.Domain.Build.DeployK8S.Entity;
 using FS.Core.Entity;
 using FS.Utils.Common;
 

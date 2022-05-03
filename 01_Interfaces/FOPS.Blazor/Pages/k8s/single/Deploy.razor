@@ -1,7 +1,8 @@
 @page "/k8s/single/deploy"
-@using FOPS.Abstract.K8S.Server
 @using FOPS.Application.Build.Cluster
 @using FOPS.Application.Build.Cluster.Entity
+@using FOPS.Application.Build
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -54,8 +55,8 @@
         _isFirst = true;
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync()??new();
-        if (_lstCluster.Count > 0 ) _selectClusterId = _lstCluster[0].Id;
+        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+        if (_lstCluster.Count > 0) _selectClusterId = _lstCluster[0].Id;
     }
 
     private async Task DeployAsync()
@@ -64,20 +65,43 @@
         var clusterVO = _lstCluster.Find(o => o.Id == _selectClusterId);
         if (clusterVO == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new {icon = 0});
+            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
+            {
+                icon = 0
+            });
             return;
         }
 
-        var deployService = _iocManager.Resolve<IDeployService>();
+        var kubectlSetYamlApp = _iocManager.Resolve<KubectlSetYamlApp>();
         try
         {
-            var runShellResult = await deployService.DeployAsync("single",_yaml, clusterVO);
-            if (runShellResult.IsError) await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new {icon = 2, title = "出错了"});
-            else await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new {icon = 1, title = "执行结果"});
+            var lstLog = new List<string>();
+            var progress = new Progress<string>(log =>
+            {
+                lstLog.Add(log);
+            });
+
+            var execSuccess = await kubectlSetYamlApp.DeployAsync(clusterVO, _yaml, progress);
+            if (!execSuccess)
+                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+                {
+                    icon = 2,
+                    title = "出错了"
+                });
+            else
+                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
+                {
+                    icon = 1,
+                    title = "执行结果"
+                });
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            {
+                icon = 2,
+                title = "出错了"
+            });
         }
         await js.InvokeVoidAsync("layer.close", load);
     }

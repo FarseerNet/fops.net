@@ -12,6 +12,11 @@ public class BuildRepository : IBuildRepository
     public BuildAgent BuildAgent { get; set; }
 
     /// <summary>
+    /// 获取未构建的任务
+    /// </summary>
+    public Task<BuildDO> GetUnBuildInfoAsync() => BuildAgent.ToUnBuildInfoAsync().AdaptAsync<BuildDO, BuildPO>();
+    
+    /// <summary>
     ///     获取构建的编号
     /// </summary>
     public Task<int> GetBuildNumberAsync(int projectId) => BuildAgent.GetBuildNumberAsync(projectId);
@@ -35,6 +40,16 @@ public class BuildRepository : IBuildRepository
         IsSuccess = false,
         FinishAt  = DateTime.Now
     });
+    
+    /// <summary>
+    ///     任务完成
+    /// </summary>
+    public Task SuccessAsync(int id) => BuildAgent.UpdateAsync(id, new BuildPO
+    {
+        Status    = EumBuildStatus.Finish,
+        IsSuccess = true,
+        FinishAt  = DateTime.Now
+    });
 
     /// <summary>
     ///     当前构建的队列数量
@@ -50,4 +65,13 @@ public class BuildRepository : IBuildRepository
     ///     查看构建信息
     /// </summary>
     public Task<BuildDO> ToInfoAsync(int id) => BuildAgent.ToInfoAsync(id).AdaptAsync<BuildDO, BuildPO>();
+
+    /// <summary>
+    /// 设置任务为构建中
+    /// </summary>
+    public Task<int> SetBuilding(int buildId) => BuildAgent.UpdateAsync(buildId, new BuildPO
+    {
+        Status   = EumBuildStatus.Building,
+        CreateAt = DateTime.Now
+    });
 }

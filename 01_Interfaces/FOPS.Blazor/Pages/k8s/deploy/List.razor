@@ -1,5 +1,4 @@
 @page "/k8s/deploy/list"
-@using FOPS.Abstract.K8S.Server
 @using FOPS.Application.Build.Cluster
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Application.Build.Project
@@ -8,9 +7,11 @@
 @using FOPS.Application.Build.ProjectGroup.Entity
 @using FOPS.Application.Build.YamlTpl
 @using FOPS.Application.Build.YamlTpl.Entity
+@using FOPS.Domain.Build
 @using FOPS.Domain.Build.Enum
 @using FS.Extends
 @using Microsoft.AspNetCore.Components
+@using FOPS.Application.Build
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -223,18 +224,24 @@
             return;
         }
 
-        var deployService = _iocManager.Resolve<IDeployService>();
+        var kubectlSetYamlApp = _iocManager.Resolve<KubectlSetYamlApp>();
         try
         {
-            var runShellResult = await deployService.DeployAsync(_lst, clusterVO, _lstTpl);
-            if (runShellResult.IsError)
-                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new
+            var lstLog = new List<string>();
+            var progress = new Progress<string>(log =>
+            {
+                lstLog.Add(log);
+            });
+
+            var execSuccess = await kubectlSetYamlApp.DeployAsync(_lst, clusterVO, _lstTpl, progress);
+            if (!execSuccess)
+                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
                 });
             else
-                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new
+                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"
@@ -276,18 +283,23 @@
             return;
         }
 
-        var deployService = _iocManager.Resolve<IDeployService>();
+        var kubectlSetYamlApp = _iocManager.Resolve<KubectlSetYamlApp>();
         try
         {
-            var runShellResult = await deployService.DeployAsync(projectVO, clusterVO, _lstTpl);
-            if (runShellResult.IsError)
-                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new
+            var lstLog = new List<string>();
+            var progress = new Progress<string>(log =>
+            {
+                lstLog.Add(log);
+            });
+            var execSuccess = await kubectlSetYamlApp.DeployAsync(projectVO, clusterVO, _lstTpl, progress);
+            if (!execSuccess)
+                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
                 });
             else
-                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new
+                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"

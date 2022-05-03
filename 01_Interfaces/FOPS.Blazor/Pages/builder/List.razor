@@ -13,6 +13,7 @@
 @using FOPS.Application.Build.YamlTpl
 @using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Domain.Build.Project
+@using FOPS.Domain.Build.Project.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -268,7 +269,7 @@
             project.GitPullAt = git.PullAt;
 
             if (!project.DicClusterVer.ContainsKey(_clusterId))
-                project.DicClusterVer[_clusterId] = new ClusterVer
+                project.DicClusterVer[_clusterId] = new ClusterVerVO
                 {
                     DockerVer = "0"
                 };

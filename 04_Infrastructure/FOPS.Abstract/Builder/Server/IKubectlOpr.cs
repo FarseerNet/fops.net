@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
 using FOPS.Application.Build.Cluster.Entity;
 using FOPS.Application.Build.Project.Entity;
+using FOPS.Domain.Build.DeployK8S.Entity;
 using FS.Core.Entity;
 using FS.DI;
 

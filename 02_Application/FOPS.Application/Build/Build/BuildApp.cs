@@ -1,5 +1,6 @@
 using FOPS.Application.Build.Build.Entity;
 using FOPS.Application.Build.Project.Entity;
+using FOPS.Domain.Build;
 using FOPS.Domain.Build.Build;
 using FOPS.Domain.Build.Build.Repository;
 using FOPS.Domain.Build.Project;
@@ -10,7 +11,7 @@ namespace FOPS.Application.Build.Build;
 public class BuildApp : ISingletonDependency
 {
     public IBuildRepository BuildRepository { get; set; }
-    public ProjectService   ProjectService  { get; set; }
+    public UpdateDockerVersionService   UpdateDockerVersionService  { get; set; }
     public BuildService     BuildService    { get; set; }
 
     /// <summary>
@@ -26,7 +27,7 @@ public class BuildApp : ISingletonDependency
         }
 
         // 修改集群的镜像版本
-        await ProjectService.UpdateDockerVer(project, clusterId, buildId);
+        await UpdateDockerVersionService.Update(project, clusterId, buildId);
     }
     /// <summary>
     /// 主动取消任务

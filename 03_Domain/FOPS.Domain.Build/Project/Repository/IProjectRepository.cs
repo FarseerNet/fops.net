@@ -1,3 +1,5 @@
+using FOPS.Domain.Build.Project.Entity;
+
 namespace FOPS.Domain.Build.Project.Repository;
 
 public interface IProjectRepository: ISingletonDependency
@@ -49,7 +51,7 @@ public interface IProjectRepository: ISingletonDependency
     /// <summary>
     /// 修改集群的镜像版本
     /// </summary>
-    Task UpdateAsync(int id, Dictionary<int, ClusterVer> dicClusterVer);
+    Task UpdateAsync(int id, Dictionary<int, ClusterVerVO> dicClusterVer);
     /// <summary>
     /// 删除项目
     /// </summary>

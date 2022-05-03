@@ -1,4 +1,7 @@
+using FOPS.Domain.Build.Deploy.Device;
+using FOPS.Domain.Build.DeployK8S.Entity;
 using FOPS.Domain.Build.DockerHub.Repository;
+using FS;
 
 namespace FOPS.Domain.Build.DockerHub;
 
@@ -41,5 +44,17 @@ public class DockerHubDO
     {
         var repository = IocManager.GetService<IDockerHubRepository>();
         return repository.UpdateAsync(Id, this);
+    }
+
+    /// <summary>
+    /// 登陆镜像
+    /// </summary>
+    public Task<bool> LoginAsync(BuildEnvironment env, IProgress<string> progress, CancellationToken cancellationToken = default)
+    {
+        progress.Report("---------------------------------------------------------");
+        progress.Report("登陆镜像仓库。");
+
+        var dockerDevice = IocManager.GetService<IDockerDevice>();
+        return dockerDevice.LoginAsync(Hub, UserName, UserPwd, progress, env, cancellationToken);
     }
 }

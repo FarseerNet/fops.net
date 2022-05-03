@@ -30,4 +30,16 @@ public interface IBuildRepository: ISingletonDependency
     ///     查看构建信息
     /// </summary>
     Task<BuildDO> ToInfoAsync(int id);
+    /// <summary>
+    /// 获取未构建的任务
+    /// </summary>
+    Task<BuildDO> GetUnBuildInfoAsync();
+    /// <summary>
+    /// 设置任务为构建中
+    /// </summary>
+    Task<int> SetBuilding(int buildId);
+    /// <summary>
+    ///     任务完成
+    /// </summary>
+    Task SuccessAsync(int id);
 }

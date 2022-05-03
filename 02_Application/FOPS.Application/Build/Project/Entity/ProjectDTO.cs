@@ -1,5 +1,6 @@
 using FOPS.Domain.Build.Enum;
 using FOPS.Domain.Build.Project;
+using FOPS.Domain.Build.Project.Entity;
 using Mapster;
 
 namespace FOPS.Application.Build.Project.Entity;
@@ -97,7 +98,7 @@ public class ProjectDTO
     /// <summary>
     /// 集群版本
     /// </summary>
-    public Dictionary<int, ClusterVer> DicClusterVer { get; set; }
+    public Dictionary<int, ClusterVerVO> DicClusterVer { get; set; }
     /// <summary>
     /// 拉取时间
     /// </summary>

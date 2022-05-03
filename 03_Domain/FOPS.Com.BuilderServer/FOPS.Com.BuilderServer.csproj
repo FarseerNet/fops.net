@@ -17,7 +17,40 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Build\Dal" />
+      <Compile Remove="Git\**" />
+      <Compile Remove="Docker\**" />
+      <Compile Remove="Kubectl\**" />
+      <Compile Remove="BuildLog\**" />
+      <Compile Remove="BuilderContext.cs" />
+      <Compile Remove="BuilderInstaller.cs" />
+      <Compile Remove="BuilderModule.cs" />
+      <Compile Remove="Dotnet\DotnetOpr.cs" />
+      <Compile Remove="Dotnet\**" />
+      <Compile Remove="Shell\**" />
+      <Compile Remove="Build\**" />
+      <Compile Remove="UnBuild\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Git\**" />
+      <EmbeddedResource Remove="Docker\**" />
+      <EmbeddedResource Remove="Kubectl\**" />
+      <EmbeddedResource Remove="BuildLog\**" />
+      <EmbeddedResource Remove="Dotnet\**" />
+      <EmbeddedResource Remove="Shell\**" />
+      <EmbeddedResource Remove="Build\**" />
+      <EmbeddedResource Remove="UnBuild\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Git\**" />
+      <None Remove="Docker\**" />
+      <None Remove="Kubectl\**" />
+      <None Remove="BuildLog\**" />
+      <None Remove="Dotnet\**" />
+      <None Remove="Shell\**" />
+      <None Remove="Build\**" />
+      <None Remove="UnBuild\**" />
     </ItemGroup>
 
 </Project>

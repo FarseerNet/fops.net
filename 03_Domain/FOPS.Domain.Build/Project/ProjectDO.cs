@@ -1,4 +1,5 @@
 using FOPS.Domain.Build.Enum;
+using FOPS.Domain.Build.Project.Entity;
 using FOPS.Domain.Build.Project.Repository;
 using Newtonsoft.Json;
 
@@ -97,7 +98,7 @@ public class ProjectDO
     /// <summary>
     /// 集群版本
     /// </summary>
-    public Dictionary<int, ClusterVer> DicClusterVer { get; set; }
+    public Dictionary<int, ClusterVerVO> DicClusterVer { get; set; }
     /// <summary>
     /// 拉取时间
     /// </summary>
@@ -137,5 +138,29 @@ public class ProjectDO
         ClusterVer = DicClusterVer != null ? JsonConvert.SerializeObject(DicClusterVer) : "{}";
 
         return repository.UpdateAsync(Id, this);
+    }
+    
+    /// <summary>
+    /// 替换模板
+    /// </summary>
+    public string ReplaceTpl(string tpl)
+    {
+        if (string.IsNullOrWhiteSpace(tpl)) return null;
+
+        // 替换项目名称
+        tpl = tpl.Replace("${project_name}", Name)
+                 .Replace("${domain}", Domain)
+                 .Replace("${entry_point}", EntryPoint)
+                 .Replace("${entry_port}", EntryPort.ToString());
+
+        // 替换模板变量
+        foreach (var kv in K8STplVariable.Split(','))
+        {
+            var kvGroup = kv.Split('=');
+            if (kvGroup.Length != 2) continue;
+            tpl = tpl.Replace($"${{{kvGroup[0]}}}", kvGroup[1]);
+        }
+
+        return tpl;
     }
 }

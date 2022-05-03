@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Application.Build.Build.Entity;
 using FOPS.Application.Build.Git.Entity;
 using FOPS.Application.Build.Project.Entity;
+using FOPS.Domain.Build.DeployK8S.Entity;
 using FS.Core.Entity;
 
 namespace FOPS.Com.BuilderServer.Build
@@ -21,12 +21,12 @@ namespace FOPS.Com.BuilderServer.Build
 
             // 自动创建目录
             BuildLogService.Write(build.Id, $"自动创建目录。");
-            if (!System.IO.Directory.Exists(env.FopsDirRoot)) System.IO.Directory.CreateDirectory(env.FopsDirRoot);
-            if (!System.IO.Directory.Exists(env.NpmModulesDirRoot)) System.IO.Directory.CreateDirectory(env.NpmModulesDirRoot);
-            if (!System.IO.Directory.Exists(env.ReleaseDirRoot)) System.IO.Directory.CreateDirectory(env.ReleaseDirRoot);
-            if (!System.IO.Directory.Exists(env.KubePath)) System.IO.Directory.CreateDirectory(env.KubePath);
-            if (!System.IO.Directory.Exists(env.ShellScriptPath)) System.IO.Directory.CreateDirectory(env.ShellScriptPath);
-            if (!System.IO.Directory.Exists(env.GitDirRoot)) System.IO.Directory.CreateDirectory(env.GitDirRoot);
+            if (!System.IO.Directory.Exists(BuildEnvironment.FopsDirRoot)) System.IO.Directory.CreateDirectory(BuildEnvironment.FopsDirRoot);
+            if (!System.IO.Directory.Exists(BuildEnvironment.NpmModulesDirRoot)) System.IO.Directory.CreateDirectory(BuildEnvironment.NpmModulesDirRoot);
+            if (!System.IO.Directory.Exists(BuildEnvironment.ReleaseDirRoot)) System.IO.Directory.CreateDirectory(BuildEnvironment.ReleaseDirRoot);
+            if (!System.IO.Directory.Exists(BuildEnvironment.KubePath)) System.IO.Directory.CreateDirectory(BuildEnvironment.KubePath);
+            if (!System.IO.Directory.Exists(BuildEnvironment.ShellScriptPath)) System.IO.Directory.CreateDirectory(BuildEnvironment.ShellScriptPath);
+            if (!System.IO.Directory.Exists(BuildEnvironment.GitDirRoot)) System.IO.Directory.CreateDirectory(BuildEnvironment.GitDirRoot);
 
             // 先删除之前编译的目标文件
             BuildLogService.Write(build.Id, $"先删除之前编译的目标文件。");

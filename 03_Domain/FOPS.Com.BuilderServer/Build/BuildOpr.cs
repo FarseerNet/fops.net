@@ -2,16 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FOPS.Abstract.Builder.Entity;
 using FOPS.Abstract.Builder.Server;
 using FOPS.Application.Build.Build.Entity;
 using FOPS.Application.Build.Project.Entity;
-using FOPS.Com.BuilderServer.Docker;
-using FOPS.Com.BuilderServer.Dotnet;
-using FOPS.Com.BuilderServer.Git;
-using FOPS.Com.BuilderServer.Kubectl;
-using FOPS.Com.BuilderServer.Shell;
 using FOPS.Com.BuilderServer.UnBuild;
+using FOPS.Domain.Build.DeployK8S.Entity;
 using FOPS.Domain.Build.Enum;
 using FS;
 using FS.DI;
@@ -36,9 +31,8 @@ namespace FOPS.Com.BuilderServer.Build
         public async Task Build()
         {
             // 取出未开始的任务
-            var po = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None && o.BuildServerId == FarseerApplication.AppId).Asc(o => o.Id).ToEntityAsync();
-            if (po == null) return;
-            var build = po.Map<BuildDTO>();
+            var build = await BuilderContext.Data.Build.Where(o => o.Status == EumBuildStatus.None && o.BuildServerId == FarseerApplication.AppId).Asc(o => o.Id).ToEntityAsync();
+            if (build == null) return;
 
             // 设置为构建中
             var isUpdate = await BuilderContext.Data.Build.Where(o => o.Id == build.Id && o.Status == EumBuildStatus.None).UpdateAsync(new BuildPO
@@ -70,11 +64,13 @@ namespace FOPS.Com.BuilderServer.Build
 
             // 执行命令时需要记录日志到文件
             void ActWriteLog(string output) => BuildLogService.Write(build.Id, output);
-            
+
             // 定义环境变量
             var env = new BuildEnvironment
             {
+                BuildId           = build.Id,
                 BuildNumber       = build.BuildNumber,
+                ProjectId         = project.Id,
                 ProjectName       = project.Name,
                 ProjectDomain     = project.Domain,
                 ProjectEntryPoint = project.EntryPoint,

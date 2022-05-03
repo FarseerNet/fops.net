@@ -1,6 +1,7 @@
 using FOPS.Domain.Build.Enum;
 using FOPS.Infrastructure.Repository.Build.Model;
 using FOPS.Infrastructure.Repository.Context;
+using FS;
 
 namespace FOPS.Infrastructure.Repository.Build;
 
@@ -26,7 +27,7 @@ public class BuildAgent : ISingletonDependency
     /// <summary>
     ///     修改任务
     /// </summary>
-    public Task UpdateAsync(int id, BuildPO po) => MysqlContext.Data.Build.Where(where: o => o.Id == id).UpdateAsync(po);
+    public Task<int> UpdateAsync(int id, BuildPO po) => MysqlContext.Data.Build.Where(where: o => o.Id == id).UpdateAsync(po) ;
 
     /// <summary>
     ///     获取构建任务的主键
@@ -50,4 +51,9 @@ public class BuildAgent : ISingletonDependency
     ///     查看构建信息
     /// </summary>
     public Task<BuildPO> ToInfoAsync(int id) => MysqlContext.Data.Build.Where(where: o => o.Id == id).ToEntityAsync();
+
+    /// <summary>
+    /// 获取未构建的任务
+    /// </summary>
+    public Task<BuildPO> ToUnBuildInfoAsync() => MysqlContext.Data.Build.Where(o => o.Status == EumBuildStatus.None && o.BuildServerId == FarseerApplication.AppId).Asc(o => o.Id).ToEntityAsync();
 }

@@ -9,6 +9,7 @@ namespace FOPS.Infrastructure.Repository;
 public class GitRepository : IGitRepository
 {
     public GitAgent GitAgent { get; set; }
+    
     /// <summary>
     /// Git列表
     /// </summary>
