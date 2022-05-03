@@ -55,8 +55,7 @@ public class DockerBuildService : ISingletonDependency
 
         // 替换模板
         var tpl     = project.ReplaceTpl(dockerfileTpl.Template);
-        var gitName = env.ProjectGitRoot.Substring(BuildEnvironment.GitRoot.Length);
-        tpl = tpl.Replace("${git_name}",gitName);
+        tpl = tpl.Replace("${git_name}",env.GitName);
         await DockerDevice.CreateDockerfileAsync(project.Name, tpl, cancellationToken);
         return true;
     }
