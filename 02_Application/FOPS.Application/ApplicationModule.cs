@@ -22,6 +22,6 @@ public class ApplicationModule : FarseerModule
 
     public override void Initialize()
     {
-        IocManager.RegisterAssemblyByConvention(type: GetType());
+        //IocManager.RegisterAssemblyByConvention(type: GetType());
     }
 }
