@@ -1,4 +1,4 @@
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FS.Core.Entity;
 
 namespace FOPS.Domain.Build.Deploy.Device;

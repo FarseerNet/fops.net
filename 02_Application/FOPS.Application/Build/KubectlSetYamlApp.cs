@@ -11,7 +11,6 @@ namespace FOPS.Application.Build;
 public class KubectlSetYamlApp : ISingletonDependency
 {
     public KubectlSetYamlService KubectlSetYamlService { get; set; }
-    public IKubectlDevice        KubectlDevice         { get; set; }
 
     /// <summary>
     /// 发布

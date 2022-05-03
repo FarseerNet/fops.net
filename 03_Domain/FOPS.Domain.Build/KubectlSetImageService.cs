@@ -1,7 +1,7 @@
 using FOPS.Domain.Build.Build;
 using FOPS.Domain.Build.Cluster.Repository;
 using FOPS.Domain.Build.Deploy.Device;
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.Project;
 using FS.Core.Entity;
 using FS.Utils.Component;

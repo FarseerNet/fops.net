@@ -1,6 +1,6 @@
 using FOPS.Application.Build.Git.Entity;
 using FOPS.Application.Build.Project.Entity;
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FS.DI;
 
 namespace FOPS.Abstract.Builder.Server

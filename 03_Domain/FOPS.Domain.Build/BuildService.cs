@@ -1,7 +1,7 @@
 using FOPS.Domain.Build.Build;
 using FOPS.Domain.Build.Build.Repository;
 using FOPS.Domain.Build.Deploy.Device;
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.DockerHub.Repository;
 using FOPS.Domain.Build.Enum;
 using FOPS.Domain.Build.Git.Repository;
@@ -81,9 +81,9 @@ public class BuildService : ISingletonDependency
             DockerImage           = DockerDevice.GetDockerImage(docker.Hub, project.Name, build.BuildNumber),
             GitHub                = git?.Hub,
             ProjectReleaseDirRoot = DotnetDevice.GetReleasePath(project.Name),
+            ProjectSourceDirRoot  = DotnetDevice.GetSourceDirRoot(git?.Hub, project.Path),
             DockerFilePath        = DotnetDevice.GetReleasePath(project.Name) + "/Dockerfile",
             ProjectGitDirRoot     = GitDevice.GetGitPath(git?.Hub),
-            ProjectSourceDirRoot  = DotnetDevice.GetSourceDirRoot(git?.Hub, project.Path)
         };
 
         try

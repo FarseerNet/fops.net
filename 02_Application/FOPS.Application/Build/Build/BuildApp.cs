@@ -10,9 +10,13 @@ namespace FOPS.Application.Build.Build;
 
 public class BuildApp : ISingletonDependency
 {
-    public IBuildRepository BuildRepository { get; set; }
-    public UpdateDockerVersionService   UpdateDockerVersionService  { get; set; }
-    public BuildService     BuildService    { get; set; }
+    public IBuildRepository           BuildRepository            { get; set; }
+    public UpdateDockerVersionService UpdateDockerVersionService { get; set; }
+    public BuildService               BuildService               { get; set; }
+    /// <summary>
+    /// 构建
+    /// </summary>
+    public Task Build() => BuildService.Build();
 
     /// <summary>
     /// 设置任务成功
@@ -32,11 +36,7 @@ public class BuildApp : ISingletonDependency
     /// <summary>
     /// 主动取消任务
     /// </summary>
-    public Task Cancel(int id)
-    {
-        //BuildLogService.Write(id, "手动取消");
-        return BuildRepository.CancelAsync(id);
-    }
+    public Task Cancel(int id) => BuildRepository.CancelAsync(id);
 
     /// <summary>
     ///     获取构建队列前30

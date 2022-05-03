@@ -1,6 +1,6 @@
 using System.Text;
 using FOPS.Domain.Build.Deploy.Device;
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.Enum;
 using FOPS.Infrastructure.Repository.DockerHub;
 using FS.Extends;

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using FOPS.Application.Build.Git.Entity;
-using FOPS.Domain.Build.DeployK8S.Entity;
+using FOPS.Domain.Build.Deploy.Entity;
 using FS.Core.Entity;
 using FS.DI;
 

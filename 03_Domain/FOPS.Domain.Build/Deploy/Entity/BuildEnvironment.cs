@@ -1,4 +1,4 @@
-namespace FOPS.Domain.Build.DeployK8S.Entity
+namespace FOPS.Domain.Build.Deploy.Entity
 {
     /// <summary>
     /// 构建时的环境变量
@@ -72,28 +72,32 @@ namespace FOPS.Domain.Build.DeployK8S.Entity
 
         /// <summary>
         /// 项目编译保存的目录
+        /// /var/lib/fops/dist/{projectName}/
         /// </summary>
         public string ProjectReleaseDirRoot { get; set; }
 
         /// <summary>
+        /// Dockerfile文件路径
+        /// /var/lib/fops/dist/{projectName}/Dockerfile
+        /// </summary>
+        public string DockerFilePath { get; set; }
+
+        /// <summary>
         /// 项目源代码目录
+        /// /var/lib/fops/git/{gitName}/{projectPath}
         /// </summary>
         public string ProjectSourceDirRoot { get; set; }
+
+        /// <summary>
+        /// Git仓库源代码根目录
+        /// /var/lib/fops/git/{gitName}/
+        /// </summary>
+        public string ProjectGitDirRoot { get; set; }
 
         /// <summary>
         /// Git仓库地址
         /// </summary>
         public string GitHub { get; set; }
-
-        /// <summary>
-        /// Git仓库源代码根目录
-        /// </summary>
-        public string ProjectGitDirRoot { get; set; }
-
-        /// <summary>
-        /// Dockerfile文件路径
-        /// </summary>
-        public string DockerFilePath { get; set; }
 
         /// <summary>
         /// Docker仓库地址
