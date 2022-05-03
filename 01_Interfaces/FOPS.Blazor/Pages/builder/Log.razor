@@ -1,9 +1,9 @@
 @page "/builder/log/{id:int}"
-@using FOPS.Abstract.Builder.Server
 @using System.Timers
 @using FOPS.Application.Build.Build
 @using FOPS.Application.Build.Project
 @using FOPS.Application.Build.Project.Entity
+@using FOPS.Domain.Build.Deploy.Device
 @using FOPS.Domain.Build.Enum
 @using BuildDTO = FOPS.Application.Build.Build.Entity.BuildDTO
 @inject IIocManager _iocManager;
@@ -103,7 +103,7 @@
                 }
 
                 _projectInfo = await _iocManager.Resolve<ProjectApp>().ToInfoAsync(_info.ProjectId) ?? new();
-                _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+                _lstLog = _iocManager.Resolve<IBuildLogDevice>().View(_info.Id);
                 if (_info.Status != EumBuildStatus.Finish)
                 {
                     _timer = new Timer(1000);
@@ -113,7 +113,7 @@
                         {
                             var oldLineCount = _lstLog.Length;
                             _info = await _iocManager.Resolve<BuildApp>().ToInfoAsync(Id);
-                            _lstLog = _iocManager.Resolve<IBuildLogService>().View(_info.Id);
+                            _lstLog = _iocManager.Resolve<IBuildLogDevice>().View(_info.Id);
     // 刷新页面
                             await InvokeAsync(StateHasChanged);
     // 完成状态，则停止时间器

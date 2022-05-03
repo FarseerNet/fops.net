@@ -1,6 +1,5 @@
 @page "/builder/list"
 @using FS.Extends
-@using FOPS.Abstract.Builder.Server
 @using FOPS.Application.Build.Build
 @using FOPS.Application.Build.Cluster
 @using FOPS.Application.Build.Cluster.Entity
@@ -12,8 +11,8 @@
 @using FOPS.Application.Build.ProjectGroup.Entity
 @using FOPS.Application.Build.YamlTpl
 @using FOPS.Application.Build.YamlTpl.Entity
-@using FOPS.Domain.Build.Project
 @using FOPS.Domain.Build.Project.Entity
+@using FOPS.Application.Build
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -150,7 +149,7 @@
                                         <td>
                                             <div class="layui-table-cell laytable-cell-14-0-6">
                                                 <button class="layui-btn layui-btn-sm layui-btn-danger" @onclick="() => AddBuild(info)">构建</button>
-                                                <button class="layui-btn layui-btn-sm" @onclick="() => SetImages(info)">同步</button>
+                                                <button class="layui-btn layui-btn-sm" @onclick="() => SyncImages(info)">同步</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -328,15 +327,21 @@
         await js.InvokeVoidAsync("layer.close", load);
     }
 
-    /// 更新集群镜像版本
-    private async Task SetImages(ProjectDTO project)
+    /// 同步集群镜像版本
+    private async Task SyncImages(ProjectDTO project)
     {
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
-            var runShellResult = await _iocManager.Resolve<IKubectlOpr>().SetImages(_clusterId, project.DockerVer.ConvertType(0), project, null);
-            if (runShellResult.IsError)
-                await js.InvokeVoidAsync("layer.alert", runShellResult.OutputBr, new
+            var lstLog = new List<string>();
+            var progress = new Progress<string>(log =>
+            {
+                lstLog.Add(log);
+            });
+            
+            var execSuccess = await _iocManager.Resolve<KubectlSetImageApp>().SyncImages(_clusterId, project, progress);
+            if (!execSuccess)
+                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
@@ -345,7 +350,7 @@
             {
                 await _iocManager.Resolve<BuildApp>().Success(_clusterId, project, 0);
                 await GetList();
-                await js.InvokeVoidAsync("layer.msg", runShellResult.OutputBr, new
+                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"

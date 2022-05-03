@@ -13,8 +13,6 @@ namespace FOPS.Infrastructure.Device;
 /// </summary>
 public class KubectlDevice : IKubectlDevice
 {
-    public DockerHubAgent DockerHubAgent { get; set; }
-
     /// <summary>
     /// 获取存储k8s Config的路径
     /// </summary>
@@ -45,10 +43,10 @@ public class KubectlDevice : IKubectlDevice
     /// <summary>
     /// 更新k8s的镜像版本
     /// </summary>
-    public async Task<bool> SetImages(string clusterName, EumK8sControllers k8sControllersType, BuildEnvironment env, IProgress<string> progress, CancellationToken cancellationToken)
+    public async Task<bool> SetImages(string clusterName, string projectName, string dockerImages, EumK8sControllers k8sControllersType, IProgress<string> progress, CancellationToken cancellationToken)
     {
         var configFile = GetConfigFile(clusterName);
-        var exitCode   = await ShellTools.Run("kubectl", $"set image {k8sControllersType.GetName()}/{env.ProjectName} {env.ProjectName}={env.DockerImage} --kubeconfig={configFile}", progress, env, null, cancellationToken);
+        var exitCode   = await ShellTools.Run("kubectl", $"set image {k8sControllersType.GetName()}/{projectName} {projectName}={dockerImages} --kubeconfig={configFile}", progress, null, null, cancellationToken);
         if (exitCode != 0)
         {
             progress.Report("K8S更新镜像失败。");

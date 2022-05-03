@@ -1,9 +1,10 @@
 @page "/git/update/{id:int}"
 @using Microsoft.AspNetCore.Components
-@using FOPS.Abstract.Builder.Server
 @using FOPS.Application.Build.Git
 @using FOPS.Application.Build.Git.Entity
 @using FOPS.Application.Build.Project
+@using FOPS.Domain.Build
+@using FS.Extends
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -137,10 +138,17 @@
             nav.NavigateTo("/project/list");
             return;
         }
-        var gitResult = await _iocManager.Resolve<IGitOpr>().ClearAsync(Id);
-        if (gitResult.IsError)
+        
+        var lstLog = new List<string>();
+        var progress = new Progress<string>(log =>
         {
-            await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "清除失败"});
+            lstLog.Add(log);
+        });
+        
+        var execSuccess = await _iocManager.Resolve<GitService>().ClearAsync(Id,progress);
+        if (!execSuccess)
+        {
+            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new {icon = 2, title = "清除失败"});
             return;
         }
         

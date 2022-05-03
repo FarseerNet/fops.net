@@ -1,4 +1,3 @@
-using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.Enum;
 
 namespace FOPS.Domain.Build.Deploy.Device;
@@ -17,11 +16,11 @@ public interface IKubectlDevice: ISingletonDependency
     /// </summary>
     void CreateConfigFile(string clusterName, string clusterConfig);
     /// <summary>
-    /// 更新k8s的镜像版本
-    /// </summary>
-    Task<bool> SetImages(string clusterName, EumK8sControllers k8sControllersType, BuildEnvironment env, IProgress<string> progress, CancellationToken cancellationToken);
-    /// <summary>
     /// 生成yaml文件，并执行kubectl apply命令
     /// </summary>
     Task<bool> SetYaml(string clusterName, string projectName, string yamlContent, IProgress<string> progress, CancellationToken cancellationToken);
+    /// <summary>
+    /// 更新k8s的镜像版本
+    /// </summary>
+    Task<bool> SetImages(string clusterName, string projectName, string dockerImages, EumK8sControllers k8sControllersType, IProgress<string> progress, CancellationToken cancellationToken);
 }

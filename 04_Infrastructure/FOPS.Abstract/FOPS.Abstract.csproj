@@ -17,8 +17,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Builder\Entity" />
-      <Folder Include="Builder\Enum" />
+      <Compile Remove="Builder\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Builder\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Builder\**" />
     </ItemGroup>
 
 </Project>

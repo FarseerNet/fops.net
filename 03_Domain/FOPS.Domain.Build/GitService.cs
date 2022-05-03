@@ -1,5 +1,4 @@
 using FOPS.Domain.Build.Deploy.Device;
-using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.Git;
 using FOPS.Domain.Build.Git.Repository;
 using FOPS.Domain.Build.Project;
@@ -51,7 +50,7 @@ public class GitService : ISingletonDependency
     /// <summary>
     /// 拉取主仓库及依赖仓库
     /// </summary>
-    public async Task<bool> CloneOrPullAndDependent(ProjectDO project, BuildEnvironment env, IProgress<string> actReceiveOutput, CancellationToken cancellationToken)
+    public async Task<bool> CloneOrPullAndDependent(ProjectDO project, IProgress<string> actReceiveOutput, CancellationToken cancellationToken)
     {
         // 读取主库及依赖库
         var lstGitIds = new List<int>
@@ -80,7 +79,6 @@ public class GitService : ISingletonDependency
         // }
         // return new RunShellResult(false, $"拉取完成。");
     }
-
 
     /// <summary>
     /// 消除仓库

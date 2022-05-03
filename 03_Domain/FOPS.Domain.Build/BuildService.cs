@@ -100,7 +100,7 @@ public class BuildService : ISingletonDependency
             // 前置检查
             CheckDirectoryService.Check(env, progress, cts.Token);
             // 拉取主仓库及依赖仓库
-            await CheckResult(GitService.CloneOrPullAndDependent(project, env, progress, cts.Token), build.Id);
+            await CheckResult(GitService.CloneOrPullAndDependent(project, progress, cts.Token), build.Id);
             // 登陆镜像仓库(先登陆，如果失败了，后则面也不需要编译、打包了)
             await CheckResult(docker.LoginAsync(env, progress, cts.Token), build.Id);
 
@@ -123,7 +123,7 @@ public class BuildService : ISingletonDependency
             // docker上传
             if (docker != null) await CheckResult(DockerPushService.Push(env, progress, cts.Token), build.Id);
             // k8s更新
-            await CheckResult(KubectlSetImageService.SetImage(env, build, project, progress, cts.Token), build.Id);
+            await CheckResult(KubectlSetImageService.SetImages(env, build, project, progress, cts.Token), build.Id);
 
             await Success(build, project, progress);
         }

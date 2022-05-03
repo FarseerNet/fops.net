@@ -1,8 +1,8 @@
 @page "/git/list"
 @using FS.Extends
-@using FOPS.Abstract.Builder.Server
 @using FOPS.Application.Build.Git
 @using FOPS.Application.Build.Git.Entity
+@using FOPS.Domain.Build
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -142,28 +142,57 @@
 
     private async Task ClearGit(int id)
     {
+        var lstLog = new List<string>();
+        var progress = new Progress<string>(log =>
+        {
+            lstLog.Add(log);
+        });
+
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        var gitResult = await _iocManager.Resolve<IGitOpr>().ClearAsync(id);
+        var execSuccess = await _iocManager.Resolve<GitService>().ClearAsync(id, progress);
         await js.InvokeVoidAsync("layer.close", load);
-        if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "清除失败"});
+        if (!execSuccess)
+            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+            {
+                icon = 2,
+                title = "清除失败"
+            });
         else
         {
-            await js.InvokeVoidAsync("layer.msg", "清除完毕", new {icon = 1});
+            await js.InvokeVoidAsync("layer.msg", "清除完毕", new
+            {
+                icon = 1
+            });
         }
     }
 
     private async Task PullGit(GitDTO git)
     {
+        var lstLog = new List<string>();
+        var progress = new Progress<string>(log =>
+        {
+            lstLog.Add(log);
+        });
+
         var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
-        var gitResult = await _iocManager.Resolve<IGitOpr>().CloneOrPull(git);
+        var execSuccess = await _iocManager.Resolve<GitService>().CloneOrPull(git, progress, default);
         await js.InvokeVoidAsync("layer.close", load);
 
-        if (gitResult.IsError) await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 2, title = "拉取失败"});
+        if (!execSuccess)
+            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+            {
+                icon = 2,
+                title = "拉取失败"
+            });
         else
         {
     // 更新git拉取时间
             await _iocManager.Resolve<GitApp>().UpdateAsync(git.Id, DateTime.Now);
-            await js.InvokeVoidAsync("layer.alert", gitResult.OutputBr, new {icon = 1, title = "执行结果"});
+            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+            {
+                icon = 1,
+                title = "执行结果"
+            });
         }
     }
 
