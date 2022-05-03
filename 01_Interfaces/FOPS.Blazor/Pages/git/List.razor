@@ -186,9 +186,7 @@
             });
         else
         {
-    // 更新git拉取时间
-            await _iocManager.Resolve<GitApp>().UpdateAsync(git.Id, DateTime.Now);
-            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+            await js.InvokeVoidAsync("layer.alert", "拉取成功", new
             {
                 icon = 1,
                 title = "执行结果"

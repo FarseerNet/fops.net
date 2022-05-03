@@ -20,6 +20,7 @@ public class CheckDirectoryService : ISingletonDependency
         if (!Directory.Exists(BuildEnvironment.KubePath)) Directory.CreateDirectory(BuildEnvironment.KubePath);
         if (!Directory.Exists(BuildEnvironment.ShellScriptPath)) Directory.CreateDirectory(BuildEnvironment.ShellScriptPath);
         if (!Directory.Exists(BuildEnvironment.GitDirRoot)) Directory.CreateDirectory(BuildEnvironment.GitDirRoot);
+        if (!Directory.Exists(BuildEnvironment.DockerfileDirRoot)) Directory.CreateDirectory(BuildEnvironment.DockerfileDirRoot);
 
         // 先删除之前编译的目标文件
         progress.Report($"先删除之前编译的目标文件。");

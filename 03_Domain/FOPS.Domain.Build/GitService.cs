@@ -34,7 +34,7 @@ public class GitService : ISingletonDependency
         else
         {
             actReceiveOutput.Report($"开始克隆git {git.Name} 分支：{git.Branch} 仓库：{git.Hub}。");
-            await GitDevice.Clone(git.Hub, git.Branch, actReceiveOutput, cancellationToken);
+            execSuccess = await GitDevice.Clone(git.Hub, git.Branch, actReceiveOutput, cancellationToken);
         }
 
         if (execSuccess)

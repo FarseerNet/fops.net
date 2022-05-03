@@ -33,12 +33,15 @@ public class DockerBuildService : ISingletonDependency
     /// </summary>
     public async Task<bool> CreateDockerfile(ProjectDO project, BuildEnvironment env, IProgress<string> progress, CancellationToken cancellationToken = default)
     {
-        // 如果文件存在，则使用项目中的定义的文件
-        if (DockerDevice.ExistsDockerfile(env.DockerFilePath))
-        {
-            progress.Report($"项目中包含Dockerfile，将按存在的Dockerfile进行打包");
-            return true;
-        }
+        var sourceDockerfilePath = $"{env.ProjectSourceDirRoot}/Dockerfile";
+
+        // // 如果文件存在，则使用项目中的定义的文件
+        // if (DockerDevice.ExistsDockerfile(sourceDockerfilePath))
+        // {
+        //     progress.Report($"项目中包含Dockerfile，将按存在的Dockerfile进行打包");
+        //     File.Copy(sourceDockerfilePath, env.ProjectDockerfilePath, true);
+        //     return true;
+        // }
 
         progress.Report($"未发现Dockerfile，将按模板创建");
 
@@ -52,7 +55,7 @@ public class DockerBuildService : ISingletonDependency
 
         // 替换模板
         var tpl = project.ReplaceTpl(dockerfileTpl.Template);
-        await DockerDevice.CreateDockerfileAsync(env.DockerFilePath, tpl, cancellationToken);
+        await DockerDevice.CreateDockerfileAsync(project.Name, tpl, cancellationToken);
         return true;
     }
 }

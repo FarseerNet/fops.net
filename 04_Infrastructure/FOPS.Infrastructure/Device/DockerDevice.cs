@@ -7,6 +7,11 @@ namespace FOPS.Infrastructure.Device
     public class DockerDevice : IDockerDevice
     {
         /// <summary>
+        /// 生成Dockerfile路径
+        /// </summary>
+        public string GetDockerfilePath(string projectName) => $"{BuildEnvironment.DockerfileDirRoot}{projectName}";
+        
+        /// <summary>
         /// 取得dockerHub
         /// </summary>
         public string GetDockerHub(string dockerHubAddress)
@@ -29,12 +34,13 @@ namespace FOPS.Infrastructure.Device
         /// <summary>
         /// 生成Dockerfile文件
         /// </summary>
-        /// <param name="dockerfilePath">dockerfile文件地址</param>
+        /// <param name="projectName">dockerfile文件地址</param>
         /// <param name="dockerfileContent">文件内容</param>
         /// <param name="cancellationToken"></param>
-        public Task CreateDockerfileAsync(string dockerfilePath, string dockerfileContent, CancellationToken cancellationToken = default)
+        public Task CreateDockerfileAsync(string projectName, string dockerfileContent, CancellationToken cancellationToken = default)
         {
-            if (ExistsDockerfile(dockerfilePath)) return Task.FromResult(0);
+            var dockerfilePath = GetDockerfilePath(projectName);
+            if (File.Exists(dockerfilePath)) File.Delete(dockerfilePath);
             return File.AppendAllTextAsync(dockerfilePath, dockerfileContent, cancellationToken);
         }
 
@@ -68,7 +74,7 @@ namespace FOPS.Infrastructure.Device
         public async Task<bool> Build(BuildEnvironment env, IProgress<string> receiveOutput, CancellationToken cancellationToken)
         {
             // 打包
-            var result = await ShellTools.Run("docker", $"build -t {env.DockerImage} --network=host .", receiveOutput, env, env.ProjectReleaseDirRoot, cancellationToken);
+            var result = await ShellTools.Run("docker", $"build -t {env.DockerImage} --network=host -f {env.ProjectDockerfilePath} {env.ProjectGitDirRoot}", receiveOutput, env, env.ProjectReleaseDirRoot, cancellationToken);
 
             receiveOutput.Report(result == 0 ? $"镜像打包完成。" : $"镜像打包出错了。");
             return result == 0;

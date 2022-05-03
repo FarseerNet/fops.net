@@ -139,7 +139,7 @@ public class ProjectDO
 
         return repository.UpdateAsync(Id, this);
     }
-    
+
     /// <summary>
     /// 替换模板
     /// </summary>
@@ -151,7 +151,8 @@ public class ProjectDO
         tpl = tpl.Replace("${project_name}", Name)
                  .Replace("${domain}", Domain)
                  .Replace("${entry_point}", EntryPoint)
-                 .Replace("${entry_port}", EntryPort.ToString());
+                 .Replace("${entry_port}", EntryPort.ToString())
+                 .Replace("${project_path}", Path.StartsWith("/") ? Path.Substring(1) : Path);
 
         // 替换模板变量
         foreach (var kv in K8STplVariable.Split(','))

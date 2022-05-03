@@ -27,10 +27,10 @@ public interface IDockerDevice: ISingletonDependency
     /// <summary>
     /// 生成Dockerfile文件
     /// </summary>
-    /// <param name="dockerfilePath">dockerfile文件地址</param>
+    /// <param name="projectName">dockerfile文件地址</param>
     /// <param name="dockerfileContent">文件内容</param>
     /// <param name="cancellationToken"></param>
-    Task CreateDockerfileAsync(string dockerfilePath, string dockerfileContent, CancellationToken cancellationToken = default);
+    Task CreateDockerfileAsync(string projectName, string dockerfileContent, CancellationToken cancellationToken = default);
     /// <summary>
     /// 容器构建
     /// </summary>
@@ -39,4 +39,8 @@ public interface IDockerDevice: ISingletonDependency
     /// 上传镜像
     /// </summary>
     Task<bool> Push(BuildEnvironment env, IProgress<string> receiveOutput, CancellationToken cancellationToken);
+    /// <summary>
+    /// 生成Dockerfile路径
+    /// </summary>
+    string GetDockerfilePath(string projectName);
 }

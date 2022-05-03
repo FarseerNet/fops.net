@@ -82,7 +82,7 @@ public class BuildService : ISingletonDependency
             GitHub                = git?.Hub,
             ProjectReleaseDirRoot = DotnetDevice.GetReleasePath(project.Name),
             ProjectSourceDirRoot  = DotnetDevice.GetSourceDirRoot(git?.Hub, project.Path),
-            DockerFilePath        = DotnetDevice.GetReleasePath(project.Name) + "/Dockerfile",
+            ProjectDockerfilePath        = DockerDevice.GetDockerfilePath(project.Name),
             ProjectGitDirRoot     = GitDevice.GetGitPath(git?.Hub),
         };
 
@@ -114,7 +114,7 @@ public class BuildService : ISingletonDependency
                     await CheckResult(ShellService.ExecShellAsync(env, project, progress, cts.Token), build.Id);
                     break;
                 default: // 不编译，将源文件复制到编译目录 
-                    await CheckResult(CopyToDistService.Copy(env, progress, cts.Token), build.Id);
+                    //await CheckResult(CopyToDistService.Copy(env, progress, cts.Token), build.Id);
                     break;
             }
 
@@ -130,7 +130,11 @@ public class BuildService : ISingletonDependency
         catch (Exception e)
         {
             await Fail(build, project, progress);
-            progress.Report(e.ToString());
+            if (!string.IsNullOrWhiteSpace(e.Message)) progress.Report(e.Message);
+        }
+        finally
+        {
+            BuildLogDevice.Stop(build.Id);
         }
     }
 
@@ -144,7 +148,7 @@ public class BuildService : ISingletonDependency
 
         if (!await result)
         {
-            throw new Exception($"执行失败，退出构建。");
+            throw new Exception();
         }
     }
 

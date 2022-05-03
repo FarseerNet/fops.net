@@ -26,6 +26,11 @@ namespace FOPS.Domain.Build.Deploy.Entity
         public const string GitDirRoot = "/var/lib/fops/git/";
 
         /// <summary>
+        /// Dockerfile根目录
+        /// </summary>
+        public const string DockerfileDirRoot = "/var/lib/fops/dockerfile/";
+
+        /// <summary>
         /// kubectlConfig配置
         /// </summary>
         public const string KubePath = "/var/lib/fops/kube/";
@@ -78,9 +83,9 @@ namespace FOPS.Domain.Build.Deploy.Entity
 
         /// <summary>
         /// Dockerfile文件路径
-        /// /var/lib/fops/dist/{projectName}/Dockerfile
+        /// /var/lib/fops/dockerfile/{projectName}
         /// </summary>
-        public string DockerFilePath { get; set; }
+        public string ProjectDockerfilePath { get; set; }
 
         /// <summary>
         /// 项目源代码目录
@@ -130,7 +135,7 @@ namespace FOPS.Domain.Build.Deploy.Entity
                 { "Project_EntryPort", env.ProjectEntryPort.ToString() },
                 { "Project_ReleaseDirRoot", env.ProjectReleaseDirRoot },
                 { "Project_SourceDirRoot", env.ProjectSourceDirRoot },
-                { "Docker_FilePath", env.DockerFilePath },
+                { "Docker_FilePath", env.ProjectDockerfilePath },
                 { "Docker_Hub", env.DockerHub },
                 { "Docker_Image", env.DockerImage },
             };
