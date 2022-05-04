@@ -20,7 +20,7 @@ public class ProjectAgent : ISingletonDependency
     /// </summary>
     public Task<List<ProjectPO>> ToListAsync(int groupId)
     {
-        return MysqlContext.Data.Project.Where(where: o => o.GroupId == groupId).Select(@select: o => new { o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId, o.BuildType }).ToListAsync();
+        return MysqlContext.Data.Project.Where(where: o => o.GroupId == groupId).Select(@select: o => new { o.Id, o.Name, o.DockerVer, o.ClusterVer, o.DockerHub, o.GroupId, o.GitId, o.BuildType,o.DockerfileTpl }).ToListAsync();
     }
 
     /// <summary>

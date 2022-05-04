@@ -13,6 +13,8 @@
 @using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Domain.Build.Project.Entity
 @using FOPS.Application.Build
+@using FOPS.Application.Build.DockerfileTpl
+@using FOPS.Application.Build.DockerfileTpl.Entity
 @inject IIocManager _iocManager;
 @inject NavigationManager nav;
 @inject IJSRuntime js;
@@ -59,14 +61,14 @@
                                     </th>
                                     <th data-field="Type">
                                         <div class="layui-table-cell laytable-cell-14-0-2">
-                                            <span>构建方式</span>
+                                            <span>Dockerfile</span>
                                         </div>
                                     </th>
-                                    <th data-field="Type">
-                                        <div class="layui-table-cell laytable-cell-14-0-2">
-                                            <span>git拉取</span>
-                                        </div>
-                                    </th>
+                                    @* <th data-field="Type"> *@
+                                    @*     <div class="layui-table-cell laytable-cell-14-0-2"> *@
+                                    @*         <span>git拉取</span> *@
+                                    @*     </div> *@
+                                    @* </th> *@
                                     <th data-field="Type">
                                         <div class="layui-table-cell laytable-cell-14-0-3">
                                             <span>镜像版本</span>
@@ -112,14 +114,14 @@
                                         </td>
                                         <td>
                                             <div class="layui-table-cell laytable-cell-14-0-2">
-                                                @info.BuildType.GetName()
+                                                @_lstDockerfileTpl.Find(o=>o.Id==info.DockerfileTpl)?.Name
                                             </div>
                                         </td>
-                                        <td>
-                                            <div class="layui-table-cell laytable-cell-14-0-2">
-                                                <span>@((DateTime.Now - info.GitPullAt).GetDateDesc())</span>
-                                            </div>
-                                        </td>
+                                        @* <td> *@
+                                        @*     <div class="layui-table-cell laytable-cell-14-0-2"> *@
+                                        @*         <span>@((DateTime.Now - info.GitPullAt).GetDateDesc())</span> *@
+                                        @*     </div> *@
+                                        @* </td> *@
                                         <td>
                                             <div class="layui-table-cell laytable-cell-14-0-3">
                                                 @info.DockerVer
@@ -181,7 +183,7 @@
 <style>
     .laytable-cell-14-0-0{ width: 60px; }
     .laytable-cell-14-0-1{ width: 170px; }
-    .laytable-cell-14-0-2{ width: 110px; }
+    .laytable-cell-14-0-2{ width: 170px; }
     .laytable-cell-14-0-3{ width: 80px; }
     .laytable-cell-14-0-4{ width: 110px; }
     .laytable-cell-14-0-5{ width: 110px; }
@@ -194,10 +196,10 @@
     private int _pageSize = 999;
 
     private List<ProjectDTO> _lst = new();
-    private List<YamlTplDTO> _lstTpl = new();
     private List<ClusterDTO> _lstCluster = new();
     private List<GitDTO> _lstGit = new();
     private List<ProjectGroupDTO> _lstGroup = new();
+    private List<DockerfileTplDTO> _lstDockerfileTpl = new();
 
     private int _clusterId;
     private int _groupId;
@@ -213,13 +215,11 @@
     // Git
         _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
 
-    // 模板
-        _lstTpl = await _iocManager.Resolve<YamlTplApp>().ToListAsync() ?? new();
-
     // 集群
         _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
         if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
 
+        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
         await GetList();
     }
 
@@ -338,7 +338,7 @@
             {
                 lstLog.Add(log);
             });
-            
+
             var execSuccess = await _iocManager.Resolve<KubectlSetImageApp>().SyncImages(_clusterId, project, progress);
             if (!execSuccess)
                 await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
