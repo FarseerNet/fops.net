@@ -66,9 +66,14 @@ namespace FOPS.Domain.Build.Deploy.Entity
         public const string GitRoot = "/var/lib/fops/git/";
 
         /// <summary>
-        /// Dockerfile根目录
+        /// Dockerfile文件地址
         /// </summary>
         public const string DockerfilePath = "/var/lib/fops/dist/Dockerfile";
+
+        /// <summary>
+        /// dockerignore文件地址
+        /// </summary>
+        public const string DockerIgnorePath = "/var/lib/fops/dist/.dockerignore";
 
         /// <summary>
         /// 生成Shell脚本的存放路径

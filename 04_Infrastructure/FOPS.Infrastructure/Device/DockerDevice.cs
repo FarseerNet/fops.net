@@ -37,10 +37,38 @@ namespace FOPS.Infrastructure.Device
         /// <param name="projectName">dockerfile文件地址</param>
         /// <param name="dockerfileContent">文件内容</param>
         /// <param name="cancellationToken"></param>
-        public Task CreateDockerfileAsync(string projectName, string dockerfileContent, CancellationToken cancellationToken = default)
+        public async Task CreateDockerfileAsync(string projectName, string dockerfileContent, CancellationToken cancellationToken = default)
         {
             if (File.Exists(BuildEnvironment.DockerfilePath)) File.Delete(BuildEnvironment.DockerfilePath);
-            return File.AppendAllTextAsync(BuildEnvironment.DockerfilePath, dockerfileContent, cancellationToken);
+
+            var ignoreContent = @"**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+**/.idea
+**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/azds.yaml
+**/bin
+**/charts
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/secrets.dev.yaml
+**/values.dev.yaml
+LICENSE
+README.md
+";
+            await File.AppendAllTextAsync(BuildEnvironment.DockerIgnorePath, ignoreContent, cancellationToken);
+            await File.AppendAllTextAsync(BuildEnvironment.DockerfilePath, dockerfileContent, cancellationToken);
         }
 
         /// <summary>
