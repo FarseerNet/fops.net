@@ -1,10 +1,11 @@
 @page "/fss/task_group/add"
 @using FS.Utils.Common
 @using FS.Utils.Component
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
+@inject IFssDevice FssDevice;
 
 <div class="layui-row layui-col-space15">
     <div class="layui-col-md6">
@@ -86,18 +87,18 @@
                 throw new Exception("Cron格式错误");
             }
             
-            var result = await _iocManager.Resolve<IFssDevice>().AddTaskGroupAsync(storage.GetFssUrl(),_info);
+            var result = await FssDevice.AddTaskGroupAsync(Storage.GetFssUrl(),_info);
             if (result.Status)
             {
-                await js.InvokeVoidAsync("layer.msg", "添加成功", new
+                await Js.InvokeVoidAsync("layer.msg", "添加成功", new
                 {
                     icon = 1
                 });
-                nav.NavigateTo("/fss/task_group/list");
+                Nav.NavigateTo("/fss/task_group/list");
             }
             else
             {
-                await js.InvokeVoidAsync("layer.alert", result.StatusMessage, new
+                await Js.InvokeVoidAsync("layer.alert", result.StatusMessage, new
                 {
                     icon = 2,
                     title = "出错了"
@@ -107,7 +108,7 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
@@ -117,7 +118,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
 }

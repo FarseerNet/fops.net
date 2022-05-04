@@ -12,9 +12,14 @@
 @using FS.Extends
 @using Microsoft.AspNetCore.Components
 @using FOPS.Application.Build
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectApp ProjectApp;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject YamlTplApp YamlTplApp;
+@inject ClusterApp ClusterApp;
+@inject KubectlSetYamlApp KubectlSetYamlApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -184,12 +189,12 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+        _lstGroup = await ProjectGroupApp.ToListAsync() ?? new();
     // 模板
-        _lstTpl = await _iocManager.Resolve<YamlTplApp>().ToListAsync() ?? new();
+        _lstTpl = await YamlTplApp.ToListAsync() ?? new();
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+        _lstCluster = await ClusterApp.ToListAsync() ?? new();
         if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
 
         await GetList();
@@ -198,8 +203,8 @@
     private async Task Save(int id)
     {
         var projectVO = _lst.Find(o => o.Id == id);
-        await _iocManager.Resolve<ProjectApp>().UpdateAsync(projectVO);
-        await js.InvokeVoidAsync("layer.msg", "保存成功", new
+        await ProjectApp.UpdateAsync(projectVO);
+        await Js.InvokeVoidAsync("layer.msg", "保存成功", new
         {
             icon = 1
         });
@@ -213,18 +218,17 @@
 
     private async Task DeployAsync()
     {
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var load = await Js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
+            await Js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
             {
                 icon = 0
             });
             return;
         }
 
-        var kubectlSetYamlApp = _iocManager.Resolve<KubectlSetYamlApp>();
         try
         {
             var lstLog = new List<string>();
@@ -233,15 +237,15 @@
                 lstLog.Add(log);
             });
 
-            var execSuccess = await kubectlSetYamlApp.DeployAsync(_lst, clusterVO, _lstTpl, progress);
+            var execSuccess = await KubectlSetYamlApp.DeployAsync(_lst, clusterVO, _lstTpl, progress);
             if (!execSuccess)
-                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
                 });
             else
-                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"
@@ -249,23 +253,23 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
             });
         }
-        await js.InvokeVoidAsync("layer.close", load);
+        await Js.InvokeVoidAsync("layer.close", load);
     }
 
     private async Task DeployAsync(int id)
     {
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var load = await Js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         var clusterVO = _lstCluster.Find(o => o.Id == _clusterId);
         if (clusterVO == null)
         {
-            await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
+            await Js.InvokeVoidAsync("layer.close", load);
+            await Js.InvokeVoidAsync("layer.alert", "请先选择集群环境", new
             {
                 icon = 0
             });
@@ -275,15 +279,14 @@
         var projectVO = _lst.Find(o => o.Id == id);
         if (projectVO == null)
         {
-            await js.InvokeVoidAsync("layer.close", load);
-            await js.InvokeVoidAsync("layer.alert", "项目不存在", new
+            await Js.InvokeVoidAsync("layer.close", load);
+            await Js.InvokeVoidAsync("layer.alert", "项目不存在", new
             {
                 icon = 0
             });
             return;
         }
 
-        var kubectlSetYamlApp = _iocManager.Resolve<KubectlSetYamlApp>();
         try
         {
             var lstLog = new List<string>();
@@ -291,15 +294,15 @@
             {
                 lstLog.Add(log);
             });
-            var execSuccess = await kubectlSetYamlApp.DeployAsync(projectVO, clusterVO, _lstTpl, progress);
+            var execSuccess = await KubectlSetYamlApp.DeployAsync(projectVO, clusterVO, _lstTpl, progress);
             if (!execSuccess)
-                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
                 });
             else
-                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"
@@ -307,13 +310,13 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
             });
         }
-        await js.InvokeVoidAsync("layer.close", load);
+        await Js.InvokeVoidAsync("layer.close", load);
     }
 
     private async Task ClusterChange(ChangeEventArgs args)
@@ -325,7 +328,7 @@
     private async Task GetList()
     {
     // 重新读取所有项目列表
-        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync() ?? new();
+        _lst = await ProjectApp.ToListAsync() ?? new();
 
     // 如果项目组不包含当前选中的组，则移除项目
         if (_groupId > 0)
@@ -338,7 +341,7 @@
         for (var i = 0; i < projectGroupIds.Count; i++)
         {
             var projectGroupId = projectGroupIds[i];
-            var info = await _iocManager.Resolve<ProjectGroupApp>().ToInfoAsync(projectGroupId);
+            var info = await ProjectGroupApp.ToInfoAsync(projectGroupId);
 
     // 如果项目组不包含当前选中的集群，则移除项目
             if (!info.ClusterIds.Contains(_clusterId))

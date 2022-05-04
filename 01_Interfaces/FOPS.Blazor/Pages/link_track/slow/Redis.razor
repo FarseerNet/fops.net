@@ -2,15 +2,15 @@
 @page "/link_track/slow/redis/{pageIndex:int}"
 @using Microsoft.AspNetCore.Components
 @using FS.Core.LinkTrack
-@using FS.Extends
 @using FS.LinkTrack
 @using FS.LinkTrack.Dal
 @using FS.Core
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Application.Build.Project
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectApp ProjectApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -165,7 +165,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lstAppId = await _iocManager.Resolve<ProjectApp>().ToAppListAsync() ?? new();
+        _lstAppId = await ProjectApp.ToAppListAsync() ?? new();
         GetList();
     }
     private void GroupChange(ChangeEventArgs args)

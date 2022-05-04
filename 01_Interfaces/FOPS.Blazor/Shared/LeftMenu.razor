@@ -2,7 +2,7 @@
 @using FS.ElasticSearch.Configuration
 @using Microsoft.Extensions.Configuration
 @using FS.Data.Configuration
-@inject IIocManager _iocManager;
+@inject IConfigurationRoot ConfigurationRoot
 
 <div class="layui-side layui-side-menu">
 <div class="layui-side-scroll">
@@ -32,7 +32,7 @@
         </dl>
     </li>
     @{
-        var fssServer = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
+        var fssServer = ConfigurationRoot.GetSection("FSS").GetChildren();
         if (fssServer.Any())
         {
             <li data-name="fss" class="layui-nav-item">
@@ -71,7 +71,7 @@
         }
     }
     @{
-        var esConfig = _iocManager.Resolve<IConfigurationRoot>().GetSection("ElasticSearch").GetChildren();
+        var esConfig = ConfigurationRoot.GetSection("ElasticSearch").GetChildren();
         if (esConfig.Any(o => o.Key == "LinkTrack"))
         {
             <li data-name="fss" class="layui-nav-item">

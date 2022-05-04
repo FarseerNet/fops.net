@@ -3,9 +3,10 @@
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Domain.Build.Enum
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ClusterApp ClusterApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -71,23 +72,23 @@
         {
             if (_info.Name == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "模板名称必须填写", new {icon = 2, title = "出错了"});
+                await Js.InvokeVoidAsync("layer.alert", "模板名称必须填写", new {icon = 2, title = "出错了"});
                 return;
             }
 
-            await _iocManager.Resolve<ClusterApp>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
-            nav.NavigateTo("/k8s/cluster/list");
+            await ClusterApp.AddAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
+            Nav.NavigateTo("/k8s/cluster/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/k8s/cluster/list");
+        Nav.NavigateTo("/k8s/cluster/list");
     }
 
 }

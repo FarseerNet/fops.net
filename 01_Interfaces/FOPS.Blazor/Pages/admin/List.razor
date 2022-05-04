@@ -1,10 +1,10 @@
 @page "/admin/list"
 @using FOPS.Application.Sys.Admin
 @using FOPS.Application.Sys.Admin.Entity
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject AdminApp adminApp;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject AdminApp AdminApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -133,13 +133,12 @@
     {
         if (_isFirst) return;
         _isFirst = true;
-        var a = adminApp;
-        _lst = await _iocManager.Resolve<AdminApp>().ToListAsync() ?? new();
+        _lst = await AdminApp.ToListAsync() ?? new();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/admin/add");
+        Nav.NavigateTo("/admin/add");
     }
 }

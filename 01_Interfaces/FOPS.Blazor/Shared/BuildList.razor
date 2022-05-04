@@ -6,9 +6,10 @@
 @using FOPS.Domain.Build.Enum
 @using FS.Extends
 
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject BuildApp BuildApp;
+@inject ProjectApp ProjectApp;
 @implements IDisposable;
 
 <div class="layui-table-header">
@@ -53,7 +54,7 @@
                     <div class="laytable-cell-build-1">
                         @{
                             var projectDTO = _lst.Find(o => o.Id == info.ProjectId);
-                            if (projectDTO == null) projectDTO = _iocManager.Resolve<ProjectApp>().ToInfo(info.ProjectId) ?? new ProjectDTO();
+                            if (projectDTO == null) projectDTO = ProjectApp.ToInfo(info.ProjectId) ?? new ProjectDTO();
                         }
                         <a href="/builder/log/@info.Id">@projectDTO.Name</a>
                     </div>
@@ -123,7 +124,7 @@
 
     private async Task CancelBuild(BuildDTO info)
     {
-        await _iocManager.Resolve<BuildApp>().Cancel(info.Id);
+        await BuildApp.Cancel(info.Id);
         await GetList();
     }
 
@@ -132,7 +133,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync();
+        _lst = await ProjectApp.ToListAsync();
         await GetList();
     }
 
@@ -140,13 +141,13 @@
     {
         var pageIndex = 1;
     // 重新读取所有列表
-        _lstBuild = await _iocManager.Resolve<BuildApp>().ToBuildingListAsync(20, pageIndex);
+        _lstBuild = await BuildApp.ToBuildingListAsync(20, pageIndex);
 
     // 说明本次构建的队列大于20条，需要都读出来
         while (_lstBuild.Count > 0 && _lstBuild.All(o => o.Status == EumBuildStatus.None))
         {
             pageIndex++;
-            _lstBuild.AddRange(await _iocManager.Resolve<BuildApp>().ToBuildingListAsync(20, pageIndex));
+            _lstBuild.AddRange(await BuildApp.ToBuildingListAsync(20, pageIndex));
         }
     }
 

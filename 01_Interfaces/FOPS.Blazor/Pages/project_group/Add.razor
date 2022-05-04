@@ -4,9 +4,11 @@
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Application.Build.ProjectGroup
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ClusterApp ClusterApp;
+@inject ProjectGroupApp ProjectGroupApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -56,7 +58,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync()??new();
+        _lstCluster = await ClusterApp.ToListAsync()??new();
         _selectCluster = _lstCluster.ToDictionary(o => o.Id, o => false);
     }
 
@@ -68,21 +70,21 @@
 
             if (_info.Name == null || _info.ClusterIds == null || _info.ClusterIds.Count == 0)
             {
-                await js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
+                await Js.InvokeVoidAsync("layer.alert", "项目组、集群必须填写.", new {icon = 2, title = "出错了"});
             }
 
-            await _iocManager.Resolve<ProjectGroupApp>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
-            nav.NavigateTo("/project_group/list");
+            await ProjectGroupApp.AddAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
+            Nav.NavigateTo("/project_group/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/project_group/list");
+        Nav.NavigateTo("/project_group/list");
     }
 }

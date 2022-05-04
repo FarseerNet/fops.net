@@ -1,10 +1,11 @@
 @page "/fss/tasks/alllist/{pageIndex:int}"
 @page "/fss/tasks/alllist"
 @using System.Timers
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 @implements IDisposable;
 
 <div class="layui-card">
@@ -225,14 +226,14 @@
 
     private async Task GetList()
     {
-        var page = await _iocManager.Resolve<IFssDevice>().GetEnableTaskListAsync(storage.GetFssUrl(), _taskType, _pageSize, PageIndex);
+        var page = await FssDevice.GetEnableTaskListAsync(Storage.GetFssUrl(), _taskType, _pageSize, PageIndex);
         _lst = page.List;
         _totalCount = page.RecordCount;
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
     private Task StatusChange(ChangeEventArgs args)
@@ -244,7 +245,7 @@
 
     private async Task Cancel(TaskDTO info)
     {
-        await _iocManager.Resolve<IFssDevice>().CancelTask(storage.GetFssUrl(), info.TaskGroupId);
+        await FssDevice.CancelTask(Storage.GetFssUrl(), info.TaskGroupId);
     }
 
     public void Dispose()

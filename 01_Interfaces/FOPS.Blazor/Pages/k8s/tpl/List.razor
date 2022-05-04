@@ -1,8 +1,9 @@
 @page "/k8s/tpl/list"
 @using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Application.Build.YamlTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
+
+@inject NavigationManager Nav;
+@inject YamlTplApp YamlTplApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -86,13 +87,13 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<YamlTplApp>().ToListAsync()??new();
+        _lst = await YamlTplApp.ToListAsync()??new();
         _lst = _lst.OrderBy(o => o.K8SKindType).ToList();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/k8s/tpl/add");
+        Nav.NavigateTo("/k8s/tpl/add");
     }
 }

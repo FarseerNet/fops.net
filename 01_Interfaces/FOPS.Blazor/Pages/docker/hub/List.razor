@@ -1,9 +1,10 @@
 @page "/docker/hub/list"
 @using FOPS.Application.Build.DockerHub.Entity
 @using FOPS.Application.Build.DockerHub
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject DockerHubApp DockerHubApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -96,12 +97,12 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<DockerHubApp>().ToListAsync() ?? new();
+        _lst = await DockerHubApp.ToListAsync() ?? new();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/docker/hub/add");
+        Nav.NavigateTo("/docker/hub/add");
     }
 }

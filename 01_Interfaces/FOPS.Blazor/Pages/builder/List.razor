@@ -1,5 +1,4 @@
 @page "/builder/list"
-@using FS.Extends
 @using FOPS.Application.Build.Build
 @using FOPS.Application.Build.Cluster
 @using FOPS.Application.Build.Cluster.Entity
@@ -9,15 +8,19 @@
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Application.Build.ProjectGroup
 @using FOPS.Application.Build.ProjectGroup.Entity
-@using FOPS.Application.Build.YamlTpl
-@using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Domain.Build.Project.Entity
 @using FOPS.Application.Build
 @using FOPS.Application.Build.DockerfileTpl
 @using FOPS.Application.Build.DockerfileTpl.Entity
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject IJSRuntime Js;
+@inject ProjectApp ProjectApp;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject GitApp GitApp;
+@inject ClusterApp ClusterApp;
+@inject DockerfileTplApp DockerfileTplApp;
+@inject BuildApp BuildApp;
+@inject KubectlSetImageApp KubectlSetImageApp;
 
 <div class="layui-row layui-col-space10">
     <div class="layui-col-xs6 layui-col-md8">
@@ -211,15 +214,15 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+        _lstGroup = await ProjectGroupApp.ToListAsync() ?? new();
     // Git
-        _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
+        _lstGit = await GitApp.ToListAsync() ?? new();
 
     // 集群
-        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+        _lstCluster = await ClusterApp.ToListAsync() ?? new();
         if (_lstCluster.Count > 0) _clusterId = _lstCluster[0].Id;
 
-        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
+        _lstDockerfileTpl = await DockerfileTplApp.ToListAsync() ?? new();
         await GetList();
     }
 
@@ -240,8 +243,8 @@
     private async Task GetList()
     {
     // 重新读取所有项目列表
-        _lst = _groupId > 0 ? await _iocManager.Resolve<ProjectApp>().ToListAsync(_groupId) :
-        await _iocManager.Resolve<ProjectApp>().ToListAsync();
+        _lst = _groupId > 0 ? await ProjectApp.ToListAsync(_groupId) :
+        await ProjectApp.ToListAsync();
         _lst ??= new();
 
     // 遍历项目组ID
@@ -277,12 +280,12 @@
 
     private async Task AddBuild(ProjectDTO project)
     {
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var load = await Js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
-            await _iocManager.Resolve<BuildApp>().AddAsync(project.Id, _clusterId);
+            await BuildApp.AddAsync(project.Id, _clusterId);
             await GetList();
-            await js.InvokeVoidAsync("layer.msg", "已加入到队列", new
+            await Js.InvokeVoidAsync("layer.msg", "已加入到队列", new
             {
                 icon = 1,
                 title = "执行结果"
@@ -290,27 +293,27 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "加入失败"
             });
         }
-        await js.InvokeVoidAsync("layer.close", load);
+        await Js.InvokeVoidAsync("layer.close", load);
     }
 
     private async Task AddAllBuild()
     {
         if (_lst.Count == 0)
         {
-            await js.InvokeVoidAsync("layer.msg", "当前没有需要构建的项目");
+            await Js.InvokeVoidAsync("layer.msg", "当前没有需要构建的项目");
             return;
         }
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var load = await Js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
-            await _iocManager.Resolve<BuildApp>().AddAsync(_lst, _clusterId);
-            await js.InvokeVoidAsync("layer.msg", "已加入到队列", new
+            await BuildApp.AddAsync(_lst, _clusterId);
+            await Js.InvokeVoidAsync("layer.msg", "已加入到队列", new
             {
                 icon = 1,
                 title = "执行结果"
@@ -318,19 +321,19 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "加入失败"
             });
         }
-        await js.InvokeVoidAsync("layer.close", load);
+        await Js.InvokeVoidAsync("layer.close", load);
     }
 
     /// 同步集群镜像版本
     private async Task SyncImages(ProjectDTO project)
     {
-        var load = await js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
+        var load = await Js.InvokeAsync<int>("layer.load", 0, "{shade: false}");
         try
         {
             var lstLog = new List<string>();
@@ -339,18 +342,18 @@
                 lstLog.Add(log);
             });
 
-            var execSuccess = await _iocManager.Resolve<KubectlSetImageApp>().SyncImages(_clusterId, project, progress);
+            var execSuccess = await KubectlSetImageApp.SyncImages(_clusterId, project, progress);
             if (!execSuccess)
-                await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new
                 {
                     icon = 2,
                     title = "出错了"
                 });
             else
             {
-                await _iocManager.Resolve<BuildApp>().Success(_clusterId, project, 0);
+                await BuildApp.Success(_clusterId, project, 0);
                 await GetList();
-                await js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
+                await Js.InvokeVoidAsync("layer.msg", lstLog.ToString("<br />"), new
                 {
                     icon = 1,
                     title = "执行结果"
@@ -359,13 +362,13 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "加入失败"
             });
         }
-        await js.InvokeVoidAsync("layer.close", load);
+        await Js.InvokeVoidAsync("layer.close", load);
     }
 
 }

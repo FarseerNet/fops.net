@@ -3,8 +3,10 @@
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Application.Build.ProjectGroup
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
+
+@inject NavigationManager Nav;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject ClusterApp ClusterApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -89,15 +91,15 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
+        _lst = await ProjectGroupApp.ToListAsync() ?? new();
         _totalCount = _lst.Count;
 
-        _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+        _lstCluster = await ClusterApp.ToListAsync() ?? new();
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/project_group/add");
+        Nav.NavigateTo("/project_group/add");
     }
 
 }

@@ -2,10 +2,11 @@
 @using FOPS.Application.Fss.Entity
 @using FS.Extends
 
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
+
 @implements IDisposable;
 
 <div class="layui-table-header">
@@ -179,12 +180,12 @@
     }
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<IFssDevice>().GetTaskUnFinishListAsync(storage.GetFssUrl(), PageSize);
+        _lst = await FssDevice.GetTaskUnFinishListAsync(Storage.GetFssUrl(), PageSize);
     }
 
     private async Task Cancel(TaskDTO info)
     {
-        await _iocManager.Resolve<IFssDevice>().CancelTask(storage.GetFssUrl(),info.TaskGroupId);
+        await FssDevice.CancelTask(Storage.GetFssUrl(),info.TaskGroupId);
     }
     
     public void Dispose()

@@ -1,6 +1,7 @@
 @using Microsoft.Extensions.Configuration
-@inject IIocManager _iocManager;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
+@inject IConfigurationRoot ConfigurationRoot;
 
 <div class="layui-header">
     <ul class="layui-nav layui-layout-left">
@@ -87,7 +88,7 @@
         set
         {
             _fssServer = value;
-            storage.SetItemAsStringAsync("FssServer", _fssServer);
+            Storage.SetItemAsStringAsync("FssServer", _fssServer);
         }
     }
 
@@ -98,7 +99,7 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        var fssServers = _iocManager.Resolve<IConfigurationRoot>().GetSection("FSS").GetChildren();
+        var fssServers = ConfigurationRoot.GetSection("FSS").GetChildren();
         foreach (var configurationSection in fssServers)
         {
             _dicFssServer[configurationSection.Key] = configurationSection.Value;
@@ -109,7 +110,7 @@
     {
         if (!firstRender) return;
 
-        var selValue = await storage.GetItemAsStringAsync("FssServer");
+        var selValue = await Storage.GetItemAsStringAsync("FssServer");
         if (!string.IsNullOrWhiteSpace(selValue))
         {
             FssServer = selValue;

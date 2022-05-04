@@ -3,9 +3,10 @@
 @using FOPS.Domain.Build.Enum
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ClusterApp ClusterApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -76,18 +77,18 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
             GotoList();
         }
         try
         {
-            await _iocManager.Resolve<ClusterApp>().UpdateAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
+            await ClusterApp.UpdateAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
@@ -95,7 +96,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
             GotoList();
         }
     }
@@ -104,10 +105,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<ClusterApp>().ToInfoAsync(Id);
+            _info = await ClusterApp.ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
+                await Js.InvokeVoidAsync("layer.alert", "Yaml模板不存在", new {icon = 2, title = "出错了"});
                 GotoList();
             }
         }
@@ -115,7 +116,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/k8s/cluster/list");
+        Nav.NavigateTo("/k8s/cluster/list");
     }
 
 }

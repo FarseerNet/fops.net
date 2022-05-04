@@ -12,9 +12,14 @@
 @using FOPS.Application.Build.DockerHub.Entity
 @using FOPS.Application.Build.Git
 @using FOPS.Application.Build.DockerfileTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject GitApp GitApp;
+@inject DockerfileTplApp DockerfileTplApp;
+@inject ProjectApp ProjectApp;
+@inject DockerHubApp DockerHubApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -177,10 +182,10 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
-        _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
-        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
-        _lstDockerHub = await _iocManager.Resolve<DockerHubApp>().ToListAsync() ?? new();
+        _lstGroup = await ProjectGroupApp.ToListAsync() ?? new();
+        _lstGit = await GitApp.ToListAsync() ?? new();
+        _lstDockerfileTpl = await DockerfileTplApp.ToListAsync() ?? new();
+        _lstDockerHub = await DockerHubApp.ToListAsync() ?? new();
 
         await GetList();
     }
@@ -188,8 +193,8 @@
     private async Task Save(int id)
     {
         var projectVO = _lst.Find(o => o.Id == id);
-        await _iocManager.Resolve<ProjectApp>().UpdateAsync(projectVO);
-        await js.InvokeVoidAsync("layer.msg", "保存成功", new
+        await ProjectApp.UpdateAsync(projectVO);
+        await Js.InvokeVoidAsync("layer.msg", "保存成功", new
         {
             icon = 1
         });
@@ -203,13 +208,13 @@
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/project/add");
+        Nav.NavigateTo("/project/add");
     }
 
     private async Task GetList()
     {
     // 重新读取所有项目列表
-        _lst = await _iocManager.Resolve<ProjectApp>().ToListAsync() ?? new();
+        _lst = await ProjectApp.ToListAsync() ?? new();
 
     // 如果项目组不包含当前选中的组，则移除项目
         if (_groupId > 0)
@@ -229,8 +234,8 @@
         newInfo.Id = 0;
         newInfo.DicClusterVer = new();
         newInfo.GitPullAt = DateTime.MinValue;
-        var id = await _iocManager.Resolve<ProjectApp>().AddAsync(newInfo);
-        nav.NavigateTo($"/project/update/{id}");
+        var id = await ProjectApp.AddAsync(newInfo);
+        Nav.NavigateTo($"/project/update/{id}");
     }
 
 }

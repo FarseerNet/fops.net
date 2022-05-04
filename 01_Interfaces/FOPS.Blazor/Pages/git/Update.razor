@@ -5,9 +5,12 @@
 @using FOPS.Application.Build.Project
 @using FOPS.Domain.Build
 @using FS.Extends
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject GitService GitService;
+@inject GitApp GitApp;
+@inject ProjectApp ProjectApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -76,7 +79,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             GotoList();
             return;
         }
@@ -88,13 +91,13 @@
                 throw new Exception("Git名称、托管地址、分支必须填写。");
             }
             
-            await _iocManager.Resolve<GitApp>().UpdateAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
+            await GitApp.UpdateAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
@@ -102,7 +105,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             GotoList();
         }
     }
@@ -111,10 +114,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<GitApp>().ToInfoAsync(Id);
+            _info = await GitApp.ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+                await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
                 GotoList();
             }
         }
@@ -122,20 +125,20 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/git/list");
+        Nav.NavigateTo("/git/list");
     }
 
     private async Task Delete()
     {
-        var count = await _iocManager.Resolve<ProjectApp>().GitCountAsync(Id);
+        var count = await ProjectApp.GitCountAsync(Id);
         if (count > 0)
         {
-            await js.InvokeVoidAsync("layer.alert", $"删除Git前，需先删除Git的{count}个项目", new
+            await Js.InvokeVoidAsync("layer.alert", $"删除Git前，需先删除Git的{count}个项目", new
             {
                 icon = 2,
                 title = "出错了"
             });
-            nav.NavigateTo("/project/list");
+            Nav.NavigateTo("/project/list");
             return;
         }
         
@@ -145,14 +148,14 @@
             lstLog.Add(log);
         });
         
-        var execSuccess = await _iocManager.Resolve<GitService>().ClearAsync(Id,progress);
+        var execSuccess = await GitService.ClearAsync(Id,progress);
         if (!execSuccess)
         {
-            await js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new {icon = 2, title = "清除失败"});
+            await Js.InvokeVoidAsync("layer.alert", lstLog.ToString("<br />"), new {icon = 2, title = "清除失败"});
             return;
         }
         
-        await _iocManager.Resolve<GitApp>().DeleteAsync(Id);
+        await GitApp.DeleteAsync(Id);
         GotoList();
     }
 

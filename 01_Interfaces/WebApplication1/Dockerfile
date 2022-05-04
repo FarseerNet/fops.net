@@ -1,9 +1,11 @@
 ﻿# 注意，这里的构建上下文，是在git源代码的根目录
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
+COPY *.csproj .
+RUN dotnet restore
+
 COPY . .
 WORKDIR /src/${git_name}/${project_path}
-RUN dotnet restore
 RUN dotnet publish -c Release -o /app
 
 

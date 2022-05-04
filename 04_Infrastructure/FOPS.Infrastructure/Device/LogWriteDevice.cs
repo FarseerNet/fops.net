@@ -9,7 +9,7 @@ namespace FOPS.Infrastructure.Device;
 /// <summary>
 /// 构建时的日志输出
 /// </summary>
-public class BuildLogDevice : IBuildLogDevice
+public class LogWriteDevice : ILogWriteDevice
 {
     const  string      SavePath = "/var/lib/fops/log/";
     public IIocManager IocManager { get; set; }
@@ -32,7 +32,7 @@ public class BuildLogDevice : IBuildLogDevice
 
         return new Progress<string>(log =>
         {
-            IocManager.Logger<BuildLogDevice>().LogInformation($"构建任务id={buildId}：{log}。");
+            IocManager.Logger<LogWriteDevice>().LogDebug($"构建任务id={buildId}：{log}。");
             QueueLog[buildId].Enqueue($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {log}");
         });
     }

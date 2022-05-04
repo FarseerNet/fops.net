@@ -1,6 +1,6 @@
 namespace FOPS.Domain.Build.Deploy.Device;
 
-public interface IBuildLogDevice: ISingletonDependency
+public interface ILogWriteDevice: ISingletonDependency
 {
     /// <summary>
     /// 清除历史记录（正常不会存在，当buildId被重置时，有可能会冲突）

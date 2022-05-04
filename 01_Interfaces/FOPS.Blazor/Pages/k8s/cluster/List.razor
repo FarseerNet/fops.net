@@ -1,8 +1,9 @@
 @page "/k8s/cluster/list"
 @using FOPS.Application.Build.Cluster.Entity
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
+
+@inject NavigationManager Nav;
+@inject ClusterApp ClusterApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -95,12 +96,12 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+        _lst = await ClusterApp.ToListAsync() ?? new();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/k8s/cluster/add");
+        Nav.NavigateTo("/k8s/cluster/add");
     }
 }

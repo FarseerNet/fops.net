@@ -1,10 +1,11 @@
 @page "/fss/tasks/finishlist/{pageIndex:int}"
 @page "/fss/tasks/finishlist"
 @using System.Timers
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 @implements IDisposable;
 
 <div class="layui-card">
@@ -162,7 +163,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
         
-        var page = await _iocManager.Resolve<IFssDevice>().GetTaskFinishListAsync(storage.GetFssUrl(),_pageSize, PageIndex);
+        var page = await FssDevice.GetTaskFinishListAsync(Storage.GetFssUrl(),_pageSize, PageIndex);
         _lst = page?.List;
         _totalCount = page.RecordCount;
     }
@@ -176,7 +177,7 @@
             {
                 try
                 {
-                    var page = await _iocManager.Resolve<IFssDevice>().GetTaskFinishListAsync(storage.GetFssUrl(),_pageSize, PageIndex);
+                    var page = await FssDevice.GetTaskFinishListAsync(Storage.GetFssUrl(),_pageSize, PageIndex);
                     _lst = page?.List;
                     _totalCount = page.RecordCount;
     // 刷新页面
@@ -194,7 +195,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
     public void Dispose()

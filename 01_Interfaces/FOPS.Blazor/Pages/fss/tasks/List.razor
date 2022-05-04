@@ -1,10 +1,11 @@
 @page "/fss/tasks/list/{GroupId:int}/{pageIndex:int}"
 @page "/fss/tasks/list/{GroupId:int}"
 @using System.Timers
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 @implements IDisposable;
 
 <div class="layui-card">
@@ -200,7 +201,7 @@
 
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
-        var page = await _iocManager.Resolve<IFssDevice>().GetTaskListAsync(storage.GetFssUrl(),GroupId, _pageSize, PageIndex);
+        var page = await FssDevice.GetTaskListAsync(Storage.GetFssUrl(),GroupId, _pageSize, PageIndex);
         _lst = page?.List;
         _totalCount = page.RecordCount;
     }
@@ -215,7 +216,7 @@
                 try
                 {
                     
-                    var page = await _iocManager.Resolve<IFssDevice>().GetTaskListAsync(storage.GetFssUrl(),GroupId, _pageSize, PageIndex);
+                    var page = await FssDevice.GetTaskListAsync(Storage.GetFssUrl(),GroupId, _pageSize, PageIndex);
                     _lst = page?.List;
                     _totalCount = page.RecordCount;
     // 刷新页面
@@ -233,12 +234,12 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
     private async Task Cancel(TaskDTO info)
     {
-        await _iocManager.Resolve<IFssDevice>().CancelTask(storage.GetFssUrl(),info.TaskGroupId);
+        await FssDevice.CancelTask(Storage.GetFssUrl(),info.TaskGroupId);
     }
 
     public void Dispose()

@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Components
 @using FOPS.Application.Build.Git.Entity
 @using FOPS.Application.Build.Git
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject GitApp GitApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -71,16 +72,16 @@
             {
                 throw new Exception("Git名称、托管地址、分支必须填写。");
             }
-            await _iocManager.Resolve<GitApp>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new
+            await GitApp.AddAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "添加成功", new
             {
                 icon = 1
             });
-            nav.NavigateTo("/git/list");
+            Nav.NavigateTo("/git/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
@@ -90,7 +91,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/git/list");
+        Nav.NavigateTo("/git/list");
     }
 
 }

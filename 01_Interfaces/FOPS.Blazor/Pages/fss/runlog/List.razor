@@ -2,10 +2,11 @@
 @page "/fss/runlog/list"
 @using FS.Core
 @using Microsoft.Extensions.Logging
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
+
+@inject NavigationManager Nav;
 @inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -137,7 +138,7 @@
     {
         if (firstRender)
         {
-            var lstTask = await _iocManager.Resolve<IFssDevice>().GetTaskGroupListAsync(storage.GetFssUrl()) ?? new();
+            var lstTask = await FssDevice.GetTaskGroupListAsync(Storage.GetFssUrl()) ?? new();
     // 取出JobName
             lstJobName = lstTask.Select(o => o.JobName).Distinct().ToList();
 
@@ -150,7 +151,7 @@
     {
         if (PageIndex < 1) PageIndex = 1;
 
-        var data = await _iocManager.Resolve<IFssDevice>().GetRunLogListAsync(storage.GetFssUrl(), jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogDTO>(new(), 0);
+        var data = await FssDevice.GetRunLogListAsync(Storage.GetFssUrl(), jobName, logLevel, _pageSize, PageIndex) ?? new PageList<RunLogDTO>(new(), 0);
         _lst = data.List;
         _totalCount = data.RecordCount;
     }

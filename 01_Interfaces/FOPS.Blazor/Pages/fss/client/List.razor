@@ -1,8 +1,8 @@
 @page "/fss/client/list"
 @page "/fss/client/list/{pageIndex:int}"
 
-@inject IIocManager _iocManager;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
+@inject IFssDevice FssDevice;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -102,7 +102,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lst = await _iocManager.Resolve<IFssDevice>().GetClientListAsync(storage.GetFssUrl()) ?? new();
+        _lst = await FssDevice.GetClientListAsync(Storage.GetFssUrl()) ?? new();
         _lst = _lst.OrderByDescending(o => o.ActivateAt).ToList();
         _totalCount = _lst.Count;
     }

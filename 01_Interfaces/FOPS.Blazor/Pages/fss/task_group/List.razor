@@ -1,10 +1,11 @@
 @page "/fss/task_group/list"
 @page "/fss/task_group/list/{pageIndex:int}"
 @using System.Timers;
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 @implements IDisposable;
 
 <div class="layui-card">
@@ -197,7 +198,7 @@
 
     private async Task GetList()
     {
-        _lst = await _iocManager.Resolve<IFssDevice>().GetTaskGroupListAsync(storage.GetFssUrl()) ?? new();
+        _lst = await FssDevice.GetTaskGroupListAsync(Storage.GetFssUrl()) ?? new();
         _lst = _lst.OrderBy(o => o.JobName).ThenByDescending(o => o.Id).ToList();
 
     // 取出JobName
@@ -219,31 +220,31 @@
 
     private async Task RefreshCache()
     {
-        await _iocManager.Resolve<IFssDevice>().SyncCacheToDbAsync(storage.GetFssUrl());
+        await FssDevice.SyncCacheToDbAsync(Storage.GetFssUrl());
         await GetList();
 
-        await js.InvokeVoidAsync("layer.msg", "刷新成功", new
+        await Js.InvokeVoidAsync("layer.msg", "刷新成功", new
         {
             icon = 1
         });
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/fss/task_group/add");
+        Nav.NavigateTo("/fss/task_group/add");
     }
 
     private void GotoUpdate(int id)
     {
-        nav.NavigateTo($"/fss/task_group/update/{id}");
+        Nav.NavigateTo($"/fss/task_group/update/{id}");
     }
 
     /// 复制项目
     private async Task Copy(TaskGroupDTO info)
     {
-        var id = await _iocManager.Resolve<IFssDevice>().CopyTaskGroupAsync(storage.GetFssUrl(),info.Id);
-        nav.NavigateTo($"/fss/task_group/update/{id.Data}");
+        var id = await FssDevice.CopyTaskGroupAsync(Storage.GetFssUrl(),info.Id);
+        Nav.NavigateTo($"/fss/task_group/update/{id.Data}");
     }
 
     // 筛选组状态
@@ -262,7 +263,7 @@
     private async Task SetEnable(TaskGroupDTO info)
     {
         info.IsEnable = !info.IsEnable;
-        await _iocManager.Resolve<IFssDevice>().SaveTaskGroupAsync(storage.GetFssUrl(),info);
+        await FssDevice.SaveTaskGroupAsync(Storage.GetFssUrl(),info);
         await GetList();
     }
 

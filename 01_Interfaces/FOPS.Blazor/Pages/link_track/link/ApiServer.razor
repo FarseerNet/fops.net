@@ -9,9 +9,10 @@
 @using Newtonsoft.Json
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Application.Build.Project
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectApp ProjectApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -226,7 +227,7 @@
         if (PageIndex < 1) PageIndex = 1;
         _lastIndex = PageIndex;
 
-        _lstAppId = await _iocManager.Resolve<ProjectApp>().ToAppListAsync() ?? new();
+        _lstAppId = await ProjectApp.ToAppListAsync() ?? new();
         GetList();
     }
 
@@ -295,7 +296,7 @@
             lstContent.Add($"<pre class='layui-code layui-box layui-code-view' style='font-size: 14px;'><strong class='layui-badge layui-bg-green'>出参：</strong>{info.ResponseBody}</pre>");
         }
 
-        await js.InvokeVoidAsync("layer.open", new
+        await Js.InvokeVoidAsync("layer.open", new
         {
             type = 1,
             skin = "layui-layer-molv",

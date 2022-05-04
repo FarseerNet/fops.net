@@ -9,9 +9,18 @@
 @using FOPS.Application.Build.Project
 @using FOPS.Application.Build.ProjectGroup
 @using FOPS.Application.Build.YamlTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
+@inject IFssDevice FssDevice;
+@inject ProjectApp ProjectApp;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject GitApp GitApp;
+@inject DockerHubApp DockerHubApp;
+@inject DockerfileTplApp DockerfileTplApp;
+@inject ClusterApp ClusterApp;
+@inject YamlTplApp YamlTplApp;
+@inject BuildApp BuildApp;
 
 <div class="layui-row layui-col-space15">
     <div class="layui-col-sm6 layui-col-md3">
@@ -301,26 +310,26 @@
     // 初始化脚本
             
     // FSS 任务组数
-            _taskGroupCount = await _iocManager.Resolve<IFssDevice>().GetTaskGroupCountAsync(storage.GetFssUrl());
+            _taskGroupCount = await FssDevice.GetTaskGroupCountAsync(Storage.GetFssUrl());
     // FSS 未执行数
-            _toUnRunCount = await _iocManager.Resolve<IFssDevice>().GetTaskGroupUnRunCountAsync(storage.GetFssUrl());
+            _toUnRunCount = await FssDevice.GetTaskGroupUnRunCountAsync(Storage.GetFssUrl());
     // FSS 客户端数
-            _clientCount = await _iocManager.Resolve<IFssDevice>().GetClientCountAsync(storage.GetFssUrl());
+            _clientCount = await FssDevice.GetClientCountAsync(Storage.GetFssUrl());
     // FSS 今日失败数
-            _todayFailCount = await _iocManager.Resolve<IFssDevice>().TodayTaskFailCountAsync(storage.GetFssUrl());
+            _todayFailCount = await FssDevice.TodayTaskFailCountAsync(Storage.GetFssUrl());
     // 项目数量
-            _projectCount = await _iocManager.Resolve<ProjectApp>().CountAsync();
-            _projectGroupCount = await _iocManager.Resolve<ProjectGroupApp>().CountAsync();
+            _projectCount = await ProjectApp.CountAsync();
+            _projectGroupCount = await ProjectGroupApp.CountAsync();
     // Git数量
-            _gitCount = await _iocManager.Resolve<GitApp>().CountAsync();
+            _gitCount = await GitApp.CountAsync();
 
-            _dockerHubCount = await _iocManager.Resolve<DockerHubApp>().CountAsync();
-            _dockerfileTplCount = await _iocManager.Resolve<DockerfileTplApp>().CountAsync();
+            _dockerHubCount = await DockerHubApp.CountAsync();
+            _dockerfileTplCount = await DockerfileTplApp.CountAsync();
 
-            _clusterCount = await _iocManager.Resolve<ClusterApp>().CountAsync();
-            _yamlTplCount = await _iocManager.Resolve<YamlTplApp>().CountAsync();
+            _clusterCount = await ClusterApp.CountAsync();
+            _yamlTplCount = await YamlTplApp.CountAsync();
 
-            _buildCount = await _iocManager.Resolve<BuildApp>().CountAsync();
+            _buildCount = await BuildApp.CountAsync();
             await InvokeAsync(StateHasChanged);
         }
     }

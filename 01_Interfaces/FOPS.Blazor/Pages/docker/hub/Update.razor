@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Components
 @using FOPS.Application.Build.DockerHub.Entity
 @using FOPS.Application.Build.DockerHub
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject DockerHubApp DockerHubApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -66,7 +67,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             GotoList();
             return;
         }
@@ -77,13 +78,13 @@
                 throw new Exception("Git名称、托管地址必须填写。");
             }
 
-            await _iocManager.Resolve<DockerHubApp>().UpdateAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
+            await DockerHubApp.UpdateAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "修改成功", new {icon = 1});
             GotoList();
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
@@ -91,7 +92,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
             GotoList();
         }
     }
@@ -100,10 +101,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<DockerHubApp>().ToInfoAsync(Id);
+            _info = await DockerHubApp.ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
+                await Js.InvokeVoidAsync("layer.alert", "Git仓库不存在", new {icon = 2, title = "出错了"});
                 GotoList();
             }
         }
@@ -111,7 +112,7 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/docker/hub/list");
+        Nav.NavigateTo("/docker/hub/list");
     }
 
 }

@@ -3,9 +3,10 @@
 @using FOPS.Domain.Build.Enum
 @using FOPS.Application.Build.YamlTpl.Entity
 @using FOPS.Application.Build.YamlTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject YamlTplApp YamlTplApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -72,18 +73,18 @@
                 throw new Exception("Yaml模板名称。");
             }
                 
-            await _iocManager.Resolve<YamlTplApp>().AddAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
-            nav.NavigateTo("/k8s/tpl/list");
+            await YamlTplApp.AddAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "添加成功", new {icon = 1});
+            Nav.NavigateTo("/k8s/tpl/list");
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new {icon = 2, title = "出错了"});
         }
     }
 
     private void GotoList()
     {
-        nav.NavigateTo("/k8s/tpl/list");
+        Nav.NavigateTo("/k8s/tpl/list");
     }
 }

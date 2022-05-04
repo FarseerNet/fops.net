@@ -1,8 +1,9 @@
 @page "/docker/tpl/list"
 @using FOPS.Application.Build.DockerfileTpl.Entity
 @using FOPS.Application.Build.DockerfileTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
+
+@inject NavigationManager Nav;
+@inject DockerfileTplApp DockerfileTplApp;
 
 <div class="layui-card">
     <div class="layui-card-header" id="anchor-play-header">
@@ -75,13 +76,13 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lst = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
+        _lst = await DockerfileTplApp.ToListAsync() ?? new();
         _lst = _lst.OrderByDescending(o => o.Id).ToList();
         _totalCount = _lst.Count;
     }
 
     private void GotoAdd()
     {
-        nav.NavigateTo("/docker/tpl/add");
+        Nav.NavigateTo("/docker/tpl/add");
     }
 }

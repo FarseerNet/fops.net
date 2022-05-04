@@ -5,9 +5,12 @@
 @using FOPS.Application.Build.Project
 @using FOPS.Application.Build.ProjectGroup
 @using FOPS.Application.Build.Cluster
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject ClusterApp ClusterApp;
+@inject ProjectApp ProjectApp;
 
 <div class="layui-card">
     <div class="layui-card-header">
@@ -67,7 +70,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "项目组不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "项目组不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -84,8 +87,8 @@
             {
                 throw new Exception("项目组、集群必须填写.");
             }
-            await _iocManager.Resolve<ProjectGroupApp>().UpdateAsync(_info);
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new
+            await ProjectGroupApp.UpdateAsync(_info);
+            await Js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
                 icon = 1
             });
@@ -93,7 +96,7 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
@@ -105,7 +108,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "项目组不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "项目组不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -118,10 +121,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<ProjectGroupApp>().ToInfoAsync(Id);
+            _info = await ProjectGroupApp.ToInfoAsync(Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "项目组不存在", new
+                await Js.InvokeVoidAsync("layer.alert", "项目组不存在", new
                 {
                     icon = 2,
                     title = "出错了"
@@ -129,7 +132,7 @@
                 GotoList();
             }
 
-            _lstCluster = await _iocManager.Resolve<ClusterApp>().ToListAsync() ?? new();
+            _lstCluster = await ClusterApp.ToListAsync() ?? new();
             _selectCluster = _lstCluster.ToDictionary(o => o.Id, _ => false);
 
             _info.ClusterIds.ForEach(o=>_selectCluster[o] = true);
@@ -138,23 +141,23 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/project_group/list");
+        Nav.NavigateTo("/project_group/list");
     }
 
     private async Task Delete()
     {
-        var count = await _iocManager.Resolve<ProjectApp>().GroupCountAsync(Id);
+        var count = await ProjectApp.GroupCountAsync(Id);
         if (count > 0)
         {
-            await js.InvokeVoidAsync("layer.alert", $"删除项目组前，需先删除该组的{count}个项目", new
+            await Js.InvokeVoidAsync("layer.alert", $"删除项目组前，需先删除该组的{count}个项目", new
             {
                 icon = 2,
                 title = "出错了"
             });
-            nav.NavigateTo("/project/list");
+            Nav.NavigateTo("/project/list");
             return;
         }
-        await _iocManager.Resolve<ProjectGroupApp>().DeleteAsync(Id);
+        await ProjectGroupApp.DeleteAsync(Id);
         GotoList();
     }
 }

@@ -1,10 +1,11 @@
 @page "/fss/task_group/update/{id:int}"
 @using FS.Utils.Common
 @using FS.Utils.Component
-@inject IIocManager _iocManager;
-@inject NavigationManager nav;
-@inject IJSRuntime js;
-@inject Blazored.LocalStorage.ILocalStorageService storage;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject IFssDevice FssDevice;
+@inject Blazored.LocalStorage.ILocalStorageService Storage;
 
 <div class="layui-row layui-col-space15">
     <div class="layui-col-md6">
@@ -119,7 +120,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "任务组不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -134,9 +135,9 @@
                 throw new Exception("Cron格式错误");
             }
             _info.IntervalMs = 0;
-            await _iocManager.Resolve<IFssDevice>().SaveTaskGroupAsync(storage.GetFssUrl(),_info); 
+            await FssDevice.SaveTaskGroupAsync(Storage.GetFssUrl(),_info); 
             
-            await js.InvokeVoidAsync("layer.msg", "修改成功", new
+            await Js.InvokeVoidAsync("layer.msg", "修改成功", new
             {
                 icon = 1
             });
@@ -144,7 +145,7 @@
         }
         catch (Exception e)
         {
-            await js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
@@ -156,7 +157,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "任务组不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -169,10 +170,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<IFssDevice>().GetTaskGroupInfoAsync(storage.GetFssUrl(),Id);
+            _info = await FssDevice.GetTaskGroupInfoAsync(Storage.GetFssUrl(),Id);
             if (_info == null)
             {
-                await js.InvokeVoidAsync("layer.alert", "任务组不存在", new
+                await Js.InvokeVoidAsync("layer.alert", "任务组不存在", new
                 {
                     icon = 2,
                     title = "出错了"
@@ -186,12 +187,12 @@
 
     private void GotoList()
     {
-        nav.NavigateTo("/fss/task_group/list");
+        Nav.NavigateTo("/fss/task_group/list");
     }
 
     private async Task Delete()
     {
-        await _iocManager.Resolve<IFssDevice>().DeleteTaskGroupAsync(storage.GetFssUrl(),Id);
+        await FssDevice.DeleteTaskGroupAsync(Storage.GetFssUrl(),Id);
         GotoList();
     }
 

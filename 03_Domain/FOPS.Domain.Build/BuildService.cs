@@ -15,7 +15,7 @@ namespace FOPS.Domain.Build;
 /// </summary>
 public class BuildService : ISingletonDependency
 {
-    public IBuildLogDevice BuildLogDevice { get; set; }
+    public ILogWriteDevice LogWriteDevice { get; set; }
     public IDockerDevice   DockerDevice   { get; set; }
     public IDotnetDevice   DotnetDevice   { get; set; }
     public IGitDevice      GitDevice      { get; set; }
@@ -48,9 +48,9 @@ public class BuildService : ISingletonDependency
         if (isUpdate == 0) return;
 
         // 清除历史记录（正常不会存在，当buildId被重置时，有可能会冲突）
-        BuildLogDevice.Clear(build.Id);
+        LogWriteDevice.Clear(build.Id);
 
-        var progress = BuildLogDevice.CreateProgress(build.Id);
+        var progress = LogWriteDevice.CreateProgress(build.Id);
 
         // 项目
         var project = await ProjectRepository.ToInfoAsync(build.ProjectId);
@@ -138,7 +138,7 @@ public class BuildService : ISingletonDependency
         }
         finally
         {
-            BuildLogDevice.Stop(build.Id);
+            LogWriteDevice.Stop(build.Id);
         }
     }
 

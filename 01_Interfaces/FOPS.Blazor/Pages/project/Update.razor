@@ -1,6 +1,6 @@
 @page "/project/update/{id:int}"
 @using FOPS.Domain.Build.Enum
-@using FS.Extends
+
 @using Microsoft.AspNetCore.Components
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Application.Build.ProjectGroup
@@ -14,9 +14,15 @@
 @using FOPS.Application.Build.DockerHub.Entity
 @using FOPS.Application.Build.Git
 @using FOPS.Application.Build.DockerfileTpl
-@inject IIocManager _iocManager;
-@inject NavigationManager _nav;
-@inject IJSRuntime _js;
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectGroupApp ProjectGroupApp;
+@inject GitApp GitApp;
+@inject DockerfileTplApp DockerfileTplApp;
+@inject ProjectApp ProjectApp;
+@inject DockerHubApp DockerHubApp;
+@inject YamlTplApp YamlTplApp;
 
 <div class="layui-row layui-col-space15">
 <div class="layui-col-md6">
@@ -281,14 +287,14 @@
         if (_isFirst) return;
         _isFirst = true;
 
-        _lstGroup = await _iocManager.Resolve<ProjectGroupApp>().ToListAsync() ?? new();
-        _lstGit = await _iocManager.Resolve<GitApp>().ToListAsync() ?? new();
+        _lstGroup = await ProjectGroupApp.ToListAsync() ?? new();
+        _lstGit = await GitApp.ToListAsync() ?? new();
         _selectGits = _lstGit.ToDictionary(o => o.Id, _ => false);
-        _lstDockerfileTpl = await _iocManager.Resolve<DockerfileTplApp>().ToListAsync() ?? new();
-        _lstDockerHub = await _iocManager.Resolve<DockerHubApp>().ToListAsync() ?? new();
+        _lstDockerfileTpl = await DockerfileTplApp.ToListAsync() ?? new();
+        _lstDockerHub = await DockerHubApp.ToListAsync() ?? new();
 
     // 模板
-        _lstTpl = await _iocManager.Resolve<YamlTplApp>().ToListAsync() ?? new();
+        _lstTpl = await YamlTplApp.ToListAsync() ?? new();
         _lstTpl = _lstTpl.OrderByDescending(o => o.Id).ToList();
     }
 
@@ -296,7 +302,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await _js.InvokeVoidAsync("layer.alert", "项目不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "项目不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -311,12 +317,12 @@
             }
 
             _info.DependentGitIds = _selectGits.Where(o => o.Value).Select(o => o.Key).ToList();
-            await _iocManager.Resolve<ProjectApp>().UpdateAsync(_info);
+            await ProjectApp.UpdateAsync(_info);
             GotoList();
         }
         catch (Exception e)
         {
-            await _js.InvokeVoidAsync("layer.alert", e.Message, new
+            await Js.InvokeVoidAsync("layer.alert", e.Message, new
             {
                 icon = 2,
                 title = "出错了"
@@ -328,7 +334,7 @@
     {
         if (Id < 1 || _info == null)
         {
-            await _js.InvokeVoidAsync("layer.alert", "项目不存在", new
+            await Js.InvokeVoidAsync("layer.alert", "项目不存在", new
             {
                 icon = 2,
                 title = "出错了"
@@ -341,10 +347,10 @@
     {
         if (Id > 0 && _info.Id == 0)
         {
-            _info = await _iocManager.Resolve<ProjectApp>().ToInfoAsync(Id);
+            _info = await ProjectApp.ToInfoAsync(Id);
             if (_info == null)
             {
-                await _js.InvokeVoidAsync("layer.alert", "项目不存在", new
+                await Js.InvokeVoidAsync("layer.alert", "项目不存在", new
                 {
                     icon = 2,
                     title = "出错了"
@@ -357,18 +363,18 @@
 
     private void GotoList()
     {
-        _nav.NavigateTo("/project/list");
+        Nav.NavigateTo("/project/list");
     }
 
     private async Task Delete()
     {
-        await _iocManager.Resolve<ProjectApp>().DeleteAsync(Id);
+        await ProjectApp.DeleteAsync(Id);
         GotoList();
     }
 
     private async Task ShowEnvTips()
     {
-        await _js.InvokeVoidAsync("layer.open", new
+        await Js.InvokeVoidAsync("layer.open", new
         {
             type = 1,
             skin = "layui-layer-molv",
