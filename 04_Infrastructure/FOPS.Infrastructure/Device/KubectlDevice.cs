@@ -46,7 +46,7 @@ public class KubectlDevice : IKubectlDevice
     public async Task<bool> SetImages(string clusterName, string projectName, string dockerImages, EumK8sControllers k8sControllersType, IProgress<string> progress, CancellationToken cancellationToken)
     {
         var configFile = GetConfigFile(clusterName);
-        var exitCode   = await ShellTools.Run("kubectl", $"set image {k8sControllersType.GetName()}/{projectName} {projectName}={dockerImages} --kubeconfig={configFile}", progress, null, null, cancellationToken);
+        var exitCode   = await ShellTools.Run("kubectl", $"set image {k8sControllersType.GetName()}/{projectName} {projectName}={dockerImages} --kubeconfig={configFile} --insecure-skip-tls-verify", progress, null, null, cancellationToken);
         if (exitCode != 0)
         {
             progress.Report("K8S更新镜像失败。");
@@ -68,7 +68,7 @@ public class KubectlDevice : IKubectlDevice
         var configFile = GetConfigFile(clusterName);
 
         // 发布
-        var exitCode = await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={configFile}", progress, null, null, cancellationToken);
+        var exitCode = await ShellTools.Run("kubectl", $"apply -f {fileName} --kubeconfig={configFile} --insecure-skip-tls-verify", progress, null, null, cancellationToken);
         if (exitCode != 0)
         {
             progress.Report("K8S更新镜像失败。");
