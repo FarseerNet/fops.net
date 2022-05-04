@@ -14,7 +14,19 @@ public class CheckDirectoryService : ISingletonDependency
 
         // 先删除之前编译的目标文件
         progress.Report($"先删除之前编译的目标文件。");
-        if (Directory.Exists(BuildEnvironment.DistRoot)) Directory.Delete(BuildEnvironment.DistRoot, true);
+        if (Directory.Exists(BuildEnvironment.DistRoot))
+        {
+            //获取指定路径下所有文件夹
+            foreach (string folderPath in Directory.GetDirectories(BuildEnvironment.DistRoot))
+                Directory.Delete(folderPath, true);
+            
+            //获取指定路径下所有文件
+            foreach (string filePath in Directory.GetFiles(BuildEnvironment.DistRoot))
+                File.Delete(filePath);
+            
+            // k8s中，BuildEnvironment.DistRoot路径是挂载的，因此无法删除该文件夹，只能使用上面的清理文件的方式
+            //Directory.Delete(BuildEnvironment.DistRoot, true);
+        }
         
         // 自动创建目录
         progress.Report($"自动创建目录。");

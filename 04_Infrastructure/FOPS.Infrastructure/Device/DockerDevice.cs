@@ -67,7 +67,7 @@ namespace FOPS.Infrastructure.Device
 LICENSE
 README.md
 ";
-            await File.AppendAllTextAsync(BuildEnvironment.DockerIgnorePath, ignoreContent, cancellationToken);
+            //await File.AppendAllTextAsync(BuildEnvironment.DockerIgnorePath, ignoreContent, cancellationToken);
             await File.AppendAllTextAsync(BuildEnvironment.DockerfilePath, dockerfileContent, cancellationToken);
         }
 

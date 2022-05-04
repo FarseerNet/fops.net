@@ -2,7 +2,6 @@ using FOPS.Domain.Build.Deploy.Device;
 using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.DockerfileTpl.Repository;
 using FOPS.Domain.Build.Project;
-using Microsoft.Extensions.Primitives;
 
 namespace FOPS.Domain.Build;
 
@@ -67,7 +66,7 @@ public class DockerBuildService : ISingletonDependency
             var fileDir  = filePath.Substring(0, filePath.LastIndexOf('/') + 1);
             lstCopyCmd.Add($"COPY [\"{filePath}\",\"{fileDir}\"]");
         }
-        lstCopyCmd.Add($"RUN dotnet restore {env.GitName}/{project.Path}/ --disable-parallel");
+        lstCopyCmd.Add($"RUN dotnet restore {env.GitName}/{project.Path}/ -s https://nuget.cdn.azure.cn/v3/index.json");
 
         tpl = tpl.Replace("${dotnet_restore}", string.Join("\r\n", lstCopyCmd));
         await DockerDevice.CreateDockerfileAsync(project.Name, tpl, cancellationToken);
