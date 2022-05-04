@@ -210,17 +210,17 @@
         </div>
         <div class="layui-card-body layui-row layui-col-space10">
             <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">构建方式</label>
-                    <div class="layui-input-inline">
-                        <select @bind="_info.BuildType">
-                            @foreach (var eumBuildType in Enum.GetValues<EumBuildType>())
-                            {
-                                <option value="@eumBuildType.ToString()">@eumBuildType.GetName()</option>
-                            }
-                        </select>
-                    </div>
-                </div>
+                @* <div class="layui-inline"> *@
+                @*     <label class="layui-form-label">构建方式</label> *@
+                @*     <div class="layui-input-inline"> *@
+                @*         <select @bind="_info.BuildType"> *@
+                @*             @foreach (var eumBuildType in Enum.GetValues<EumBuildType>()) *@
+                @*             { *@
+                @*                 <option value="@eumBuildType.ToString()">@eumBuildType.GetName()</option> *@
+                @*             } *@
+                @*         </select> *@
+                @*     </div> *@
+                @* </div> *@
 
                 <div class="layui-inline">
                     <label class="layui-form-label">Dockerfile</label>
