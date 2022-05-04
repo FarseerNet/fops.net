@@ -2,6 +2,7 @@ using FOPS.Domain.Build.Deploy.Device;
 using FOPS.Domain.Build.Deploy.Entity;
 using FOPS.Domain.Build.DockerfileTpl.Repository;
 using FOPS.Domain.Build.Project;
+using Microsoft.Extensions.Primitives;
 
 namespace FOPS.Domain.Build;
 
@@ -54,8 +55,21 @@ public class DockerBuildService : ISingletonDependency
         }
 
         // 替换模板
-        var tpl     = project.ReplaceTpl(dockerfileTpl.Template);
-        tpl = tpl.Replace("${git_name}",env.GitName);
+        var tpl = project.ReplaceTpl(dockerfileTpl.Template);
+        tpl = tpl.Replace("${git_name}", env.GitName);
+
+        // 如果.net 应用，则自动实现csproj的递归复制并运行dotnet restore
+        var lstCopyCmd = new List<string>();
+        var csproj     = Directory.GetFiles(BuildEnvironment.DistRoot, "*.csproj", SearchOption.AllDirectories);
+        foreach (var file in csproj)
+        {
+            var filePath = file.Substring(BuildEnvironment.DistRoot.Length);
+            var fileDir  = filePath.Substring(0, filePath.LastIndexOf('/') + 1);
+            lstCopyCmd.Add($"COPY [\"{filePath}\",\"{fileDir}\"]");
+        }
+        lstCopyCmd.Add($"RUN dotnet restore {env.GitName}/{project.Path}/ --disable-parallel");
+
+        tpl = tpl.Replace("${dotnet_restore}", string.Join("\r\n", lstCopyCmd));
         await DockerDevice.CreateDockerfileAsync(project.Name, tpl, cancellationToken);
         return true;
     }
