@@ -13,15 +13,4 @@ namespace FOPS.Application;
               typeof(SysModule))]
 public class ApplicationModule : FarseerModule
 {
-    /// <summary>
-    ///     初始化之前
-    /// </summary>
-    public override void PreInitialize()
-    {
-    }
-
-    public override void Initialize()
-    {
-        //IocManager.RegisterAssemblyByConvention(type: GetType());
-    }
 }
