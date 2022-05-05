@@ -4,6 +4,7 @@
 @using FOPS.Application.AppLog.ContainerLog.Entity
 @using FOPS.Application.Build.Build.Entity
 @using FOPS.Application.Build.Project
+@using System.Text.RegularExpressions
 
 @inject NavigationManager Nav;
 @inject IJSRuntime Js;
@@ -19,14 +20,14 @@
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i>历史日志</button>
         </div>
     </div>
-    <div class="layui-card-body" style="background-color:#333;line-height: 26px">
-        <div class="layui-form-item" style="background-color:#333;color: #fff;">
+    <div class="layui-card-body" style="background-color:#393d49;line-height: 26px">
+        <div class="layui-form-item">
             @* <pre class="layui-code layui-box layui-code-view" id="preLog"> *@
-                @* <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3> *@
-                <ol class="layui-code-ol" style="background-color:#333;color: #fff;">
+            @* <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3> *@
+            <ol class="layui-code-ol" style="color: #fff;">
                 @for (var index = 0; index < _lstLog.Count; index++)
                 {
-                    <li>@_lstLog[index].CreateAt.ToString("MM-dd HH:mm:ss") @_lstLog[index].Content</li>
+                    <li>@_lstLog[index].CreateAt.ToString("MM-dd HH:mm:ss") @SyntaxHighlighting(_lstLog[index].Content)</li>
                 }
                 </ol>
                 @* </pre> *@
@@ -89,6 +90,31 @@
         {
         }
         return ValueTask.CompletedTask;
+    }
+
+    private MarkupString SyntaxHighlighting(string log)
+    {
+    // fops的命令（黄色）
+        if (log.StartsWith("git -C ") ||
+                 log.StartsWith("docker login ") ||
+                 log.StartsWith("docker build -t ") ||
+                 log.StartsWith("docker push ") ||
+                 log.StartsWith("kubectl set image "))
+        {
+            log = $"<span style=\"color:#ffe127\">{log}</span>";
+        }
+    // 容器中的命令（黄色）
+        else if (Regex.IsMatch(log, "#\\d+ \\[.+ \\d+/\\d+\\] "))
+        {
+            var cmdEndTagIndex = log.IndexOf("] ") + 1;
+            var beginTip = log.Substring(0, cmdEndTagIndex);
+            var cmd = log.Substring(cmdEndTagIndex);
+
+            log = $"<span style=\"color:#6a6964\">{beginTip}</span> <span style=\"color:#ffe127\">{cmd}</span>";
+        }
+    // 其它 （灰色）
+        else log = $"<span style=\"color:#6a6964\">{log}</span>";
+        return new MarkupString(log);
     }
 
     public void Dispose()

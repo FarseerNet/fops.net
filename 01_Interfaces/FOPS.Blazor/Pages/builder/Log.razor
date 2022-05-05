@@ -6,7 +6,6 @@
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Domain.Build.Deploy.Device
 @using FOPS.Domain.Build.Enum
-@using Microsoft.AspNetCore.Html
 @using System.Text.RegularExpressions
 
 @inject NavigationManager Nav;
@@ -191,51 +190,76 @@
     }
 
     // 语法高亮
-    static string[] tips =
+    static string[] chineseTips =
     {
-        "环境变量：", "前置检查。", "先删除之前编译的目标文件。", "自动创建目录。", "前置检查通过。", "已经是最新的。", "拉取完成。", "登陆镜像仓库。", "登陆成功。", "开始镜像打包。", "镜像打包完成。", "开始上传镜像。", "镜像上传完成。", "开始更新K8S POD的镜像版本。", "更新镜像版本完成。", "成功执行。"
+        "环境变量：", "前置检查。", "先删除之前编译的目标文件。", "自动创建目录。", "前置检查通过。", "已经是最新的。", "拉取完成。", "登陆镜像仓库。", "登陆成功。", "开始镜像打包。", "镜像打包完成。", "开始上传镜像。", "镜像上传完成。", "开始更新K8S POD的镜像版本。", "更新镜像版本完成。"
     };
-
-    static string[] tips2 =
+    static string[] cmdPrefix =
+    {
+        "git -C ",
+        "docker login ",
+        "docker build -t ",
+        "docker push ",
+        "kubectl set image ",
+        "成功执行。"
+    };
+    static string[] cmdResultTips =
     {
         "Login Succeeded"
+    };
+
+    static string[] errorTips =
+    {
+        "Exception ",
+        "Failed ",
+        "ERROR:",
+        "error ",
+        "镜像打包出错了。",
+        "执行失败，提前退出。",
+        "K8S更新镜像失败。",
+        "Unable to connect",
     };
 
     private MarkupString SyntaxHighlighting(string content)
     {
         var dateTime = content.Substring(0, 19);
         var log = content.Substring(20);
-        dateTime = $"<span style=\"color:#ff5722\">{dateTime}</span>";
+        dateTime = $"<span style=\"color:#9caf62\">{dateTime}</span>";
 
     // fops的中文提示（紫色）
-        if (tips.Contains(log)) log = $"<span style=\"color:#cfbbfc\">{log}</span>";
+        if (chineseTips.Contains(log)) log = $"<span style=\"color:#cfbbfc\">{log}</span>";
     // 命令中比较重要的（白色）
-        else if (tips2.Contains(log) ||
+        else if (cmdResultTips.Contains(log) ||
                  log.StartsWith("The push refers to repository ") ||
                  Regex.IsMatch(log, "\\w+\\.apps/\\w+ image updated"))
         {
             log = $"<span style=\"color:#fff\">{log}</span>";
         }
     // fops的命令（黄色）
-        else if (log.StartsWith("git -C ") ||
-                 log.StartsWith("docker login ") ||
-                 log.StartsWith("docker build -t ") ||
-                 log.StartsWith("docker push ") ||
-                 log.StartsWith("kubectl set image "))
+        else if (cmdPrefix.Any(o=>log.StartsWith(o)))
         {
             log = $"<span style=\"color:#ffe127\">{log}</span>";
         }
-    // 容器中的命令（黄色）
-        else if (Regex.IsMatch(log, "#\\d+ \\[.+ \\d+/\\d+\\] "))
+    // 执行错误（红色）
+        else if (errorTips.Any(o=>log.ToLower().Contains(o.ToLower())))
         {
-            var cmdEndTagIndex = log.IndexOf("] ") + 1;
-            var beginTip = log.Substring(0, cmdEndTagIndex);
-            var cmd = log.Substring(cmdEndTagIndex);
-
-            log = $"<span style=\"color:#6a6964\">{beginTip}</span> <span style=\"color:#ffe127\">{cmd}</span>";
+            log = $"<span style=\"color:#ff5b5b\">{log}</span>";
         }
-    // 其它 （灰色）
-        else log = $"<span style=\"color:#6a6964\">{log}</span>";
+        else
+        {
+            // 容器中的命令（黄色）
+            var dockerLogMatch = Regex.Match(log, "#\\d+ \\[.+ \\d+/\\d+\\] (?<cmd>.+)");
+            if (!dockerLogMatch.Success) dockerLogMatch = Regex.Match(log, "#\\d+ \\d+\\.\\d+ (?<cmd>.+)");
+            if (dockerLogMatch.Success)
+            {
+                log = log.Replace(dockerLogMatch.Groups[1].Value, $"<span style=\"color:#38e4c6\">{dockerLogMatch.Groups[1].Value}</span>");
+                log = $"<span style=\"color:#6a6964\">{log}</span>";
+            }
+            else // 其它 （灰色）
+            {
+                log = $"<span style=\"color:#6a6964\">{log}</span>";
+            }
+        }
         return new MarkupString(dateTime + " " + log);
     }
 
