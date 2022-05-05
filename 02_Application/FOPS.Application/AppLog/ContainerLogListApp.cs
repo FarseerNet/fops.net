@@ -8,13 +8,13 @@ namespace FOPS.Application.AppLog;
 public class ContainerLogListApp : ISingletonDependency
 {
     public IContainerLogRepository ContainerLogRepository { get; set; }
-    
+
     /// <summary>
     ///     读取前500条日志
     /// </summary>
     public async Task<List<ContainerLogDTO>> ToListAsync()
     {
-        var lst =await ContainerLogRepository.ToListAsync(100).AdaptAsync<ContainerLogDTO, ContainerLogDO>();
-        return lst.OrderBy(o => o.CreateAt).ToList();
+        var lst = await ContainerLogRepository.ToListAsync(100).AdaptAsync<ContainerLogDTO, ContainerLogDO>();
+        return lst.OrderBy(o => o.CreateAt).ThenBy(o=>o.Id).ToList();
     }
 }
