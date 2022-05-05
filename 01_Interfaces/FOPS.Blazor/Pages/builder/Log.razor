@@ -6,6 +6,8 @@
 @using FOPS.Application.Build.Project.Entity
 @using FOPS.Domain.Build.Deploy.Device
 @using FOPS.Domain.Build.Enum
+@using Microsoft.AspNetCore.Html
+@using System.Text.RegularExpressions
 
 @inject NavigationManager Nav;
 @inject IJSRuntime Js;
@@ -46,18 +48,19 @@
             <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i> 列表</button>
         </div>
     </div>
-    <div class="layui-card-body">
+    <div class="layui-card-body" style="background-color:#393d49;line-height: 26px">
         <div class="layui-form-item">
-            <pre class="layui-code layui-box layui-code-view" id="preLog">
-                <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3>
-                <ol class="layui-code-ol">
+            @* <pre class="layui-code layui-box layui-code-view" id="preLog"> *@
+            @* <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3> *@
+            <ol class="layui-code-ol" style="color: #fff;">
                 @for (var index = 0; index < _lstLog.Length; index++)
                 {
-                    var log = _lstLog[index];
-                    <li>@(index + 1) : @log</li>
+                    <li>
+                        <span style="color:#6f6c6c">@(index + 1) : </span> @SyntaxHighlighting(_lstLog[index])
+                    </li>
                 }
-                </ol>
-                </pre>
+            </ol>
+            @* </pre> *@
         </div>
         @{
             if (_info.Status == EumBuildStatus.Building)
@@ -185,6 +188,55 @@
         }
         await Js.InvokeVoidAsync("layer.close", load);
         Nav.NavigateTo($"/builder/log/{Id}", true);
+    }
+
+    // 语法高亮
+    static string[] tips =
+    {
+        "环境变量：", "前置检查。", "先删除之前编译的目标文件。", "自动创建目录。", "前置检查通过。", "已经是最新的。", "拉取完成。", "登陆镜像仓库。", "登陆成功。", "开始镜像打包。", "镜像打包完成。", "开始上传镜像。", "镜像上传完成。", "开始更新K8S POD的镜像版本。", "更新镜像版本完成。", "成功执行。"
+    };
+
+    static string[] tips2 =
+    {
+        "Login Succeeded"
+    };
+
+    private MarkupString SyntaxHighlighting(string content)
+    {
+        var dateTime = content.Substring(0, 19);
+        var log = content.Substring(20);
+        dateTime = $"<span style=\"color:#ff5722\">{dateTime}</span>";
+
+    // fops的中文提示（紫色）
+        if (tips.Contains(log)) log = $"<span style=\"color:#cfbbfc\">{log}</span>";
+    // 命令中比较重要的（白色）
+        else if (tips2.Contains(log) ||
+                 log.StartsWith("The push refers to repository ") ||
+                 Regex.IsMatch(log, "\\w+\\.apps/\\w+ image updated"))
+        {
+            log = $"<span style=\"color:#fff\">{log}</span>";
+        }
+    // fops的命令（黄色）
+        else if (log.StartsWith("git -C ") ||
+                 log.StartsWith("docker login ") ||
+                 log.StartsWith("docker build -t ") ||
+                 log.StartsWith("docker push ") ||
+                 log.StartsWith("kubectl set image "))
+        {
+            log = $"<span style=\"color:#ffe127\">{log}</span>";
+        }
+    // 容器中的命令（黄色）
+        else if (Regex.IsMatch(log, "#\\d+ \\[.+ \\d+/\\d+\\] "))
+        {
+            var cmdEndTagIndex = log.IndexOf("] ") + 1;
+            var beginTip = log.Substring(0, cmdEndTagIndex);
+            var cmd = log.Substring(cmdEndTagIndex);
+
+            log = $"<span style=\"color:#6a6964\">{beginTip}</span> <span style=\"color:#ffe127\">{cmd}</span>";
+        }
+    // 其它 （灰色）
+        else log = $"<span style=\"color:#6a6964\">{log}</span>";
+        return new MarkupString(dateTime + " " + log);
     }
 
     public void Dispose()

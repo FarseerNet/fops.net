@@ -112,9 +112,6 @@ README.md
         /// </summary>
         public async Task<bool> Push(BuildEnvironment env, IProgress<string> receiveOutput, CancellationToken cancellationToken)
         {
-            receiveOutput.Report("---------------------------------------------------------");
-            receiveOutput.Report($"开始上传镜像。");
-
             // 上传
             var result = await ShellTools.Run("docker", $"push {env.DockerImage}", receiveOutput, env, null, cancellationToken);
 

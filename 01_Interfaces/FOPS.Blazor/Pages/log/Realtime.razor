@@ -1,0 +1,98 @@
+@page "/log/realtime"
+@using System.Timers
+@using FOPS.Application.AppLog
+@using FOPS.Application.AppLog.ContainerLog.Entity
+@using FOPS.Application.Build.Build.Entity
+@using FOPS.Application.Build.Project
+
+@inject NavigationManager Nav;
+@inject IJSRuntime Js;
+@inject ProjectApp ProjectApp;
+@inject ContainerLogListApp ContainerLogListApp;
+
+@implements IDisposable;
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        实时日志
+        <div class="layui-right">
+            <button class="layui-btn" @onclick="GotoList"><i class="am-icon-plus"></i>历史日志</button>
+        </div>
+    </div>
+    <div class="layui-card-body" style="background-color:#333;line-height: 26px">
+        <div class="layui-form-item" style="background-color:#333;color: #fff;">
+            @* <pre class="layui-code layui-box layui-code-view" id="preLog"> *@
+                @* <h3 class="layui-code-h3">code<a href="javasciprt:;">执行日志</a></h3> *@
+                <ol class="layui-code-ol" style="background-color:#333;color: #fff;">
+                @for (var index = 0; index < _lstLog.Count; index++)
+                {
+                    <li>@_lstLog[index].CreateAt.ToString("MM-dd HH:mm:ss") @_lstLog[index].Content</li>
+                }
+                </ol>
+                @* </pre> *@
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private BuildDTO _info = new();
+    private List<ContainerLogDTO> _lstLog = new();
+    private Timer _timer;
+    private bool _isFirst;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isFirst) return;
+        _isFirst = true;
+
+        try
+        {
+            _lstLog = await ContainerLogListApp.ToListAsync() ?? new();
+            await ScrollBodyTop();
+
+            _timer = new Timer(1000);
+            _timer.Elapsed += async (sender, args) =>
+            {
+                try
+                {
+                    _lstLog = await ContainerLogListApp.ToListAsync() ?? new();
+    // 刷新页面
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
+            _timer.Enabled = true;
+        }
+        catch
+        {
+        }
+    }
+
+    private void GotoList()
+    {
+        Nav.NavigateTo("/log/history");
+    }
+
+    private ValueTask ScrollBodyTop()
+    {
+        try
+        {
+            return Js.InvokeVoidAsync("ScrollBodyTop");
+        }
+        catch
+        {
+        }
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}
