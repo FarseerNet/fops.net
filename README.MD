@@ -1,3 +1,6 @@
+## 注意
+该项目已使用GO语言重构，请移步到：[FOPS](https://github.com/farseers/FOPS)
+
 ## 概述
 提供给开发人员、管理员维护的运维系统。
 
